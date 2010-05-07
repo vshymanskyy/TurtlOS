@@ -11,6 +11,8 @@
 #include <hal/lapic.h>
 #include <hal/cpu.h>
 
+#include <std/HexDump.h>
+
 #include "MultibootParser.h"
 #include "ImpsParser.h"
 #include "Processors.h"
@@ -24,6 +26,13 @@ CliDesktop* desktop;
 int main();
 
 int main() {
+	int a;
+	a = 0x12481632;
+	hexdump(&a);
+	hexdump("hello world", 12);
+	
+	for(;;);
+
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(0, 0, 80, 25));
 
@@ -59,7 +68,7 @@ int main() {
 
 	lapicInit();
 
-	//(*console) << "LAPIC at: " << (ptr)lapicGetBase() << endl;
+	(*console) << "LAPIC at: " << (ptr)lapicGetBase() << endl;
 
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
@@ -67,8 +76,15 @@ int main() {
 	Processors::Instance()->~Processors();
 	DeviceManager::Instance()->~DeviceManager();
 
-	debug_print("Hello integer <%d> string <%p>\n", 1024, "brum-brum");
-	debug_print("Hello integer <%d> string <%s>\n", 1024, "brum-brum");
+	//debug_print("Hello integer <%d> string <%p> char <%c><%c><%c><%c>\n", 1024, "brum-brum", 'A', 'B', 'C', 'D');
+	//debug_print("Hello integer <%08d> string <%s>\n", 1024, "brum-brum");
+
+
+	//int a = 0x12481632;
+	//hexdump(&a);
+	//hexdump("hello world", 12);
+	//hexdump(DeviceManager::Instance());
+
 
 	delete console;
 	delete desktop;

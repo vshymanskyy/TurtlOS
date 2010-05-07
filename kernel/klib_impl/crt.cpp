@@ -43,18 +43,26 @@ extern "C" {
 	}
 }
 
-int __cxxabiv1::__cxa_guard_acquire (__guard* g) {
+int
+__cxxabiv1::__cxa_guard_acquire (__guard* g)
+{
 	return !*(char*)(g);
 }
 
-void __cxxabiv1::__cxa_guard_release (__guard* g) {
+void
+__cxxabiv1::__cxa_guard_release (__guard* g)
+{
 	*(char*)g = 1;
 }
 
-void __cxxabiv1::__cxa_guard_abort (__guard*) {
+void
+__cxxabiv1::__cxa_guard_abort (__guard*)
+{
 }
 
-int __cxa_atexit (void (*f)(void*), void* p, void* d) {
+int
+__cxa_atexit (void (*f)(void*), void* p, void* d)
+{
 	assert(objectQty < MAX_ATEXIT_HANDLERS);
 	object[objectQty].f = f;
 	object[objectQty].p = p;
@@ -63,7 +71,9 @@ int __cxa_atexit (void (*f)(void*), void* p, void* d) {
 	return 0;
 }
 
-void __cxa_finalize (void* d) {
+void
+__cxa_finalize (void* d)
+{
 	argused(d);
 	for (unsigned i = objectQty; i > 0; --i) {
 		--objectQty;
@@ -71,30 +81,32 @@ void __cxa_finalize (void* d) {
 	}
 }
 
-void __stack_chk_guard_setup () {
-unsigned char* p = (unsigned char*) &__stack_chk_guard;
-p[sizeof(size_t)-1] = 255;  /* <- this should be probably randomized */
-p[sizeof(size_t)-2] = '\n';
-p[0] = 0;
+void
+__stack_chk_guard_setup ()
+{
+	unsigned char* p = (unsigned char*) &__stack_chk_guard;
+	p[sizeof(size_t)-1] = 255;  /* <- this should be probably randomized */
+	p[sizeof(size_t)-2] = '\n';
+	p[0] = 0;
 }
 
-void __attribute__((noreturn)) __stack_chk_fail () {
-	assert(!"stack broken");
-	cpuStop();
-	for(;;) {
-		//to make gcc happy
-	}
+void
+__attribute__((noreturn))
+__stack_chk_fail ()
+{
+	fatal("stack broken");
 }
 
-void __attribute__((noreturn)) __cxa_pure_virtual () {
-	assert(!"pure virtual function called");
-	cpuStop();
-	for(;;) {
-		//to make gcc happy
-	}
+void
+__attribute__((noreturn))
+__cxa_pure_virtual ()
+{
+	fatal("pure virtual function called");
 }
 
-void entry() {
+void
+entry()
+{
 	__stack_chk_guard_setup();
 
 	//call all static constructors
@@ -157,3 +169,4 @@ void operator delete (void* p) {
 void operator delete[] (void* p) {
 	free(p);
 }
+

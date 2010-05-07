@@ -39,6 +39,7 @@ putUnsigned (unsigned long long value, char* buf, long base, bool capt)
 int
 vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 {
+	argused(count);
 	char* p = buffer;
 	for (; *format; format++) {
 		if (*format == '%') {
@@ -56,10 +57,10 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 			bool sign = false;
 			bool capt = false;
 			bool expo = false;
-			long width;
-			long prec;
-			long length;
-			long base;
+			long width = -1;
+			long prec = -1;
+			long length = -1;
+			long base = -1;
 
 			// flags
 			while (true) {
@@ -120,9 +121,10 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 			}
 
 			switch (*format) {
+
 			case 'c': // Character
-				*p++ = va_arg(args, char);
-				break;
+				*p++  = (unsigned char)va_arg(args, int);
+				continue;
 			case 's': // String of characters
 				goto string;
 
@@ -152,7 +154,7 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 				width = sizeof(size_t)*2;
 				goto integer;
 
-			case 'E':
+			case 'E': // Floating point variations
 				capt = true;
 			case 'e':
 				expo = true;
@@ -165,30 +167,21 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 				goto floating;
 
 			case 'n': // Pointer to a signed int, where the number of characters written so far is stored
-				if (length == 8) {
-					uint64_t* ptr = va_arg(args, uint64_t*);
-					*ptr = (uint64_t)(p - buffer);
-				} else if (length == 4) {
-					uint32_t* ptr = va_arg(args, uint32_t*);
-					*ptr = (uint32_t)(p - buffer);
-				} else if (length == 2) {
-					uint16_t* ptr = va_arg(args, uint16_t*);
-					*ptr = (uint16_t)(p - buffer);
-				}
-				break;
-
+				goto report;
 			default:
 				*p++ = *format;
+				continue;
 			}
 
 			string: {
-				char* value = va_arg(args, char*);
-				while (*value) {
-					*p++ = *value++;
-				}
+				const char* value = va_arg(args, const char*);
+				const size_t len = strlen(value);
+				memcpy(p, value, len);
+				p += length;
 				continue;
 			}
 			integer: {
+				char* prevP = p;
 				if (sign) {
 					if (length == 2) {
 						int16_t value = va_arg(args, int16_t);
@@ -212,9 +205,27 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 						p = putUnsigned(value, p, base, capt);
 					}
 				}
+				ptrdiff_t curWidth = p - prevP;
+				width -= curWidth;
+				while (width-- > 0) {
+					*p++ = (zero)?'0': ' ';
+				}
 				continue;
 			}
 			floating: {
+				continue;
+			}
+			report: {
+				if (length == 8) {
+					int64_t* ptr = va_arg(args, int64_t*);
+					*ptr = (int64_t)(p - buffer);
+				} else if (length == 4) {
+					int32_t* ptr = va_arg(args, int32_t*);
+					*ptr = (int32_t)(p - buffer);
+				} else if (length == 2) {
+					int16_t* ptr = va_arg(args, int16_t*);
+					*ptr = (int16_t)(p - buffer);
+				}
 				continue;
 			}
 		} else {
@@ -224,3 +235,4 @@ vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
 	*p = '\0';
 	return (int)(p - buffer);
 }
+

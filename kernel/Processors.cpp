@@ -118,7 +118,8 @@ Processors::InitAp() {
 	cpu->state = CpuDesc::CPU_HALTED;
 	mLock.Unlock();
 	cpuHalt();
-	assert(!"must never reach this point");
+
+	fatal("executing after cpuHalt");
 }
 
 void

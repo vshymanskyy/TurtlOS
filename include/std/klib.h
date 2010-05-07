@@ -39,7 +39,10 @@ void *malloc_debug (size_t size, const char* file, int line);
 //  Debug
 //*******************************************************
 void debug_print(const char* format, ...);
-void assert_failed (const char *msg, const char *file, const int line, const char *func);
+void __attribute__((noreturn)) assert_failed (const char *msg, const char *file, const int line, const char *func);
+void __attribute__((noreturn)) fatal_soft (const char *msg, const char *file, const int line, const char *func);
+
+#define fatal(msg)		fatal_soft(msg, __FILE__, __LINE__, __FUNC__);
 
 #ifdef DEBUG
 	#define assert(msg) {													\
