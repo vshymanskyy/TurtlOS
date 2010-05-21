@@ -1,16 +1,16 @@
 #ifndef _INC_PLATFORM_H
 #define _INC_PLATFORM_H
 
-#define I386 1
-#define X86_64 2
+#define TARGET_X86 1
+#define TARGET_X86_64 2
 
 /// Recognize target
-#if defined(__i386)
-#  define TARGET I386
-#  define CURTARGET "i386"
+#if defined(__x86)
+#  define TARGET TARGET_X86
+#  define CURTARGET x86
 #elif defined(__x86_64)
-#  define TARGET X86_64
-#  define CURTARGET "x86-64"
+#  define TARGET TARGET_X86_64
+#  define CURTARGET x86-64
 #else
 #  error "Target platform not recognized."
 #endif

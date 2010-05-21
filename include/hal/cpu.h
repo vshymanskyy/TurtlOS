@@ -17,15 +17,10 @@ void cpuSetIDT(size_t base, uint16_t limit);
 uint64_t cpuGetMSR(uint32_t msr);
 void cpuSetMSR(uint32_t msr, uint64_t val);
 
-#include <../hal/common/cpu.inl>
+#define HAL_INCLUDE_COMMON_IMPL(FILENAME) <../hal/common/FILENAME>
+#define HAL_INCLUDE_TARGET_IMPL(FILENAME) <../hal/CURTARGET/FILENAME>
 
-#if TARGET == I386
-#  include <../hal/x86-64/cpu.inl>
-#elif TARGET == X86_64
-#  include <../hal/i386/cpu.inl>
-#else
-#  error "target platform not supported"
-#endif
+#include HAL_INCLUDE_COMMON_IMPL(cpu.inl)
+#include HAL_INCLUDE_TARGET_IMPL(cpu.inl)
 
 #endif  // _INC_CPU_H
-

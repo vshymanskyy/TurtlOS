@@ -1,7 +1,7 @@
 #---------------------------------------------------------
 # CONFIG
 #---------------------------------------------------------
-Arch		?= i386
+Arch		?= x86
 Config		?= Debug
 
 ifeq ($(Config),)
@@ -25,7 +25,7 @@ endif
 #---------------------------------------------------------
 
 # 1. Platform
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 else ifeq ($(Arch),x86-64)
 else
 $(error Target platform '$(Arch)' not supported)
@@ -53,7 +53,7 @@ RM			 = rm -f
 RMDIR		 = rm -rf
 MKDIR		 = mkdir -p
 
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 EM			 = qemu
 GDB			 = gdb
 else ifeq ($(Arch),x86-64)
@@ -130,11 +130,11 @@ ASFLAGS		 = -w+gnu-elf-extensions
 EMFLAGS		 = -m 64 -smp 6 -boot d
 
 #----- Platform-dependent --------------------------------
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 ASFLAGS		+= -f elf32
 CCFLAGS		+= -m32
 LDFLAGS		+= -m elf_i386
-DEFINES		+= -D __i386
+DEFINES		+= -D __x86
 else ifeq ($(Arch),x86-64)
 ASFLAGS		+= -f elf64
 CCFLAGS		+= -m64
@@ -191,7 +191,7 @@ endif
 image: $(IMAGE)
 
 all:
-	$(MAKE) image Arch=i386
+	$(MAKE) image Arch=x86
 	$(MAKE) image Arch=x86-64
 	
 tools: $(BIN2INL) $(MKINITRD)
@@ -250,7 +250,7 @@ $(GDBCONF):
 	$(ECHO) Preparing $@
 	$(ECHO) "set disassembly-flavor intel"    > $@
 	$(ECHO) "set remotetimeout 5"            >> $@
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 	$(ECHO) "set archi i386:intel"           >> $@
 else ifeq ($(Arch),x86-64)
 	$(ECHO) "set archi i386:x86-64:intel"    >> $@
@@ -262,7 +262,7 @@ $(DDDCONF):
 	$(ECHO) Preparing $@
 	$(ECHO) "set disassembly-flavor intel"    > $@
 	$(ECHO) "set remotetimeout 5"            >> $@
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 	$(ECHO) "set archi i386:intel"           >> $@
 else ifeq ($(Arch),x86-64)
 	$(ECHO) "set archi i386:x86-64:intel"    >> $@

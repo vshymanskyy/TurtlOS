@@ -1,3 +1,4 @@
+#pragma once
 
 inline
 uint8_t
@@ -46,8 +47,8 @@ inportsb(const uint16_t port, void* buffer, const int count)
 			"cld; rep; insb"
 			:
 			: "d" (port),
-			  "D" (buffer),
-			  "c" (count)
+			"D" (buffer),
+			"c" (count)
 		);
 }
 
@@ -59,8 +60,8 @@ inportsw(const uint16_t port, void* buffer, const int count)
 			"cld; rep; insw"
 			:
 			: "d" (port),
-			  "D" (buffer),
-			  "c" (count)
+			"D" (buffer),
+			"c" (count)
 		);
 }
 
@@ -72,8 +73,8 @@ inportsl(const uint16_t port, void* buffer, const int count)
 			"cld; rep; insl"
 			:
 			: "d" (port),
-			  "D" (buffer),
-			  "c" (count)
+			"D" (buffer),
+			"c" (count)
 		);
 }
 
@@ -85,7 +86,7 @@ outportb(const uint16_t port, const uint8_t data)
 			"outb %1, %0"
 			:
 			: "d" (port),
-			  "a" (data)
+			"a" (data)
 		);
 }
 
@@ -97,7 +98,7 @@ outportw(const uint16_t port, const uint16_t data)
 			"outw %1, %0"
 			:
 			: "d" (port),
-			  "a" (data)
+			"a" (data)
 		);
 }
 
@@ -109,7 +110,7 @@ outportl(const uint16_t port, const uint32_t data)
 			"outl %1, %0"
 			:
 			: "d" (port),
-			  "a" (data)
+			"a" (data)
 		);
 }
 
@@ -121,8 +122,8 @@ outportsb(const uint16_t port, const void* buffer, const int count)
 			"cld; rep; outsb"
 			:
 			: "d" (port),
-			  "S" (buffer),
-			  "c" (count)
+			"S" (buffer),
+			"c" (count)
 		);
 }
 
@@ -134,8 +135,8 @@ outportsw(const uint16_t port, const void* buffer, const int count)
 			"cld; rep; outsw"
 			:
 			: "d" (port),
-			  "S" (buffer),
-			  "c" (count)
+			"S" (buffer),
+			"c" (count)
 		);
 }
 
@@ -147,8 +148,8 @@ outportsl(const uint16_t port, const void* buffer, const int count)
 			"cld; rep; outsl"
 			:
 			: "d" (port),
-			  "S" (buffer),
-			  "c" (count)
+			"S" (buffer),
+			"c" (count)
 		);
 }
 
