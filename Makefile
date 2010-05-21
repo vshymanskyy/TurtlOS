@@ -82,6 +82,7 @@ AUXFILES	 = $(LINKSCRIPT) \
 			   Makefile      \
 			   Readme.txt    \
 			   doxyfile      \
+			   grub.cfg
 
 GENFILES	 = $(TARBALL) \
 			   cscope.*   \
@@ -91,6 +92,15 @@ BUILDPATHS	 = hal/common  \
 			   hal/$(Arch) \
 			   kernel      \
 			   std
+
+TARPATHS	 = config      \
+			   hal         \
+			   include     \
+			   kernel      \
+			   std         \
+			   tools       \
+			   .git        \
+			   .settings
 
 MKINITRD	 = $(BUILD)/mkinitrd
 BIN2INL		 = $(BUILD)/bin2inl
@@ -105,12 +115,15 @@ IMAGE		 = $(DEST)/image.iso
 ASMFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.s")
 CPPFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.cpp")
 HDRFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.h")
+INLFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.inl")
 
 OUTFILES	 = $(patsubst %.s, $(TEMP)/%.b, $(ASMFILES))
 OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.o, $(CPPFILES))
 DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.d, $(CPPFILES))
 
 LINKFILES	 = $(OUTFILES) $(OBJFILES)
+
+TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES)
 
 #---------------------------------------------------------
 # FLAGS
@@ -310,7 +323,7 @@ run_ddd: $(IMAGE) $(DDDCONF)
 #---------------------------------------------------------
 tar $(TARBALL):
 	$(ECHO) Making tarball
-	tar -cjf TurtlOS.tar.bz2 $(ALLFILES)
+	tar -cjf TurtlOS.tar.bz2 $(TARFILES)
 
 ctags tags:
 	$(ECHO) Building ctags database
