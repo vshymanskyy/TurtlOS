@@ -17,10 +17,7 @@ void cpuSetIDT(size_t base, uint16_t limit);
 uint64_t cpuGetMSR(uint32_t msr);
 void cpuSetMSR(uint32_t msr, uint64_t val);
 
-#define HAL_INCLUDE_COMMON_IMPL(FILENAME) <../hal/common/FILENAME>
-#define HAL_INCLUDE_TARGET_IMPL(FILENAME) <../hal/CURTARGET/FILENAME>
-
-#include HAL_INCLUDE_COMMON_IMPL(cpu.inl)
-#include HAL_INCLUDE_TARGET_IMPL(cpu.inl)
+#include INCLUDE_COMMON(../hal,cpu.inl)
+#include INCLUDE_TARGET(../hal,cpu.inl)
 
 #endif  // _INC_CPU_H

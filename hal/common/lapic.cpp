@@ -162,7 +162,7 @@ lapicSetBase(size_t addr)
 	base &= 0xFFF;
 	base |= addr;
 	cpuSetMSR(CPU_MSR_APICBASE, base);
-	lapicAddress = base;
+	lapicAddress = (size_t)base;
 }
 
 size_t

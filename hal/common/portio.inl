@@ -27,6 +27,31 @@ inportw(const uint16_t port)
 }
 
 inline
+void
+outportb(const uint16_t port, const uint8_t data)
+{
+	asm (
+			"outb %1, %0"
+			:
+			: "d" (port),
+			"a" (data)
+		);
+}
+
+inline
+void
+outportw(const uint16_t port, const uint16_t data)
+{
+	asm (
+			"outw %1, %0"
+			:
+			: "d" (port),
+			"a" (data)
+		);
+}
+
+/*
+inline
 uint32_t
 inportl(const uint16_t port)
 {
@@ -78,29 +103,7 @@ inportsl(const uint16_t port, void* buffer, const int count)
 		);
 }
 
-inline
-void
-outportb(const uint16_t port, const uint8_t data)
-{
-	asm (
-			"outb %1, %0"
-			:
-			: "d" (port),
-			"a" (data)
-		);
-}
 
-inline
-void
-outportw(const uint16_t port, const uint16_t data)
-{
-	asm (
-			"outw %1, %0"
-			:
-			: "d" (port),
-			"a" (data)
-		);
-}
 
 inline
 void
@@ -153,3 +156,108 @@ outportsl(const uint16_t port, const void* buffer, const int count)
 		);
 }
 
+inline
+uint16_t inportw(const uint16_t port) {
+	uint16_t res=0;
+	asm {
+		mov dx, port;
+		in	ax, dx;
+		mov [res], ax;
+	}
+	return res;
+}
+
+inline
+uint32_t inportl(const uint16_t port) {
+	uint32_t res=0;
+	asm {
+		mov dx, port;
+		in	eax, dx;
+		mov [res], eax;
+	}
+	return res;
+}
+
+inline
+void outportw(const uint16_t port, const uint16_t value) {
+	asm {
+		mov	dx, [port];
+		mov	ax, [value];
+		out	dx, ax;
+	}
+}
+
+inline
+void outportl(const uint16_t port, const uint32_t value) {
+	asm {
+		mov	dx, [port];
+		mov	eax, [value];
+		out	dx, eax;
+	}
+}
+
+inline
+void inportsb(const uint16_t port, const void* buffer, const int n){
+	asm {
+		mov	dx, [port];
+		mov xdi, [buffer];
+		mov	ecx, [n];
+		rep insb;
+	}
+}
+
+inline
+void inportsw(const uint16_t port, const uint16_t* buffer, const int n){
+	asm {
+		mov	dx, [port];
+		mov xdi, [buffer];
+		mov	ecx, [n];
+		cld;
+		rep insw;
+	}
+}
+
+inline
+void inportsl(const uint16_t port, const uint32_t* buffer, const int n){
+	asm {
+		mov	dx,	[port];
+		mov xdi, [buffer];
+		mov	ecx, [n];
+		cld;
+		rep insd;
+	}
+}
+
+inline
+void outportsb(const uint8_t* buffer, const int n, const uint16_t port){
+	asm {
+		mov	dx, [port];
+		mov xsi, [buffer];
+		mov	ecx, [n];
+		cld;
+		rep outsb;
+	}
+}
+
+inline
+void outportsw(const uint16_t* buffer, const int n, const uint16_t port){
+	asm {
+		mov	dx, [port];
+		mov xsi, [buffer];
+		mov	ecx, [n];
+		cld;
+		rep outsw;
+	}
+}
+
+inline
+void outportsl(const uint32_t* buffer, const int n, const uint16_t port){
+	asm {
+		mov	dx, [port];
+		mov xsi, [buffer];
+		mov	ecx, [n];
+		cld;
+		rep outsd;
+	}
+}
+*/

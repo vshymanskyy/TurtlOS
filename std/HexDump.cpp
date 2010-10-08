@@ -57,4 +57,3 @@ hexdump(const void* data, size_t length, unsigned columnsMask)
 		debug_print("\n");
 	}
 }
-

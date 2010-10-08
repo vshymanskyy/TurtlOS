@@ -18,6 +18,8 @@
 #include "Processors.h"
 
 #include "Heap.h"
+
+#include "Log.h"
 extern Heap heap;
 
 Console* console;
@@ -38,7 +40,7 @@ int main() {
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;
 	}
-	(*console) << "Kernel:  TurtlOS " << __string(TARGET) << " (" << COMPILERSTR << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
+	(*console) << "Kernel:  TurtlOS " << __string(TARGET) << " (" << __COMPILER__ << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
 	if (char* cmdl = MultibootParser::Instance()->GetCommandLine()) {
 		(*console) << "Command: " << cmdl << endl;
 	}
@@ -69,6 +71,11 @@ int main() {
 
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
+
+	LogManager::Instance()->AddLogger(new BasicLogViewer(console));
+
+	Log l ("main");
+	l() << "hello";
 
 	Processors::Instance()->~Processors();
 	DeviceManager::Instance()->~DeviceManager();

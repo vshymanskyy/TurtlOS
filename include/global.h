@@ -3,7 +3,7 @@
 
 #include <platform.h>
 
-#if COMPILER == GCC
+#if COMPILER == COMPILER_GCC
 
 	#define __int8 char
 	#define __int16 short

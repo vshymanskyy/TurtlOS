@@ -1,6 +1,6 @@
 
 
-#if		TARGET == TARGET_X86 && COMPILER == GCC
+#if		TARGET == TARGET_X86 && COMPILER == COMPILER_GCC
 
 typedef unsigned long long u_quad_t;
 typedef signed long long quad_t;
