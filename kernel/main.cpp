@@ -28,8 +28,6 @@ CliDesktop* desktop;
 
 int main();
 
-const char* data = "hello world";
-
 int main() {
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(0, 0, 39, 25));
@@ -38,6 +36,15 @@ int main() {
 
 	desktop->AddChild(console);
 	desktop->AddChild(console2);
+
+/*
+	LogManager::Instance()->AddLogger(new BasicLogViewer(console));
+
+	Log l ("main");
+	l() << "hello";
+
+	for(;;);
+*/
 
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;
@@ -73,11 +80,6 @@ int main() {
 
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
-
-	LogManager::Instance()->AddLogger(new BasicLogViewer(console));
-
-	Log l ("main");
-	l() << "hello";
 
 	Processors::Instance()->~Processors();
 	DeviceManager::Instance()->~DeviceManager();

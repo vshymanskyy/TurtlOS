@@ -17,7 +17,7 @@ public:
 
 	void Redraw(const Rect& region) {
 		CliWindow::Redraw(region);
-		for(List<CliWindow*>::Iterator it = mChildren.First(); it != mChildren.End(); ++it) {
+		for(List<CliWindow*>::It it = mChildren.First(); it != mChildren.End(); ++it) {
 			Rect b = mChildren[it]->Bounds();
 			if (b.Intersects(region)) {
 				Rect bc(b.Intersect(region));
@@ -35,7 +35,7 @@ public:
 
 	void RemoveChild(CliWindow* win) {
 		int index = 0;
-		for(List<CliWindow*>::Iterator it = mChildren.First(); it != mChildren.End(); ++it) {
+		for(List<CliWindow*>::It it = mChildren.First(); it != mChildren.End(); ++it) {
 			if (mChildren[it] == win) {
 				mChildren.RemoveAt(it);
 			}

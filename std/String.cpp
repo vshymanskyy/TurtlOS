@@ -1,4 +1,5 @@
 #include <std/String.h>
+#include <string.h>
 
 String
 String::Format(const char* format, ...)

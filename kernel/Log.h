@@ -1,12 +1,36 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include <string.h>
 #include "std/String.h"
 #include "std/List.h"
 #include "Console.h"
+#include <std/Pool.h>
 
 #define __LOG_ENTRY_SIZE 512
-#define __LOG_ENTRY_QTY 10
+#define __LOG_ENTRY_QTY 16
+
+#define __LOG_STRINGIFY(x) #x
+#define __LOG_MIN(a,b) (((a) < (b)) ? (a) : (b))
+
+#define LOG_STR(val) __LOG_STRINGIFY(val)
+#define LOG_VAL(val) "(" LOG_STR(val) ")" << " = " << (val)
+#define LOG_LINE (__FILE__":" LOG_STR(__LINE__))
+
+#ifdef MSVC
+  #define LOG_FUNC (__FUNCTION__)
+  #define LOG_FUNC_DEC (__FUNCDNAME__)
+  #define LOG_FUNC_SIG (__FUNCSIG__)
+#elif defined(GCC)
+  #define LOG_FUNC (__func__)
+  #define LOG_FUNC_DEC (__FUNCTION__)
+  #define LOG_FUNC_SIG (__PRETTY_FUNCTION__)
+#else
+//  #error Compiler not supported
+#endif
+
+#define LOG_FUNC_ENTER ("Entered " LOG_FUNC)
+#define LOG_FUNC_EXIT ("Exited" LOG_FUNC)
 
 enum LogLevel {
     LOG_FATAL,      // Shows always, terminates application
@@ -34,10 +58,10 @@ private:
         int         pos;
         char        buff[__LOG_ENTRY_SIZE];
 
-        LogStreamData(const Log* l, LogLevel lvl)
+        LogStreamData(const Log* log, LogLevel level)
             : ref   (1)
-            , log   (l)
-            , level (lvl)
+            , log   (log)
+            , level (level)
             , pos   (0)
         {}
 
@@ -46,7 +70,21 @@ private:
         char* getPos() {
             return buff+pos;
         }
-    }* _data;
+
+        static Pool <LogStreamData, __LOG_ENTRY_QTY> entries;
+
+/*
+        void* operator new(size_t) {
+            return entries.allocate();
+        }
+
+        void operator delete(void* ptr) {
+            entries.release(ptr);
+        }
+*/
+    };
+
+    LogStreamData* _data;
 
     void operator = (const LogStream&) { }
 
@@ -68,9 +106,7 @@ public:
         }
     }
 
-    #define LOG_DUMP_VAL(val) "("#val")" << " = " << (val)
-
-    #define __LOG_APPEND(fmt, ...) { int s = __LOG_ENTRY_SIZE - _data->pos-1; if (s) { _data->pos += min(s, snprintf(_data->getPos(), s, (fmt), __VA_ARGS__)); } return *this; }
+    #define __LOG_APPEND(fmt, ...) { int s = __LOG_ENTRY_SIZE - _data->pos-1; if (s) { _data->pos += __LOG_MIN(s, snprintf(_data->getPos(), s, (fmt), __VA_ARGS__)); } return *this; }
 
     const LogStream& operator << (bool v) const                 __LOG_APPEND("%s", v?"true":"false")
     const LogStream& operator << (char v) const                 __LOG_APPEND("%c", v)
@@ -156,7 +192,7 @@ private:
         }
         time += QTime::currentTime().toString("HH:mm:ss.zzz");*/
 
-        for (List<Logger*>::Iterator i = _loggers.First(); i != _loggers.End(); ++i)  {
+        for (List<Logger*>::It i = _loggers.First(); i != _loggers.End(); ++i)  {
             _loggers[i]->AddEntry(level, "", log, msg);
         }
 
@@ -225,4 +261,3 @@ private:
 };
 
 #endif // LOG_H
-

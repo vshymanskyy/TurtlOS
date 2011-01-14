@@ -15,21 +15,21 @@ DeviceManager::~DeviceManager() {
 
 bool DeviceManager::RegisterDevice(iDevice* device) {
 	mDevices.Append(device);
-	for (ListenerList::Iterator it = mListeners.First(); it != mListeners.End(); ++it)
+	for (ListenerList::It it = mListeners.First(); it != mListeners.End(); ++it)
 		mListeners[it]->OnDriverRegistered(device);
 	return true;
 }
 
 bool DeviceManager::UnregisterDevice(iDevice* device) {
 	mDevices.RemoveAt(mDevices.FindFirst(device));
-	for (ListenerList::Iterator it = mListeners.First(); it != mListeners.End(); ++it)
+	for (ListenerList::It it = mListeners.First(); it != mListeners.End(); ++it)
 		mListeners[it]->OnDriverUnregistered(device);
 	return true;
 }
 
 bool DeviceManager::RegisterListener(Listener* lsn) {
 	mListeners.Append(lsn);
-	for (DeviceList::Iterator it = mDevices.First(); it != mDevices.End(); ++it)
+	for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it)
 		lsn->OnDriverRegistered(mDevices[it]);
 	return true;
 }
@@ -45,7 +45,7 @@ int DeviceManager::GetDeviceCount() {
 
 void DeviceManager::Print() {
 	(*console) << "======== Registered devices: ================" << endl;
-	for (DeviceList::Iterator it = mDevices.First(); it != mDevices.End(); ++it) {
+	for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it) {
 		(*console) << mDevices[it]->GetDescription() << endl;
 	}
 	(*console) << "=============================================" << endl;

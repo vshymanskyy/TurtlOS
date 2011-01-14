@@ -26,7 +26,7 @@ public:
 
 	List<iDevFileSystem*> GetFileSystems() const {
 		List<iDevFileSystem*> result;
-		for (DeviceList::Iterator it = mDevices.First(); it != mDevices.End(); ++it) {
+		for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it) {
 			if (mDevices[it]->GetType() == iDevice::DevTypeFileSystem)
 				result.Append((iDevFileSystem*) mDevices[it]);
 		}

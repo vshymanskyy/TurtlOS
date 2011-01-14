@@ -1,21 +1,6 @@
 #ifndef _INC_KLIB_H
 #define _INC_KLIB_H
 
-//*******************************************************
-//  New
-//*******************************************************
-void* operator new (size_t size);
-void* operator new (size_t size, void* at);
-void* operator new[] (size_t size);
-void operator delete (void* p);
-void operator delete[] (void* p);
-
-#ifdef DEBUG
-	void* operator new (size_t size, const char* file, int line);
-	void* operator new[] (size_t size, const char* file, int line);
-	#define new new(__FILE__, __LINE__)
-#endif
-
 extern "C" {
 
 //*******************************************************
@@ -34,58 +19,6 @@ void *malloc_debug (size_t size, const char* file, int line);
 #ifdef DEBUG
 	#define malloc(size) malloc_debug(size, __FILE__, __LINE__)
 #endif
-
-//*******************************************************
-//  Debug
-//*******************************************************
-void debug_print(const char* format, ...);
-void __attribute__((noreturn)) assert_failed (const char *msg, const char *file, const int line, const char *func);
-void __attribute__((noreturn)) fatal_soft (const char *msg, const char *file, const int line, const char *func);
-
-#define fatal(msg)		fatal_soft(msg, __FILE__, __LINE__, __FUNC__);
-
-#ifdef DEBUG
-	#define assert(msg) {													\
-		if (!(msg)) {														\
-			assert_failed(__string(msg), __FILE__, __LINE__, __FUNC__);		\
-		}																	\
-	}
-#else
-	#define assert(msg)
-#endif
-
-//*******************************************************
-//  StdArg
-//*******************************************************
-typedef char* va_list;
-#define va_round(n)			((sizeof(n) + sizeof(size_t) - 1) & ~(sizeof(size_t) - 1))
-#define va_start(ap, v)		(ap = (va_list)&v + va_round(v))
-#define va_arg(ap, t)		(*(t*)((ap += va_round(t)) - va_round(t)))
-#define va_end(ap)			(ap = (va_list)0)
-
-//*******************************************************
-//  String
-//*******************************************************
-char *strlast (char *s);
-char *strrev (char *s);
-unsigned strlen (const char *s);
-unsigned strnlen (const char *s, unsigned count);
-char *strcpy (char *s1, const char *s2);
-char *strdup (const char *s);
-char *strcat (char *s1, const char *s2);
-char *strchr (const char *s, int c);
-char *strrchr (const char *s, int c);
-char *strpadr (char *s, const size_t fl, const char c);
-bool strlike (char *str, char *mask);
-char *strtok (char *s1, const char *s2);
-char *strstr (const char *s1, const char *s2);
-char *strncpy (char *dest, const char *source, unsigned count);
-int strcmp (const char *s1, const char *s2);
-int stricmp (const char *s1, const char *s2);
-int strncmp(const char* s1, const char* s2, int n);
-int strnicmp(const char* s1, const char* s2, int n);
-int vsnprintf(char* buffer, unsigned count, const char* format, va_list args);
-int snprintf(char* buffer, unsigned count, const char* format, ...);
 
 //*******************************************************
 //  Memory

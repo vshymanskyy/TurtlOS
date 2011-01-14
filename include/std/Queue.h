@@ -30,18 +30,18 @@ public:
 
 private:
 	/// Data buffer
-	T	mData[SIZE];
+	T	_data[SIZE];
 	/// Index of writer
-	int mIn;
+	int _inIdx;
 	/// Index of reader
-	int mOut;
+	int _outIdx;
 };
 
 template<class T, unsigned SIZE>
 inline
 Queue<T, SIZE>::Queue()
-	: mIn(0)
-	, mOut(SIZE - 1)
+	: _inIdx(0)
+	, _outIdx(SIZE - 1)
 {
 }
 
@@ -56,7 +56,7 @@ inline
 bool
 Queue<T, SIZE>::IsEmpty() const
 {
-	return (((mOut+1)%SIZE) == mIn);
+	return (((_outIdx+1)%SIZE) == _inIdx);
 }
 
 template<class T, unsigned SIZE>
@@ -64,8 +64,8 @@ inline
 void
 Queue<T, SIZE>::Clear()
 {
-	mIn = 0;
-	mOut = SIZE - 1;
+	_inIdx = 0;
+	_outIdx = SIZE - 1;
 }
 
 template<class T, unsigned SIZE>
@@ -74,9 +74,9 @@ void
 Queue<T, SIZE>::Push(const T& info)
 {
 	AutoSpinLock(this);
-	mData[mIn] = info;
-	mIn = (mIn+1)%SIZE;
-	assert(mIn != mOut);		//overflow
+	_data[_inIdx] = info;
+	_inIdx = (_inIdx+1)%SIZE;
+	assert(_inIdx != _outIdx);		//overflow
 }
 
 template<class T, unsigned SIZE>
@@ -85,9 +85,9 @@ T
 Queue<T, SIZE>::Pop()
 {
 	AutoSpinLock(this);
-	mOut = (mOut+1)%SIZE;
-	assert(mOut != mIn);		//underflow
-	return mData[mOut];
+	_outIdx = (_outIdx+1)%SIZE;
+	assert(_outIdx != _inIdx);		//underflow
+	return _data[_outIdx];
 }
 
 template<class T, unsigned SIZE>
@@ -95,9 +95,9 @@ inline
 T
 Queue<T, SIZE>::Peek()
 {
-	const int p = (mOut+1)%SIZE;
-	assert(p != mIn);			//underflow
-	return mData[p];
+	const int p = (_outIdx+1)%SIZE;
+	assert(p != _inIdx);			//underflow
+	return _data[p];
 }
 
 #endif // _INC_QUEUE_H

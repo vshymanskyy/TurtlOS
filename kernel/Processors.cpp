@@ -29,7 +29,7 @@ Processors::Processors()
 
 Processors::~Processors()
 {
-	for(Container::Iterator i = mProcessors.First(); i != mProcessors.End(); ++i) {
+	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
 		if (mProcessors[i].stack) {
 			if (mProcessors[i].stack) {
 				free(mProcessors[i].stack);
@@ -44,7 +44,7 @@ Processors::~Processors()
 CpuDesc*
 Processors::GetCpu(uint32_t lapicId)
 {
-	for(Container::Iterator i = mProcessors.First(); i != mProcessors.End(); ++i) {
+	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
 		if (mProcessors[i].lapicId == lapicId) {
 			return &mProcessors[i];
 		}
@@ -65,7 +65,7 @@ Processors::Startup()
 	InitBsp();
 
 	CpuWaker waker(CpuWaker::Entry(Processors::Instance(), &Processors::InitAp));
-	for(Container::Iterator i = mProcessors.First(); i != mProcessors.End(); ++i) {
+	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
 		CpuDesc& cpu = mProcessors[i];
 		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == mBspLapicId) {
 			continue;
@@ -135,7 +135,7 @@ int
 Processors::GetReadyCount()const
 {
 	int result = 0;
-	for(Container::Iterator i = mProcessors.First(); i != mProcessors.End(); ++i) {
+	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
 		if (mProcessors[i].state == CpuDesc::CPU_READY) {
 			++result;
 		}

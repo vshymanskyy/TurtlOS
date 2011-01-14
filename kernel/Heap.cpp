@@ -1,6 +1,7 @@
 #include "Heap.h"
 #include "Console.h"
-#include <std/klib.h>
+//#include <std/klib.h>
+#include <string.h>
 
 #define MinBlockSpace 16
 

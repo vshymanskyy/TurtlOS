@@ -1,4 +1,4 @@
-#include <std/klib.h>
+#include <string.h>
 
 char*
 strlast(char* s)

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <assert.h>
+#include <stddef.h>
+
 /// Represents a generic double-linked list
 template <class T>
 class List
@@ -8,11 +11,11 @@ private:
 	/// List node
 	struct Node {
 		/// Pointer to previous item
-		Node *mPrev;
+        Node *_prev;
 		/// Pointer to next item
-		Node *mNext;
+        Node *_next;
 		/// The data
-		T mData;
+        T _data;
 
 		/// Constructor
 		Node(const T& data, Node* prev, Node* next);
@@ -21,9 +24,9 @@ private:
 	/// Node at the end of the list
 	struct EndNode {
 		/// Pointer to last item
-		Node *mPrev;
+        Node *_last;
 		/// Pointer to first item
-		Node *mNext;
+        Node *_first;
 
 		/// Constructor
 		EndNode();
@@ -31,30 +34,30 @@ private:
 
 public:
 	/// List iterator
-	class Iterator {
+    class It {
 
 	private:
 		/// Pointer to node
-		Node* mNode;
+        Node* _node;
 
 	public:
 		/// Constructor
-		Iterator(Node* node);
+        It(Node* node);
 
 		/// Destructor
-		~Iterator() {}
+        ~It() {}
 
 		Node* getNode() const;
 
 		/// Comparison operator
-		bool operator ==(const Iterator& it) const;
+        bool operator ==(const It& it) const;
 		/// Comparison operator
-		bool operator !=(const Iterator& it) const;
+        bool operator !=(const It& it) const;
 
 		/// Moves to next item
-		Iterator operator ++();
+        It operator ++();
 		/// Moves to previous item
-		Iterator operator --();
+        It operator --();
 	};
 
 public:
@@ -80,13 +83,13 @@ public:
 	bool IsEmpty() const;
 
 	/// Returns iterator that points to the first item in the list
-	Iterator First() const;
+    It First() const;
 
 	/// Returns iterator that points to the last item in the list
-	Iterator Last() const;
+    It Last() const;
 
 	/// Returns iterator that represents the end of the list
-	Iterator End() const;
+    It End() const;
 
 	/// Clears the list and removes all nodes
 	void Clear();
@@ -104,41 +107,340 @@ public:
 	/// Inserts an item after a specified iterator
 	/// @param it Iterator
 	/// @param item Item to insert
-	void InsertAfter(const Iterator& it, const T& item);
+    void InsertAfter(const It& it, const T& item);
 
 	/// Inserts an item before a specified iterator
 	/// @param it Iterator
 	/// @param item Item to insert
-	void InsertBefore(const Iterator& it, const T& item);
+    void InsertBefore(const It& it, const T& item);
 
 	/// Removes an item that is pointed to by a specified iterator
 	/// @param it Iterator
-	void RemoveAt(const Iterator& it);
+    void RemoveAt(const It& it);
 
 	/// @param it Iterator
 	/// @returns An item at iterator position
-	T& operator[](const Iterator& it);
+    T& operator[](const It& it);
 
 	/// @param it Iterator
 	/// @returns Constant item at iterator position
-	const T& operator[](const Iterator& it)const;
+    const T& operator[](const It& it)const;
 
 	/// Finds first occurrence of an item
 	/// @param item Item to find
 	/// @returns Iterator pointing to found item or End if not found
-	Iterator FindFirst(const T& item) const;
+    It FindFirst(const T& item) const;
 
 	/// Finds last occurrence of an item
 	/// @param item Item to find
 	/// @returns Iterator pointing to found item or End if not found
-	Iterator FindLast(const T& item) const;
+    It FindLast(const T& item) const;
 
 private:
 	/// Ending of list
-	EndNode mHead;
+    EndNode _head;
 	/// Count of items
-	unsigned mCount;
+    unsigned _count;
 };
 
-#include "List.inline"
+//*******************************************
+//  List::Node
+//*******************************************
 
+template <class T>
+inline
+List<T>::Node::Node(const T& data, Node* prev, Node* next)
+    : _prev(prev)
+    , _next(next)
+    , _data(data)
+{
+}
+
+template <class T>
+inline
+List<T>::EndNode::EndNode()
+    : _last((Node*)this)
+    , _first((Node*)this)
+{
+}
+
+//*******************************************
+//  List::Iterator
+//*******************************************
+
+template <class T>
+inline
+List<T>::It::It(Node* node)
+    : _node(node)
+{
+}
+
+template <class T>
+inline
+typename List<T>::Node*
+List<T>::It::getNode() const
+{
+    return _node;
+}
+
+template <class T>
+inline
+bool
+List<T>::It::operator ==(const It& it) const
+{
+    return _node == it._node;
+}
+
+template <class T>
+inline
+bool
+List<T>::It::operator !=(const It& it) const
+{
+    return _node != it._node;
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::It::operator ++()
+{
+    _node = _node->_next;
+    return (*this);
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::It::operator --()
+{
+    _node = _node->_prev;
+    return (*this);
+}
+
+//*******************************************
+//  List
+//*******************************************
+
+template <class T>
+inline
+List<T>::List()
+    : _count(0)
+{
+}
+
+template <class T>
+inline
+List<T>::List(const List& lst)
+    : _count(0)
+{
+    for(It it=lst.First(); it!=lst.End(); ++it){
+        Append(lst[it]);
+    }
+}
+
+template <class T>
+inline
+List<T>&
+List<T>::operator = (const List& lst){
+    Clear();
+    for(It it=lst.First(); it!=lst.End(); it++){
+        Append(lst[it]);
+    }
+    return *this;
+}
+
+template <class T>
+inline
+List<T>::~List()
+{
+    Clear();
+}
+
+template <class T>
+unsigned
+List<T>::Count() const
+{
+    return _count;
+}
+
+template <class T>
+inline
+size_t
+List<T>::MemoryConsumption()
+{
+    return sizeof(List) + sizeof(Node) * _count;
+}
+
+template <class T>
+inline
+bool
+List<T>::IsEmpty() const
+{
+    return !_count;
+}
+
+template <class T>
+inline
+void
+List<T>::Clear()
+{
+    Node* tmp;
+    Node* c = _head._first;
+    while (c != (Node*)&_head){
+        tmp = c;
+        c = c->_next;
+        delete tmp;
+    }
+    _head._first = (Node*)&_head;
+    _head._last = (Node*)&_head;
+    _count = 0;
+}
+
+template <class T>
+inline
+void
+List<T>::DeleteAll()
+{
+    Node* tmp;
+    Node* c = _head._first;
+    while (c != (Node*)&_head){
+        tmp = c;
+        c = c->_next;
+        delete tmp->_data;
+        delete tmp;
+    }
+    _head._first = (Node*)&_head;
+    _head._last = (Node*)&_head;
+    _count = 0;
+}
+
+template <class T>
+inline
+void
+List<T>::Append(const T& item)
+{
+    Node*& prev = _head._last;
+    Node* const node = new Node(item, prev, (Node*)&_head);
+    assert(node);
+    prev->_next = node;
+    prev = node;
+    _count++;
+}
+
+template <class T>
+inline
+void
+List<T>::Prepend(const T& item)
+{
+    Node*& next = _head->mPrev;
+    Node* const node = new Node(item, _head, next);
+    assert(node);
+    next->_prev = node;
+    next = node;
+    _count++;
+}
+
+template <class T>
+inline
+void
+List<T>::InsertAfter(const It& it, const T& item)
+{
+    Node*& next = it._node->_prev;
+    Node* const node = new Node(item, it._node, next);
+    assert(node);
+    next->_prev = node;
+    next = node;
+    _count++;
+}
+
+template <class T>
+inline
+void
+List<T>::InsertBefore(const It& it, const T& item)
+{
+    Node*& prev = it._node->_prev;
+    Node* const node = new Node(item, prev, it._node);
+    assert(node);
+    prev->_next = node;
+    prev = node;
+    _count++;
+}
+
+template <class T>
+inline
+void
+List<T>::RemoveAt(const It& it)
+{
+    assert(it!=End());
+    Node* const next = it.getNode()->_next;
+    Node* const prev = it.getNode()->_prev;
+    prev->_next = next;
+    next->_prev = prev;
+    delete it.getNode();
+    _count--;
+}
+
+template <class T>
+inline
+T&
+List<T>::operator[](const It& it)
+{
+    assert(it!=End());
+    return it.getNode()->_data;
+}
+
+template <class T>
+inline
+const T&
+List<T>::operator[](const It& it) const
+{
+    assert(it!=End());
+    return it.getNode()->_data;
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::FindFirst(const T& item) const
+{
+    It it = First();
+    for(; it != End(); ++it){
+        if(it.getNode()->_data == item)
+            break;
+    }
+    return it;
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::FindLast(const T& item) const
+{
+    It it = Last();
+    for(; it != End(); it--){
+        if(it.getNode()->_data == item)
+            break;
+    }
+    return it;
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::First() const{
+    return It(_head._first);
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::Last() const{
+    return It(_head._last);
+}
+
+template <class T>
+inline
+typename List<T>::It
+List<T>::End() const{
+    return It((Node*)&_head);
+}

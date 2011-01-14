@@ -1,4 +1,4 @@
-#include <std/klib.h>
+#include <string.h>
 static const char* symbSmall = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static const char* symbCapital = "0123456789abcdefghijklmnopqrstuvwxyz";
 

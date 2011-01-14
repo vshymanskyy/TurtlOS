@@ -13,6 +13,12 @@ public:
 	/// Destructor
 	~Stack();
 
+    /// Checks if stack is empty
+    bool IsEmpty() const;
+
+    /// Checks if stack is full
+    bool IsFull() const;
+
 	/// Inserts an item into the queue
 	/// @param item an item to push
 	/// @returns false if buffer overflow occurs
@@ -29,15 +35,15 @@ public:
 
 private:
 	/// Data buffer
-	T  mData[SIZE];
+    T  _data[SIZE];
 	/// The 'top' element of the stack
-	T* mTop;
+    T* _top;
 };
 
 template <class T, unsigned SIZE>
 inline
 Stack<T, SIZE>::Stack()
-	: mTop(&mData[0])
+    : _top	(&_data[0])
 {
 }
 
@@ -47,14 +53,28 @@ Stack<T, SIZE>::~Stack()
 {
 }
 
+template<class T, unsigned SIZE>
+inline
+bool
+Stack<T, SIZE>::IsEmpty() const
+{
+    return (_top <= &_data[0]);
+}
+
+template<class T, unsigned SIZE>
+inline
+bool
+Stack<T, SIZE>::IsFull() const
+{
+    return (_top >= &_data[SIZE]);
+}
+
 template <class T, unsigned SIZE>
 inline
 void
 Stack<T, SIZE>::Push(const T& item)
 {
-// 	if (mTop >= &mData[SIZE])	//overflow
-// 		return false;
-	*(mTop++) = item;
+    *(_top++) = item;
 }
 
 template <class T, unsigned SIZE>
@@ -62,8 +82,7 @@ inline
 T
 Stack<T, SIZE>::Pop()
 {
-//	if (mTop <= &mData[0])		//underflow
-	return *(--mTop);
+    return *(--_top);
 }
 
 template <class T, unsigned SIZE>
@@ -71,9 +90,9 @@ inline
 bool
 Stack<T, SIZE>::Peek(T& item)
 {
-	if (mTop <= &mData[0])		//underflow
+    if (_top <= &_data[0])		//underflow
 		return false;
-	item = *(mTop-1);
+    item = *(_top-1);
 	return true;
 }
 
