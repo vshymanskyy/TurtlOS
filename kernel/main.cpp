@@ -19,7 +19,7 @@
 
 #include "Heap.h"
 
-#include "Log.h"
+#include <std/Log.h>
 extern Heap heap;
 
 Console* console;
@@ -28,7 +28,35 @@ CliDesktop* desktop;
 
 int main();
 
+class DebugLogViewer
+    : public Logger
+{
+public:
+    virtual void AddEntry(LogLevel level, const char* time, const char* log, const char* msg) {
+        const char* mod = "";
+
+        switch (level) {
+        case LOG_WARN:      mod = "Warning: ";      break;
+        case LOG_CRIT:      mod = "CRITICAL: ";     break;
+        case LOG_FATAL:     mod = "FATAL: ";        break;
+        default:            break;
+        }
+
+		debug_print("%s %s %s\n", log, mod, msg);
+    }
+};
+
 int main() {
+
+	//DebugLogViewer lv;
+	//LogManager::Instance()->AddLogger(&lv);
+
+	Log l ("main");
+
+	l() << "hello";
+
+	for(;;);
+
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(0, 0, 39, 25));
 
@@ -37,14 +65,6 @@ int main() {
 	desktop->AddChild(console);
 	desktop->AddChild(console2);
 
-/*
-	LogManager::Instance()->AddLogger(new BasicLogViewer(console));
-
-	Log l ("main");
-	l() << "hello";
-
-	for(;;);
-*/
 
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;

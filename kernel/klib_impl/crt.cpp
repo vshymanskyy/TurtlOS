@@ -107,25 +107,28 @@ __cxa_pure_virtual ()
 void
 entry()
 {
+	debug_print("Kernel entry executed\n");
 	__stack_chk_guard_setup();
 
-	//call all static constructors
+	// Call all static constructors
 	for (size_t* call = &__ctorsStart; call < &__ctorsEnd; call++) {
 		if (*call) {
+			debug_print("Calling ctor 0x%08X\n", *call);
 			((pproc_t)*call)();
 		}
 	}
 
-	//call main
+	debug_print("Calling main\n");
 	main();
 
-	//call all static destructors
+	// Call all static destructors
 	for (size_t* call = &__dtorsStart; call < &__dtorsEnd; call++) {
 		if (*call) {
+			debug_print("Calling dtor 0x%08X\n", *call);
 			((pproc_t)*call)();
 		}
 	}
-
+/*
 	#ifdef DEBUG
 	if (SmartPtrGlobalCounter != 0) {
 		debug_print("CHECK SMART POINTERS, %d OBJECTS LEFT\n", SmartPtrGlobalCounter);
@@ -134,7 +137,7 @@ entry()
 		heap.DumpDebug();
 	}
 	#endif
-
+*/
 	cpuStop();
 }
 

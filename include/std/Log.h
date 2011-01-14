@@ -2,10 +2,9 @@
 #define LOG_H
 
 #include <string.h>
-#include "std/String.h"
-#include "std/List.h"
-#include "Console.h"
-#include <std/Pool.h>
+#include "String.h"
+#include "List.h"
+#include "Pool.h"
 
 #define __LOG_ENTRY_SIZE 512
 #define __LOG_ENTRY_QTY 16
@@ -237,27 +236,5 @@ void Log::Print (LogLevel level, const char* msg) const {
         LogManager::Instance()->Print(_name, level, msg);
     }
 }
-
-class BasicLogViewer
-    : public Logger
-{
-public:
-    BasicLogViewer(Console* c) {
-        _console = c;
-    }
-
-    virtual void AddEntry(LogLevel level, const char* time, const char* log, const char* msg) {
-        const char* mod = "";
-        switch (level) {
-        case LOG_WARN:      mod = "Warning: ";      break;
-        case LOG_CRIT:      mod = "CRITICAL: ";     break;
-        case LOG_FATAL:     mod = "FATAL: ";        break;
-        default:            break;
-        }
-        //(*_console) << log << mod << msg << endl;
-    }
-private:
-    Console* _console;
-};
 
 #endif // LOG_H
