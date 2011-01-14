@@ -287,9 +287,8 @@ $(IMAGE): $(KERNEL) $(INITRD) $(GDBCONF) grub.cfg
 	$(CP) grub.cfg $(TEMP_ISO)/boot/grub
 	$(CP) $(KERNEL) $(TEMP_ISO)/kernel.bin
 	$(CP) $(INITRD) $(TEMP_ISO)/initrd.img
-	grub-mkimage -p /boot/grub -o $(TEMP_ISO)/core.img biosdisk iso9660 multiboot sh
+	grub-mkimage -p /boot/grub -O i386-pc -o $(TEMP_ISO)/core.img biosdisk normal iso9660 multiboot
 	cat /usr/lib/grub/i386-pc/cdboot.img $(TEMP_ISO)/core.img > $(TEMP_ISO)/boot.img
-	rm $(TEMP_ISO)/core.img
 	genisoimage -quiet -pad -input-charset ascii -R -A "TurtlOS" -no-emul-boot -boot-load-size 4 -boot-info-table -b boot.img -c boot.catalog -hide boot.img -hide boot.catalog -o $(IMAGE) $(TEMP_ISO)
 
 #----- Run -----------------------------------------------

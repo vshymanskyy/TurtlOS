@@ -25,11 +25,12 @@ CliDesktop* desktop;
 
 int main();
 
+const char* data = "hello world";
+
 int main() {
-	int a;
-	a = 0x12481632;
+	int a = 0x12481632;
 	hexdump(&a);
-	hexdump("hello world", 12);
+	hexdump(data, 12);
 	
 	for(;;);
 
