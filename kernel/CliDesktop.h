@@ -17,8 +17,7 @@ public:
 	{
 		delete[] mCanvas.Buffer();
 		mCanvas.Buffer((uint16_t*)0xB8000);
-		//TODO:
-		//Invalidate();
+		Invalidate();
 	}
 
 	~CliDesktop() {

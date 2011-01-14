@@ -18,9 +18,12 @@
 #include "Processors.h"
 
 #include "Heap.h"
+
+#include "Log.h"
 extern Heap heap;
 
 Console* console;
+Console* console2;
 CliDesktop* desktop;
 
 int main();
@@ -28,21 +31,18 @@ int main();
 const char* data = "hello world";
 
 int main() {
-	int a = 0x12481632;
-	hexdump(&a);
-	hexdump(data, 12);
-	
-	for(;;);
-
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
-	console = new Console(Rect(0, 0, 80, 25));
+	console = new Console(Rect(0, 0, 39, 25));
+
+	console2 = new Console(Rect(40, 0, 39, 25));
 
 	desktop->AddChild(console);
+	desktop->AddChild(console2);
 
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;
 	}
-	(*console) << "Kernel:  TurtlOS " << CURTARGET << " (" << COMPILERSTR << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
+	(*console) << "Kernel:  TurtlOS " << __string(TARGET) << " (" << __COMPILER__ << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
 	if (char* cmdl = MultibootParser::Instance()->GetCommandLine()) {
 		(*console) << "Command: " << cmdl << endl;
 	}
@@ -74,21 +74,19 @@ int main() {
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
 
+	LogManager::Instance()->AddLogger(new BasicLogViewer(console));
+
+	Log l ("main");
+	l() << "hello";
+
 	Processors::Instance()->~Processors();
 	DeviceManager::Instance()->~DeviceManager();
 
-	//debug_print("Hello integer <%d> string <%p> char <%c><%c><%c><%c>\n", 1024, "brum-brum", 'A', 'B', 'C', 'D');
-	//debug_print("Hello integer <%08d> string <%s>\n", 1024, "brum-brum");
-
-
-	//int a = 0x12481632;
-	//hexdump(&a);
-	//hexdump("hello world", 12);
-	//hexdump(DeviceManager::Instance());
-
 
 	delete console;
+	delete console2;
 	delete desktop;
 
 	return 0;
 }
+

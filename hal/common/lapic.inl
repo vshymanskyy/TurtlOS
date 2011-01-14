@@ -1,3 +1,5 @@
+#pragma once
+
 extern size_t lapicAddress;
 
 inline

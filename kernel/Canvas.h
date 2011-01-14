@@ -67,8 +67,9 @@ public:
 
 	void Fill(T color) {
 		const uint16_t* const e = mBuffer + mSize.x*mSize.y;
-		for(uint16_t* p = mBuffer; p < e; p++)
+		for (uint16_t* p = mBuffer; p < e; p++) {
 			*p = color;
+		}
 	}
 
 	void Fill(const Rect& r, T color) {

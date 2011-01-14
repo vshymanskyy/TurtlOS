@@ -93,14 +93,31 @@ strcmp(const char* s1, const char* s2)
 int
 stricmp(const char* s1, const char* s2)
 {
-	char f, l;
-	do {
-		f = ((*s1 <= 'Z') && (*s1 >= 'A')) ? static_cast<char>(*s1 + 'a' - 'A') : *s1;
-		l = ((*s2 <= 'Z') && (*s2 >= 'A')) ? static_cast<char>(*s2 + 'a' - 'A') : *s2;
-		s1++;
-		s2++;
-	} while ((f) && (f == l));
-	return (int) (f - l);
+	while ((*s1) && (tolower(*s1) == tolower(*s2))) {
+		++s1;
+		++s2;
+	}
+	return (*s1 - *s2);
+}
+
+int
+strncmp(const char* s1, const char* s2, int n)
+{
+	while ((--n > 0) && (*s1) && (*s1 == *s2)) {
+		++s1;
+		++s2;
+	}
+	return (*s1 - *s2);
+}
+
+int
+strnicmp(const char* s1, const char* s2, int n)
+{
+	while ((--n > 0) && (*s1) && (tolower(*s1) == tolower(*s2))) {
+		++s1;
+		++s2;
+	}
+	return (*s1 - *s2);
 }
 
 char*

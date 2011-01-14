@@ -1,6 +1,6 @@
 
 
-
+#if		TARGET == TARGET_X86 && COMPILER == COMPILER_GCC
 
 typedef unsigned long long u_quad_t;
 typedef signed long long quad_t;
@@ -312,3 +312,5 @@ __divdi3(quad_t a, quad_t b)
 		uq = __qdivrem(ua, ub, (u_quad_t *)0);
 		return (neg ? -uq : uq);
 }
+
+#endif

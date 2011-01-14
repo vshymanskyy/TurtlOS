@@ -70,17 +70,17 @@ Processors::Startup()
 		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == mBspLapicId) {
 			continue;
 		}
-		(*console) << "CPU " << (int)cpu.lapicId << ": ";
+		(*console2) << "CPU " << (int)cpu.lapicId << ": ";
 		if (cpu.state == CpuDesc::CPU_STOPPED) {
-			(*console) << "Starting...";
+			(*console2) << "Starting...";
 			cpu.state = CpuDesc::CPU_BOOTING;
 			if (!waker.StartCpu(cpu.lapicId)) {
-				(*console) << esc << "[31m fail" << esc << "[m" << endl;
+				(*console2) << esc << "[31m fail" << esc << "[m" << endl;
 			}
 			mLock.Wait();
 		} else {
 			static const char* labels[5] = { "Disabled", "Stopped", "Booting", "Init", "Ready" };
-			(*console) << labels[cpu.state] << endl;
+			(*console2) << labels[cpu.state] << endl;
 		}
 	}
 }
@@ -102,7 +102,7 @@ Processors::InitBsp() {
 void
 Processors::InitAp() {
 	mLock.Lock();
-	(*console) << esc << "[32m ok" << esc << "[m" << endl;
+	(*console2) << esc << "[32m ok" << esc << "[m" << endl;
 	CpuDesc* cpu = GetCpu(lapicGetID());
 	cpu->state = CpuDesc::CPU_INIT;
 

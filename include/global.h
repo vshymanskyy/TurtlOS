@@ -3,7 +3,7 @@
 
 #include <platform.h>
 
-#if COMPILER == GCC
+#if COMPILER == COMPILER_GCC
 
 	#define __int8 char
 	#define __int16 short
@@ -46,14 +46,14 @@ typedef void*    ptr;
 //*******************************************************
 //  size_t
 //*******************************************************
-#if		TARGET == I386
+#if		TARGET == TARGET_X86
 	typedef unsigned int		size_t;
 	typedef signed int			ptrdiff_t;
 
 	#define SIZE_T_MIN			0
 	#define SIZE_T_MAX			0xffffffffUL
 	#define SIZE_T_SIZE			4
-#elif		TARGET == X86_64
+#elif		TARGET == TARGET_X86_64
 	typedef unsigned long		size_t;
 	typedef signed long			ptrdiff_t;
 
@@ -125,11 +125,9 @@ typedef char* va_list;
 //  Assert
 //*******************************************************
 
-//
-//
-//
 
 extern class Console* console;
+extern class Console* console2;
 extern class CliDesktop* desktop;
 
 #include <std/klib.h>

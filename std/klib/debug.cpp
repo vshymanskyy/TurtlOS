@@ -59,4 +59,3 @@ assert_failed(const char* msg, const char* file, const int line, const char* fun
 		cpuStop();
 	}
 }
-

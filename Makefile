@@ -1,42 +1,14 @@
 #---------------------------------------------------------
 # CONFIG
 #---------------------------------------------------------
-Arch		?= i386
-Config		?= Debug
+Arch		?= x86
+Build		?= Debug
 
-ifeq ($(Config),)
-else ifeq ($(Config),Debug)
-Debug		?= true
-Warnings	?= true
 #GenMap		?= true
-#CppGenAsm	?= true
+CppGenAsm	?= true
 #Strip		?= true
+#BinOutput	?= true
 ObjDump		?= true
-else ifeq ($(Config),Release)
-Optimize	?= true
-Strip		?= true
-BinOutput	?= true
-else
-$(error Configuration '$(Config)' not found)
-endif
-
-#---------------------------------------------------------
-# CHECKS
-#---------------------------------------------------------
-
-# 1. Platform
-ifeq ($(Arch),i386)
-else ifeq ($(Arch),x86-64)
-else
-$(error Target platform '$(Arch)' not supported)
-endif
-
-#2. Debugging
-ifdef Debug
-ifdef Optimize
-$(error Debug and Optimize are mutually exclusive)
-endif
-endif
 
 #---------------------------------------------------------
 # BINARIES
@@ -44,7 +16,6 @@ endif
 ECHO		 = @echo
 LD			 = ld
 CC			 = gcc
-#/opt/intel/Compiler/11.1/056/bin/ia32/icc
 AS			 = nasm
 OBJDUMP		 = objdump
 SLEEP		 = sleep
@@ -53,7 +24,7 @@ RM			 = rm -f
 RMDIR		 = rm -rf
 MKDIR		 = mkdir -p
 
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 EM			 = qemu
 GDB			 = gdb
 else ifeq ($(Arch),x86-64)
@@ -82,6 +53,7 @@ AUXFILES	 = $(LINKSCRIPT) \
 			   Makefile      \
 			   Readme.txt    \
 			   doxyfile      \
+			   grub.cfg
 
 GENFILES	 = $(TARBALL) \
 			   cscope.*   \
@@ -91,6 +63,15 @@ BUILDPATHS	 = hal/common  \
 			   hal/$(Arch) \
 			   kernel      \
 			   std
+
+TARPATHS	 = config      \
+			   hal         \
+			   include     \
+			   kernel      \
+			   std         \
+			   tools       \
+			   .git        \
+			   .settings
 
 MKINITRD	 = $(BUILD)/mkinitrd
 BIN2INL		 = $(BUILD)/bin2inl
@@ -105,45 +86,48 @@ IMAGE		 = $(DEST)/image.iso
 ASMFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.s")
 CPPFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.cpp")
 HDRFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.h")
+INLFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.inl")
 
 OUTFILES	 = $(patsubst %.s, $(TEMP)/%.b, $(ASMFILES))
-OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.o, $(CPPFILES))
-DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.d, $(CPPFILES))
+OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.obj, $(CPPFILES))
+DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.dep, $(CPPFILES))
 
 LINKFILES	 = $(OUTFILES) $(OBJFILES)
 
-#---------------------------------------------------------
-# FLAGS
-#---------------------------------------------------------
+TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES)
 
-#----- General -------------------------------------------
-LDFLAGS		 = -nodefaultlibs
-
+#---------------------------------------------------------
+# General FLAGS
+#---------------------------------------------------------
 CCFLAGS		 = -nostartfiles   \
 			   -nodefaultlibs  \
 			   -ffreestanding  \
 			   -fno-exceptions \
 			   -fno-rtti       \
-			   -fno-builtin
-
+			   -fno-builtin    \
+			   -MMD -MP -MF $(@:.obj=.dep)
+ 
+LDFLAGS		 = -nodefaultlibs
 ASFLAGS		 = -w+gnu-elf-extensions
 EMFLAGS		 = -m 64 -smp 6 -boot d
 
 #----- Platform-dependent --------------------------------
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 ASFLAGS		+= -f elf32
 CCFLAGS		+= -m32
 LDFLAGS		+= -m elf_i386
-DEFINES		+= -D __i386
+DEFINES		+= -D __x86
 else ifeq ($(Arch),x86-64)
 ASFLAGS		+= -f elf64
 CCFLAGS		+= -m64
 LDFLAGS		+= -m elf_x86_64
 DEFINES		+= -D __x86_64
+else
+$(error Target platform '$(Arch)' not supported)
 endif
 
-#----- Warnings ------------------------------------------
-ifdef Warnings
+#----- Build type ----------------------------------------
+ifeq ($(Build),Debug)
 CCFLAGS		+= -pedantic \
 			   -W \
 			   -Wall \
@@ -157,19 +141,24 @@ CCFLAGS		+= -pedantic \
 			   -Wpointer-arith \
 			   -Wredundant-decls \
 			   -Wmissing-declarations \
-			   -Woverloaded-virtual
-endif
-
-ifdef Debug
-CCFLAGS		+= -g -fstack-protector-all
+			   -Woverloaded-virtual \
+			   -g -fstack-protector-all
 DEFINES		+= -D DEBUG
-endif
-
-ifdef Optimize
+else ifeq ($(Build),Release)
 CCFLAGS		+= -O4 -fno-stack-protector
 LDFLAGS		+= -O4 -x -X
 DEFINES		+= -D RELEASE
+ifeq ($(Arch),x86)
+	CCFLAGS		+= -mregparm=3
 endif
+
+else
+$(error Build type '$(Build)' not supported)
+endif
+
+#ifdef CppGenAsm
+#CCFLAGS		+= -Wa,-a,-ad,-aln=$(@:.obj=.lst) -masm=intel
+#endif
 
 ifdef Strip
 LDFLAGS		+= -s
@@ -191,7 +180,7 @@ endif
 image: $(IMAGE)
 
 all:
-	$(MAKE) image Arch=i386
+	$(MAKE) image Arch=x86
 	$(MAKE) image Arch=x86-64
 	
 tools: $(BIN2INL) $(MKINITRD)
@@ -212,12 +201,12 @@ ifdef ObjDump
 endif
 
 #----- Compiling -----------------------------------------
-$(TEMP)/%.o: %.cpp $(INCLUDE)/$(GLOBALINC)
+$(TEMP)/%.obj: %.cpp $(INCLUDE)/$(GLOBALINC)
 	$(ECHO) Compiling $<
 	$(MKDIR) $(shell dirname $@)
-	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -MMD -MP -o $@ -c $<
+	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -o $@ -c $<
 ifdef CppGenAsm
-	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -o $(@:.obj=.cod) -S $< > /dev/null 2>&1
+	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.obj=.lst) -o $(@:.obj=.lst2) -S $<
 endif
 
 $(TEMP)/%.b: %.s
@@ -230,7 +219,7 @@ $(WAKER): hal/$(Arch)/boot/waker.asm
 	$(AS) -i $(shell dirname $<)/ -o $@ $<
 
 #----- Additional dependencies ---------------------------
-#$(LINKFILES): Makefile
+$(LINKFILES): Makefile
 -include $(DEPFILES)
 
 #----- Tools ---------------------------------------------
@@ -250,7 +239,8 @@ $(GDBCONF):
 	$(ECHO) Preparing $@
 	$(ECHO) "set disassembly-flavor intel"    > $@
 	$(ECHO) "set remotetimeout 5"            >> $@
-ifeq ($(Arch),i386)
+	$(ECHO) "file $(KERNEL)"                 >> $@
+ifeq ($(Arch),x86)
 	$(ECHO) "set archi i386:intel"           >> $@
 else ifeq ($(Arch),x86-64)
 	$(ECHO) "set archi i386:x86-64:intel"    >> $@
@@ -262,7 +252,7 @@ $(DDDCONF):
 	$(ECHO) Preparing $@
 	$(ECHO) "set disassembly-flavor intel"    > $@
 	$(ECHO) "set remotetimeout 5"            >> $@
-ifeq ($(Arch),i386)
+ifeq ($(Arch),x86)
 	$(ECHO) "set archi i386:intel"           >> $@
 else ifeq ($(Arch),x86-64)
 	$(ECHO) "set archi i386:x86-64:intel"    >> $@
@@ -270,6 +260,7 @@ endif
 	$(ECHO) "symbol-file $(KERNEL)"          >> $@
 	$(ECHO) "target remote :1234"            >> $@
 	$(ECHO) "b assert_failed"                >> $@
+	$(ECHO) "b main"                         >> $@
 	$(ECHO) "c"                              >> $@
 
 
@@ -309,7 +300,7 @@ run_ddd: $(IMAGE) $(DDDCONF)
 #---------------------------------------------------------
 tar $(TARBALL):
 	$(ECHO) Making tarball
-	tar -cjf TurtlOS.tar.bz2 $(ALLFILES)
+	tar -cjf TurtlOS.tar.bz2 $(TARFILES)
 
 ctags tags:
 	$(ECHO) Building ctags database

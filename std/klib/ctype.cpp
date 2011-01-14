@@ -1,7 +1,7 @@
 #include <std/klib.h>
 
 enum {
-	 _UPPER		= 0x1     // Upper case letter
+	_UPPER		= 0x1     // Upper case letter
 	,_LOWER		= 0x2     // Lower case letter
 	,_DIGIT		= 0x4     // Digit[0-9]
 	,_SPACE		= 0x8     // Tab, carriage return, newline, vertical tab or form feed
@@ -11,7 +11,7 @@ enum {
 	,_HEX		= 0x80    // Hexadecimal digit
 };
 
-static unsigned short _ctype[257] = {
+static unsigned short _ctype_table[257] = {
 	0,                      // -1 EOF
 	_CONTROL,               // 00 (NUL)
 	_CONTROL,               // 01 (SOH)
@@ -144,7 +144,7 @@ static unsigned short _ctype[257] = {
 	// and the rest are 0...
 };
 
-static unsigned short* p = _ctype + 1; // pointer to table for char's
+static unsigned short* p = _ctype_table + 1; // pointer to table for char's
 
 int isupper(int c) {		return p[c] & _UPPER;				}
 
@@ -152,7 +152,7 @@ int islower(int c) {		return p[c] & _LOWER;				}
 
 int isdigit(int c) {		return p[c] & _DIGIT;				}
 
-int isxdigit(int c) {	return p[c] & _HEX;					}
+int isxdigit(int c) {		return p[c] & _HEX;					}
 
 int isspace(int c) {		return p[c] & _SPACE;				}
 
@@ -185,20 +185,13 @@ isalpha(int c)
 }
 
 int
-toupper(int c)
+tolower(int c)
 {
-	if (p[c] & _LOWER)
-		return c - ('a' - 'A');
-	else
-		return c;
+	return (c >= 'A' && c <= 'Z') ? c+'a'-'A' : c;
 }
 
 int
-tolower(int c)
+toupper(int c)
 {
-	if (p[c] & _UPPER)
-		return c + ('a' - 'A');
-	else
-		return c;
+	return (c >= 'a' && c <= 'z') ? c+'A'-'a' : c;
 }
-

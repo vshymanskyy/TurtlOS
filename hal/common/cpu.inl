@@ -1,4 +1,4 @@
-
+#pragma once
 
 #define CPU_MSR_APICBASE 0x1B
 #define CPU_MSR_PERFCTR0 0xC1
