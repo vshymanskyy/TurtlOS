@@ -1,5 +1,9 @@
-#ifndef _INC_STRING_H
-#define _INC_STRING_H
+#ifndef INC_STRING_HPP
+#define INC_STRING_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -67,9 +71,9 @@ public:
 	String Substring(int offset);
 
 	/// @param offset The offset of substring
-	/// @param count The length of substring
+	/// @param length The length of substring
 	/// @returns substring
-	String Substring(int offset, int count);
+	String Substring(int offset, int length);
 
 	/// Sets data to a new value
 	void Set(const String& s);
@@ -154,5 +158,5 @@ String::operator>=(const String& s) const
 	return Compare(s)>=0;
 }
 
-#endif // _INC_STRING_H
+#endif // INC_STRING_HPP
 

@@ -1,5 +1,9 @@
-#ifndef _INC_Array_H
-#define _INC_Array_H
+#ifndef INC_ARRAY_HPP
+#define INC_ARRAY_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -158,4 +162,4 @@ private:
     T _data[SIZE];
 };
 
-#endif // _INC_Array_H
+#endif // INC_ARRAY_HPP

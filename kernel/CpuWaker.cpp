@@ -19,8 +19,8 @@ static CpuWaker* instance = NULL;
 static CpuConfig* const config = (CpuConfig*)CPU_CONFIG_ADDR;
 
 CpuWaker::CpuWaker(Entry entry)
-	: mLock(false)
-	, mEntry(entry)
+	: _lock(false)
+	, _entry(entry)
 {
 	assert(!instance);
 	List<iDevFileSystem*> fsystems = DeviceManager::Instance()->GetFileSystems();
@@ -39,7 +39,7 @@ CpuWaker::StartCpu(uint32_t lapicId)
 	assert((size_t)CpuWaker::Waked < 0xFFFFFFFF);
 	assert(cpuGetPageTable() < 0xFFFFFFFF);
 
-	mLock.Lock();
+	_lock.Lock();
 
 	config->mode	= TARGET;
 	config->id		= (uint8_t)lapicId;
@@ -47,8 +47,8 @@ CpuWaker::StartCpu(uint32_t lapicId)
 
 	lapicStartCpu(lapicId, CPU_WAKER_ADDR);
 
-	const bool locked = mLock.Wait(10000000);
-	mLock.Unlock();
+	const bool locked = _lock.Wait(10000000);
+	_lock.Unlock();
 	return locked;
 }
 
@@ -58,8 +58,8 @@ CpuWaker::Waked()
 	assert(instance);
 	assert(config->id == lapicGetID());
 	assert(config->mode == TARGET);
-	instance->mLock.Unlock();
-	instance->mEntry();
+	instance->_lock.Unlock();
+	instance->_entry();
 
 	cpuStop();
 }

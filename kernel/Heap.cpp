@@ -8,14 +8,14 @@
 
 
 Heap::Heap(const void* start, const size_t size)
-	:mSize(size)
+	:_size(size)
 {
 	Node* mFirst = (Node*)start;
-	mHead = (Node*)((char*)(mFirst - 1) + size);
+	_head = (Node*)((char*)(mFirst - 1) + size);
 
-	WriteBlock(mFirst, true, mHead, mHead);
-	WriteBlock(mHead, false, mFirst, mFirst);
-	mNodesCount = 1;
+	WriteBlock(mFirst, true, _head, _head);
+	WriteBlock(_head, false, mFirst, mFirst);
+	_nodesQty = 1;
 }
 
 Heap::~Heap() {
@@ -23,17 +23,17 @@ Heap::~Heap() {
 }
 
 inline Heap::Iterator Heap::First() const{
-	return Iterator(mHead->mNext);
+	return Iterator(_head->_next);
 }
 
 inline Heap::Iterator Heap::End() const{
-	return Iterator(mHead);
+	return Iterator(_head);
 }
 
 size_t Heap::GetFreeMemorySize() const{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
-		if (it->mFree) {
+		if (it->_free) {
 			result += it->GetSize();
 		}
 	}
@@ -43,7 +43,7 @@ size_t Heap::GetFreeMemorySize() const{
 size_t Heap::GetAllocatedMemorySize() const{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
-		if (!it->mFree) {
+		if (!it->_free) {
 			size_t size = it->GetSize();
 			result += size;
 		}
@@ -54,7 +54,7 @@ size_t Heap::GetAllocatedMemorySize() const{
 size_t Heap::GetMaxFreeBlock() const{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
-		if (it->mFree) {
+		if (it->_free) {
 			const size_t size = it->GetSize();
 			if (size > result)
 				result = size;
@@ -64,12 +64,12 @@ size_t Heap::GetMaxFreeBlock() const{
 }
 
 size_t Heap::GetOverhead() const{
-	return sizeof(Heap) + sizeof(Node) * (mNodesCount + 1);
+	return sizeof(Heap) + sizeof(Node) * (_nodesQty + 1);
 }
 
 void Heap::Dump() {
-	int aCount = 0;
-	int fCount = 0;
+	int aQty = 0;
+	int fQty = 0;
 	size_t aSize = 0;
 	size_t fSize = 0;
 	size_t fMax = 0;
@@ -79,23 +79,23 @@ void Heap::Dump() {
 
 	for(Iterator it = First(); it != End(); it++) {
 		const size_t size = it->GetSize();
-		if (it->mFree) {
-			++fCount;
+		if (it->_free) {
+			++fQty;
 			fSize += size;
 			if (size > fMax)
 				fMax = size;
 		} else {
 			#ifdef DEBUG
-			(*console) << it->mFile << ":" << it->mLine << endl;
+			(*console) << it->_file << ":" << it->_line << endl;
 			#endif
-			++aCount;
+			++aQty;
 			aSize += size;
 		}
 	}
 
 	(*console)
-		<< "Nodes #:   "  << (int)mNodesCount << "   A:" << aCount << "    F:" << fCount << endl
-		<< "Size:      " << mSize/1024 << "K +" << mSize%1024 << "b" << endl
+		<< "Nodes #:   "  << (int)_nodesQty << "   A:" << aQty << "    F:" << fQty << endl
+		<< "Size:      " << _size/1024 << "K +" << _size%1024 << "b" << endl
 		<< "Allocated: " << aSize/1024 << "K +" << aSize%1024 << "b" << endl
 		<< "Free:      " << fSize/1024 << "K +" << fSize%1024 << "b" << endl
 		<< "Max free:  " << fMax/1024  << "K +" << fMax%1024 << "b" << endl
@@ -104,7 +104,7 @@ void Heap::Dump() {
 
 bool Heap::IsEmpty() const {
 	for(Iterator it = First(); it != End(); it++) {
-		if (!it->mFree) {
+		if (!it->_free) {
 			return false;
 		}
 	}
@@ -114,8 +114,8 @@ bool Heap::IsEmpty() const {
 #ifdef DEBUG
 void Heap::DumpDebug() const{
 	for(Iterator it = First(); it != End(); it++) {
-		if (!it->mFree) {
-			debug_print("%s:%d [%d]\n", it->mFile, it->mLine, it->GetSize());
+		if (!it->_free) {
+			debug_print("%s:%d [%d]\n", it->_file, it->_line, it->GetSize());
 		}
 	}
 }
@@ -127,9 +127,9 @@ void* Heap::AllocateDebug(size_t size, const char* file, int line) {
 	assert(n);
 
 	const size_t bSize = n->GetSize();
-	n->mFree = false;
-	n->mLine = line;
-	strncpy(n->mFile, file, 256);
+	n->_free = false;
+	n->_line = line;
+	strncpy(n->_file, file, 256);
 
 	if (bSize - size > MinBlockSpace*sizeof(Node)) {
 		AddNodeAfter(n, (Node*)((char*)(n + 1) + size));
@@ -146,7 +146,7 @@ void* Heap::Allocate(size_t size) {
 	assert(n);
 
 	const size_t bSize = n->GetSize();
-	n->mFree = false;
+	n->_free = false;
 	if (bSize - size > MinBlockSpace*sizeof(Node)) {
 		AddNodeAfter(n, (Node*)((char*)(n + 1) + size));
 	}
@@ -159,7 +159,7 @@ Heap::FindNodeContaining(void* p) const
 {
 	for(Iterator it = First(); it != End(); it++) {
 		Node* cur = it;
-		if ((cur+1) <= p && p < cur->mNext) {
+		if ((cur+1) <= p && p < cur->_next) {
 			return cur;
 		}
 	}
@@ -174,10 +174,10 @@ Heap::AllocateAt(void* p, size_t size)
 		return p;
 	//assert(n);
 	if (p == (void*)(n+1) && n->GetSize() == size) {
-		n->mFree = false;
+		n->_free = false;
 		return p;
 	}
-	assert(n->mFree == true);
+	assert(n->_free == true);
 	assert(size < n->GetSize());
 	//TODO: add node
 	return p;
@@ -192,13 +192,13 @@ Heap::Free(void* p)
 	Node* n = (Node*)p - 1;
 	CheckNode(n);
 
-	if (n->mNext->mFree)
-		RemoveNode(n->mNext);
+	if (n->_next->_free)
+		RemoveNode(n->_next);
 
-	if (n->mPrev->mFree) {
+	if (n->_prev->_free) {
 		RemoveNode(n);
 	} else {
-		n->mFree = true;
+		n->_free = true;
 	}
 }
 
@@ -206,32 +206,32 @@ void
 Heap::AddNodeAfter(Node* curr, Node* node)
 {
 	CheckNode(curr);
-	Node*& next = curr->mNext;
+	Node*& next = curr->_next;
 	WriteBlock(node, true, curr, next);
-	next->mPrev = node;
+	next->_prev = node;
 	next = node;
-	++mNodesCount;
+	++_nodesQty;
 }
 
 void
 Heap::RemoveNode(Node* n)
 {
 	CheckNode(n);
-	Node* const next = n->mNext;
-	Node* const prev = n->mPrev;
+	Node* const next = n->_next;
+	Node* const prev = n->_prev;
 	CheckNode(next);
 	CheckNode(prev);
-	prev->mNext = next;
-	next->mPrev = prev;
-	--mNodesCount;
+	prev->_next = next;
+	next->_prev = prev;
+	--_nodesQty;
 }
 
 void
 Heap::WriteBlock(Node* const at, const bool free, Node* const prev, Node* const next)
 {
-	at->mFree = free;
-	at->mPrev = prev;
-	at->mNext = next;
+	at->_free = free;
+	at->_prev = prev;
+	at->_next = next;
 	ProtectNode(at);
 }
 
@@ -241,13 +241,13 @@ Heap::FindSutableNode(const size_t size) const
 	Node* result = NULL;
 	size_t resSize = (size_t)-1;
 	for(Iterator it = First(); it != End(); it++) {
-		if (it->mFree) {
+		if (it->_free) {
 			const size_t curSize = it->GetSize();
 			if (curSize == size)
-				return it.mNode;
+				return it._node;
 			else if (curSize > size && curSize < resSize) {
 				resSize = curSize;
-				result = it.mNode;
+				result = it._node;
 			}
 		}
 	}
@@ -271,10 +271,10 @@ Heap::Reallocate(void* p, size_t size)
 	if (size <= curSize) {
 		return p;
 	}
-	Node* next = n->mNext;
-	Node* next2 = next->mNext;
+	Node* next = n->_next;
+	Node* next2 = next->_next;
 	Node* ins = (Node*)((char*)p + size);
-	if (next->mFree && (ins < next2)) {
+	if (next->_free && (ins < next2)) {
 		RemoveNode(next);
 		if (next2 - ins > MinBlockSpace)
 			AddNodeAfter(n, ins);
@@ -290,6 +290,6 @@ Heap::Reallocate(void* p, size_t size)
 size_t
 Heap::Node::GetSize()
 {
-	return (char*)mNext - (char*)this - sizeof(Node);
+	return (char*)_next - (char*)this - sizeof(Node);
 }
 

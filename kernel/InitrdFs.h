@@ -14,13 +14,13 @@ class InitrdFsFileData: public VirtualFsFileData {
 public:
 	InitrdFsFileData(InitrdFs* root);
 
-	size_t Read(size_t offset, size_t count, ptr buffer);
-	size_t Write(size_t offset, size_t count, const ptr buffer);
+	size_t Read(size_t offset, size_t qty, ptr buffer);
+	size_t Write(size_t offset, size_t qty, const ptr buffer);
 
 	virtual ~InitrdFsFileData() {}
 
 private:
-	InitrdFs* mRootNode;
+	InitrdFs* _rootNode;
 };
 
 class InitrdFs
@@ -38,8 +38,8 @@ public:
 	String GetDescription() const;
 
 private:
-	uint32_t mCount;
-	InitrdFileHeader* mFileHeaders;
+	uint32_t			_fileQty;
+	InitrdFileHeader*	_fileHeaders;
 };
 
 class Listener: public DeviceManager::Listener {

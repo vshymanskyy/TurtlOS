@@ -7,30 +7,24 @@
 template <typename T>
 class Canvas {
 
-private:
-	/// Size of canvas
-	Vec2d mSize;
-	/// Memory buffer
-	T* mBuffer;
-
 public:
 	/// @returns buffer
-	T* Buffer() const { return mBuffer; }
+	T* Buffer() const { return _buffer; }
 	/// @param val new buffer
-	void Buffer(T* val) { mBuffer = val; }
+	void Buffer(T* val) { _buffer = val; }
 
 	/// @returns pointer to the end of buffer
-	T* BufferEnd() const { return mBuffer + mSize.x*mSize.y; }
+	T* BufferEnd() const { return _buffer + _size.x*_size.y; }
 
 
 	/// @returns Reference to size
-	Vec2d& Size() { return mSize; }
+	Vec2d& Size() { return _size; }
 	/// @returns Reference to constant size
-	const Vec2d& Size() const { return mSize; }
+	const Vec2d& Size() const { return _size; }
 
 	/// Computes the memory location of coordinates
 	T* OffsetOf(int x, int y) const{
-		return mBuffer + mSize.x * y + x;
+		return _buffer + _size.x * y + x;
 	}
 
 	/// Computes the memory location of coordinates
@@ -40,7 +34,7 @@ public:
 
 	/// Computes the relative offset of specified memory location
 	int GetOffset(T* ptr) const{
-		return static_cast<int>(((size_t)ptr-(size_t)mBuffer)/sizeof(T));
+		return static_cast<int>(((size_t)ptr-(size_t)_buffer)/sizeof(T));
 	}
 
 	/// Computes the coordinates of specified memory location
@@ -50,17 +44,17 @@ public:
 
 	/// Computes the coordinates of specified memory offset
 	Vec2d OffsetLocation(int offset) const{
-		return Vec2d(offset%mSize.x, offset/mSize.x);
+		return Vec2d(offset%_size.x, offset/_size.x);
 	}
 
 	/// Return local drawable bounds
 	Rect GetDrawBounds() const{
-		return Rect(0, 0, mSize.x, mSize.y);
+		return Rect(0, 0, _size.x, _size.y);
 	}
 
 	Canvas(T* buffer, int w, int h)
-		: mSize(w, h)
-		, mBuffer(buffer)
+		: _size(w, h)
+		, _buffer(buffer)
 	{}
 
 	void SetPixel(const Vec2d& p, T color) {
@@ -68,8 +62,8 @@ public:
 	}
 
 	void Fill(T color) {
-		const uint16_t* const e = mBuffer + mSize.x*mSize.y;
-		for (uint16_t* p = mBuffer; p < e; p++) {
+		const uint16_t* const e = _buffer + _size.x*_size.y;
+		for (uint16_t* p = _buffer; p < e; p++) {
 			*p = color;
 		}
 	}
@@ -83,7 +77,7 @@ public:
 				for(int x = 0; x < clipped.Width(); x++) {
 					*(buffer+x) = color;
 				}
-				buffer += mSize.x;
+				buffer += _size.x;
 			}
 		}
 	}
@@ -109,19 +103,22 @@ public:
 		if (from_buff > to_buff) {
 			for(int y = 0; y < src_clipped.Height(); y++) {
 				memmove(to_buff, from_buff, src_clipped.Width()*sizeof(T));
-				to_buff += mSize.x;
-				from_buff += canvas.mSize.x;
+				to_buff += _size.x;
+				from_buff += canvas._size.x;
 			}
 		} else {
-			from_buff += (src_clipped.Height()-1)*canvas.mSize.x;
-			to_buff += (src_clipped.Height()-1)*mSize.x;
+			from_buff += (src_clipped.Height()-1)*canvas._size.x;
+			to_buff += (src_clipped.Height()-1)*_size.x;
 			for(int y = src_clipped.Height(); y > 0; y--) {
 				memmove(to_buff, from_buff, src_clipped.Width()*sizeof(T));
-				to_buff -= mSize.x;
-				from_buff -= canvas.mSize.x;
+				to_buff -= _size.x;
+				from_buff -= canvas._size.x;
 			}
 		}
 	}
 
+private:
+	Vec2d	_size;		/// Size of canvas
+	T*		_buffer;	/// Memory buffer
 };
 

@@ -9,7 +9,7 @@ namespace CachedDrive {
 class CachedDrive: public iDevDrive {
 
 public:
-	CachedDrive(iDevDrive* drive, size_t cachedBlocksCount);
+	CachedDrive(iDevDrive* drive, size_t cachedBlocksQty);
 	~CachedDrive();
 
 	String GetDescription() const;
@@ -17,17 +17,17 @@ public:
 	bool ReadBlock(size_t offset, ptr buffer);
 	bool WriteBlock(size_t offset, const ptr buffer);
 
-	size_t Read(size_t offset, size_t count, ptr buffer);
-	size_t Write(size_t offset, size_t count, const ptr buffer);
+	size_t Read(size_t offset, size_t qty, ptr buffer);
+	size_t Write(size_t offset, size_t qty, const ptr buffer);
 
-	size_t GetBlocksCount();
+	size_t GetBlocksQty();
 
 	bool IsLogical() const;
 	bool IsCached() const;
 
 private:
-	iDevDrive* mDrive;
-	size_t mCachedBlocksCount;
+	iDevDrive*	_drive;
+	size_t		_cachedBlocksQty;
 
 	struct CachedBlock {
 		size_t offset;

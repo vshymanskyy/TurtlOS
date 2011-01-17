@@ -1,5 +1,9 @@
-#ifndef POOL_H
-#define POOL_H
+#ifndef INC_POOL_HPP
+#define INC_POOL_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -33,4 +37,4 @@ private:
     Stack<void*, QTY> _free;
 };
 
-#endif // POOL_H
+#endif // INC_POOL_HPP

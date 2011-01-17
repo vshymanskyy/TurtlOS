@@ -13,7 +13,7 @@ namespace DreamDDM {
 			DevTypeFileSystem,
 			DevTypeStream,
 			//-----------------------
-			DevTypeCount
+			DevTypeQty
 		};
 
 		virtual String GetDescription() const = 0;

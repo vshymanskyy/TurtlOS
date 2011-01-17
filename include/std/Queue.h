@@ -1,5 +1,9 @@
-#ifndef _INC_QUEUE_H
-#define _INC_QUEUE_H
+#ifndef INC_QUEUE_HPP
+#define INC_QUEUE_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -104,5 +108,4 @@ Queue<T, SIZE>::Peek()
 	return _data[p];
 }
 
-#endif // _INC_QUEUE_H
-
+#endif // INC_QUEUE_HPP

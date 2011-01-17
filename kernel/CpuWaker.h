@@ -16,8 +16,8 @@ private:
 	static void Waked();
 
 private:
-	Spinlock mLock;
-	Entry mEntry;
+	Spinlock	_lock;
+	Entry		_entry;
 };
 
 #endif /* CPUWAKER_H_ */

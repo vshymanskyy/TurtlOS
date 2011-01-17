@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_VEC2D_HPP
+#define INC_VEC2D_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -35,3 +40,4 @@ struct Vec2d
 	}
 };
 
+#endif // INC_VEC2D_HPP

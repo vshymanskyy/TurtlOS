@@ -17,7 +17,7 @@ private:
 	void AddLINT(struct cteINT *interr);
 
 private:
-	struct FPS *mFps;
-	struct ConfigTable* mConfigTable;
-	size_t mLapicAddr;
+	struct FPS*			_fps;
+	struct ConfigTable*	_configTable;
+	size_t				_lapicAddr;
 };

@@ -1,5 +1,9 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef INC_LOG_HPP
+#define INC_LOG_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -240,4 +244,4 @@ void Log::Print (LogLevel level, const char* msg) const {
     }
 }
 
-#endif // LOG_H
+#endif // INC_LOG_HPP

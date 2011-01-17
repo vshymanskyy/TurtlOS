@@ -13,13 +13,14 @@ Listener::OnDriverRegistered (iDevice* dev)
 	if (dev->GetType() == iDevice::DevTypeDrive) {
 		iDevDrive* drive = static_cast<iDevDrive*>(dev);
 		if (!drive->IsCached()) {
-			DeviceManager::Instance()->RegisterDevice(new CachedDrive(drive, drive->GetBlocksCount()));
+			DeviceManager::Instance()->RegisterDevice(new CachedDrive(drive, drive->GetBlocksQty()));
 		}
 	}
 }
 
-CachedDrive::CachedDrive(iDevDrive* drive, size_t cachedBlocksCount)
-	: mDrive(drive), mCachedBlocksCount(cachedBlocksCount)
+CachedDrive::CachedDrive(iDevDrive* drive, size_t cachedBlocksQty)
+	: _drive(drive)
+	, _cachedBlocksQty(cachedBlocksQty)
 {
 
 }
@@ -29,31 +30,31 @@ CachedDrive::~CachedDrive() {
 }
 
 size_t
-CachedDrive::Read(size_t offset, size_t count, ptr buffer)
+CachedDrive::Read(size_t offset, size_t qty, ptr buffer)
 {
-	return mDrive->Read(offset, count, buffer);
+	return _drive->Read(offset, qty, buffer);
 }
 
 size_t
-CachedDrive::Write(size_t offset, size_t count, const ptr buffer)
+CachedDrive::Write(size_t offset, size_t qty, const ptr buffer)
 {
-	return mDrive->Write(offset, count, buffer);
+	return _drive->Write(offset, qty, buffer);
 }
 
 size_t
-CachedDrive::GetBlocksCount()
+CachedDrive::GetBlocksQty()
 {
-	return mDrive->GetBlocksCount();
+	return _drive->GetBlocksQty();
 }
 
 bool
 CachedDrive::ReadBlock(size_t offset, ptr buffer)
-{	return mDrive->ReadBlock(offset, buffer);
+{	return _drive->ReadBlock(offset, buffer);
 }
 
 bool
 CachedDrive::WriteBlock(size_t offset, const ptr buffer)
-{	return mDrive->WriteBlock(offset, buffer);
+{	return _drive->WriteBlock(offset, buffer);
 }
 
 bool
@@ -65,13 +66,13 @@ CachedDrive::IsCached() const
 String
 CachedDrive::GetDescription() const
 {
-	return String("Cached <") + mDrive->GetDescription() + String(">");
+	return String("Cached <") + _drive->GetDescription() + String(">");
 }
 
 CachedDrive::CachedBlock::CachedBlock()
 {
-	data = new char[CachedDrive::_BlockSize];
-	memset(data, 0, CachedDrive::_BlockSize);
+	data = new char[CachedDrive::BlockSize];
+	memset(data, 0, CachedDrive::BlockSize);
 }
 
 CachedDrive::CachedBlock::~CachedBlock()

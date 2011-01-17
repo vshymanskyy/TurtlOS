@@ -6,7 +6,7 @@ class CliPanel :
 	public CliWindow
 {
 private:
-	List<CliWindow*> mChildren;
+	List<CliWindow*> _children;
 
 public:
 	CliPanel(const Rect& bounds)
@@ -17,27 +17,27 @@ public:
 
 	void Redraw(const Rect& region) {
 		CliWindow::Redraw(region);
-		for(List<CliWindow*>::It it = mChildren.First(); it != mChildren.End(); ++it) {
-			Rect b = mChildren[it]->Bounds();
+		for(List<CliWindow*>::It it = _children.First(); it != _children.End(); ++it) {
+			Rect b = _children[it]->Bounds();
 			if (b.Intersects(region)) {
 				Rect bc(b.Intersect(region));
 				bc.Move(Vec2d(-b.Left(), -b.Top()));
-				mCanvas.Copy(mChildren[it]->mCanvas, bc, bc.TopLeft()+b.TopLeft());
+				_canvas.Copy(_children[it]->_canvas, bc, bc.TopLeft()+b.TopLeft());
 			}
 		}
 	}
 
 	void AddChild(CliWindow* win) {
-		mChildren.Append(win);
+		_children.Append(win);
 		win->Parent(this);
 		win->Invalidate();
 	}
 
 	void RemoveChild(CliWindow* win) {
 		int index = 0;
-		for(List<CliWindow*>::It it = mChildren.First(); it != mChildren.End(); ++it) {
-			if (mChildren[it] == win) {
-				mChildren.RemoveAt(it);
+		for(List<CliWindow*>::It it = _children.First(); it != _children.End(); ++it) {
+			if (_children[it] == win) {
+				_children.RemoveAt(it);
 			}
 			index++;
 		}

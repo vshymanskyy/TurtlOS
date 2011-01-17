@@ -22,11 +22,11 @@ struct multiboot_header {
 	uint32_t magic;
 	uint32_t flags;
 	uint32_t checksum;
-	uint32_t header_addr;
-	uint32_t load_addr;
-	uint32_t load_end_addr;
-	uint32_t bss_end_addr;
-	uint32_t entry_addr;
+	uint32_t headerAddr;
+	uint32_t loadAddr;
+	uint32_t loadEndAddr;
+	uint32_t bssEndAddr;
+	uint32_t entryAddr;
 } PACKED;
 
 struct aout_symbol_table {
@@ -45,46 +45,46 @@ struct elf_section_header_table {
 
 struct multiboot_info {
 	uint32_t flags;
-	uint32_t mem_lower;
-	uint32_t mem_upper;
-	uint32_t boot_device;
-	uint32_t cmdline;
-	uint32_t mods_count;
-	uint32_t mods_addr;
+	uint32_t memLower;
+	uint32_t memUpper;
+	uint32_t bootDevice;
+	uint32_t cmdLine;
+	uint32_t modQty;
+	uint32_t modAddr;
 	union {
-		aout_symbol_table aout_sym;
-		elf_section_header_table elf_sec;
+		aout_symbol_table aoutSym;
+		elf_section_header_table elfSec;
 	} u;
-	uint32_t mmap_length;
-	uint32_t mmap_addr;
-	uint32_t drives_length;
-	uint32_t drives_addr;
-	uint32_t config_table;
-	uint32_t boot_loader_name;
-	uint32_t apm_table;
+	uint32_t mmapLength;
+	uint32_t mmapAddr;
+	uint32_t drivesLength;
+	uint32_t drivesAddr;
+	uint32_t configTable;
+	uint32_t bootLoaderName;
+	uint32_t apmTable;
 	struct {
-		uint32_t control_info;
-		uint32_t mode_info;
+		uint32_t controlInfo;
+		uint32_t modeInfo;
 		uint32_t mode;
 		uint32_t interface_seg;
-		uint32_t interface_off;
-		uint32_t interface_len;
+		uint32_t interfaceOff;
+		uint32_t interfaceLen;
 	} vbe;
 } PACKED;
 
 struct module {
-	uint32_t mod_start;
-	uint32_t mod_end;
+	uint32_t modStart;
+	uint32_t modEnd;
 	uint32_t string;
 	uint32_t reserved;
 } PACKED;
 
 struct memory_map {
 	uint32_t size;
-	uint32_t base_addr_low;
-	uint32_t base_addr_high;
-	uint32_t length_low;
-	uint32_t length_high;
+	uint32_t baseAddrLow;
+	uint32_t baseAddrHigh;
+	uint32_t lengthLow;
+	uint32_t lengthHigh;
 	uint32_t type;
 } PACKED;
 
@@ -97,56 +97,57 @@ MultibootParser* MultibootParser::Instance()
 
 MultibootParser::MultibootParser() {
 	assert(mbiMagic == MULTIBOOT_BOOTLOADER_MAGIC);
-	mTable = (multiboot_info*)mbiTable;
-	mModules = (mTable->flags && MULTIBOOT_FLAG_MODS) ? (module*)mTable->mods_addr : NULL;
-	mMemMap  = (mTable->flags && MULTIBOOT_FLAG_MMAP) ? (memory_map*)mTable->mmap_addr : NULL;
+	_table = (multiboot_info*)mbiTable;
+	_modules = (_table->flags && MULTIBOOT_FLAG_MODS) ? (module*)_table->modAddr : NULL;
+	_memMap  = (_table->flags && MULTIBOOT_FLAG_MMAP) ? (memory_map*)_table->mmapAddr : NULL;
 }
 
-uint32_t MultibootParser::GetModulesCount() const {
-	return (mModules == NULL) ? 0 : mTable->mods_count;
+uint32_t MultibootParser::GetModulesQty() const {
+	return (_modules == NULL) ? 0 : _table->modQty;
 }
 
 char* MultibootParser::GetCommandLine() const {
-	return (mTable && mTable->flags && MULTIBOOT_FLAG_CMDLINE) ? (char*)mTable->cmdline : NULL;
+	return (_table && _table->flags && MULTIBOOT_FLAG_CMDLINE) ? (char*)_table->cmdLine : NULL;
 }
 
 char* MultibootParser::GetLoader() const {
-	return (mTable && mTable->flags && MULTIBOOT_FLAG_LOADER) ? (char*)mTable->boot_loader_name : NULL;
+	return (_table && _table->flags && MULTIBOOT_FLAG_LOADER) ? (char*)_table->bootLoaderName : NULL;
 }
 
 size_t MultibootParser::GetUpperMemory() const {
-	return (mTable && mTable->flags && MULTIBOOT_FLAG_MEM) ? mTable->mem_upper : 0;
+	return (_table && _table->flags && MULTIBOOT_FLAG_MEM) ? _table->memUpper : 0;
 }
 
 size_t MultibootParser::GetLowerMemory() const {
-	return (mTable->flags && MULTIBOOT_FLAG_MEM) ? mTable->mem_lower : 0;
+	return (_table->flags && MULTIBOOT_FLAG_MEM) ? _table->memLower : 0;
 }
 
 bool MultibootParser::GetModule(uint32_t index, Module& mod) const {
-	if (!mTable || index >= mTable->mods_count || mModules == NULL)
+	if (!_table || index >= _table->modQty || !_modules) {
 		return false;
-	module& m = mModules[index];
+	}
+	module& m = _modules[index];
 	mod.command = (char*)m.string;
-	mod.data = (void*)m.mod_start;
-	mod.length = m.mod_end - m.mod_start;
+	mod.data = (void*)m.modStart;
+	mod.length = m.modEnd - m.modStart;
 	return true;
 }
 
 uint32_t MultibootParser::GetMemoryMap(MemoryMap*& mmap) const {
-	if (!(mTable && mTable->flags && MULTIBOOT_FLAG_MMAP) || mTable->mmap_length == 0 || mTable->mmap_addr == 0)
+	if (!(_table && _table->flags && MULTIBOOT_FLAG_MMAP) || !_table->mmapLength || !_table->mmapAddr) {
 		return 0;
+	}
 
-	mmap = new MemoryMap[mTable->mmap_length];
+	mmap = new MemoryMap[_table->mmapLength];
 	int i = 0;
-	for (memory_map* m = (memory_map*)mTable->mmap_addr;
-			m < (memory_map*)(mTable->mmap_addr + mTable->mmap_length);
+	for (memory_map* m = (memory_map*)_table->mmapAddr;
+			m < (memory_map*)(_table->mmapAddr + _table->mmapLength);
 			m = (memory_map*)((uint8_t*)m + m->size + sizeof(m->size)))
 	{
-		mmap[i].addr	= (void*)(((uint64_t)m->base_addr_high << 32) | (uint64_t)m->base_addr_low);
-		mmap[i].length	= (size_t)((uint64_t)m->length_high << 32) | (uint64_t)m->length_low;
+		mmap[i].addr	= (void*)(((uint64_t)m->baseAddrHigh << 32) | (uint64_t)m->baseAddrLow);
+		mmap[i].length	= (size_t)((uint64_t)m->lengthHigh << 32) | (uint64_t)m->lengthLow;
 		mmap[i].type	= (MemoryMap::Type)m->type;
 		i++;
 	}
 	return i;
 }
-

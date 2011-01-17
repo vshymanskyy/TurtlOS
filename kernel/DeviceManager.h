@@ -26,14 +26,14 @@ public:
 
 	List<iDevFileSystem*> GetFileSystems() const {
 		List<iDevFileSystem*> result;
-		for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it) {
-			if (mDevices[it]->GetType() == iDevice::DevTypeFileSystem)
-				result.Append((iDevFileSystem*) mDevices[it]);
+		for (DeviceList::It it = _devices.First(); it != _devices.End(); ++it) {
+			if (_devices[it]->GetType() == iDevice::DevTypeFileSystem)
+				result.Append((iDevFileSystem*) _devices[it]);
 		}
 		return result;
 	}
 
-	int GetDeviceCount();
+	int GetDeviceQty();
 
 	void Print();
 
@@ -44,8 +44,9 @@ public:
 private:
 	typedef List<iDevice*> DeviceList;
 	typedef List<Listener*> ListenerList;
-	DeviceList mDevices;
-	ListenerList mListeners;
+
+	DeviceList		_devices;
+	ListenerList	_listeners;
 };
 
 }

@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_RECT_HPP
+#define INC_RECT_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -115,3 +120,4 @@ public:
 	}
 };
 
+#endif // INC_RECT_HPP

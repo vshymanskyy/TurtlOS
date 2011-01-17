@@ -6,12 +6,12 @@
 	#define HeapFootSig 0xB5
 
 	#define CheckNode(n) { \
-		if (n->mHeadSig != HeapHeadSig || n->mFootSig != HeapFootSig) { \
-		assert(n->mHeadSig == HeapHeadSig); \
-		assert(n->mFootSig == HeapFootSig);\
+		if (n->_headSig != HeapHeadSig || n->_footSig != HeapFootSig) { \
+		assert(n->_headSig == HeapHeadSig); \
+		assert(n->_footSig == HeapFootSig);\
 		} \
 	}
-	#define ProtectNode(n) {n->mHeadSig = HeapHeadSig; n->mFootSig = HeapFootSig;}
+	#define ProtectNode(n) {n->_headSig = HeapHeadSig; n->_footSig = HeapFootSig;}
 #else
 	#define CheckNode(n)
 	#define ProtectNode(n)
@@ -24,14 +24,15 @@ private:
 	/// Heap node
 	struct Node {
 #ifdef DEBUG
-		uint8_t mHeadSig;
+		uint8_t	_headSig;
 #endif
-		bool mFree;
-		Node *mPrev, *mNext;
+		bool	_free;
+		Node*	_prev;
+		Node*	_next;
 #ifdef DEBUG
-		char mFile[256];
-		int mLine;
-		uint8_t mFootSig;
+		char	_file[256];
+		int		_line;
+		uint8_t	_footSig;
 #endif
 		size_t GetSize();
 	};
@@ -39,25 +40,25 @@ private:
 	/// Node iterator
 	struct Iterator {
 		/// Pointer to current node
-		Node* mNode;
+		Node* _node;
 
 		/// Constructor
-		Iterator(Node* node) : mNode(node) {}
+		Iterator(Node* node) : _node(node) {}
 		~Iterator() {}
 
 		/// Comparison operator
-		bool operator !=(const Iterator& it) const{	return mNode != it.mNode;	}
+		bool operator !=(const Iterator& it) const{	return _node != it._node;	}
 
-		Node* operator ->() { return mNode; }
+		Node* operator ->() { return _node; }
 
 		operator Node* () {
-			return mNode;
+			return _node;
 		}
 
 		/// Moves to next node
-		Iterator operator ++() {		mNode = mNode->mNext;	CheckNode(mNode);	return (*this);	}
+		Iterator operator ++() {		_node = _node->_next;	CheckNode(_node);	return (*this);	}
 		/// Moves to next node
-		Iterator operator ++(int) {	mNode = mNode->mNext;	CheckNode(mNode);	return Iterator(mNode->mPrev); }
+		Iterator operator ++(int) {	_node = _node->_next;	CheckNode(_node);	return Iterator(_node->_prev); }
 	};
 
 private:
@@ -113,8 +114,8 @@ public:
 	void DumpDebug() const;
 
 private:
-	Node* mHead;
-	size_t mNodesCount;
-	size_t mSize;
+	Node*	_head;
+	size_t	_nodesQty;
+	size_t	_size;
 };
 

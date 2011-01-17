@@ -9,44 +9,44 @@ DeviceManager* DeviceManager::Instance() {
 }
 
 DeviceManager::~DeviceManager() {
-	mDevices.DeleteAll();
-	mListeners.DeleteAll();
+	_devices.DeleteAll();
+	_listeners.DeleteAll();
 }
 
 bool DeviceManager::RegisterDevice(iDevice* device) {
-	mDevices.Append(device);
-	for (ListenerList::It it = mListeners.First(); it != mListeners.End(); ++it)
-		mListeners[it]->OnDriverRegistered(device);
+	_devices.Append(device);
+	for (ListenerList::It it = _listeners.First(); it != _listeners.End(); ++it)
+		_listeners[it]->OnDriverRegistered(device);
 	return true;
 }
 
 bool DeviceManager::UnregisterDevice(iDevice* device) {
-	mDevices.RemoveAt(mDevices.FindFirst(device));
-	for (ListenerList::It it = mListeners.First(); it != mListeners.End(); ++it)
-		mListeners[it]->OnDriverUnregistered(device);
+	_devices.RemoveAt(_devices.FindFirst(device));
+	for (ListenerList::It it = _listeners.First(); it != _listeners.End(); ++it)
+		_listeners[it]->OnDriverUnregistered(device);
 	return true;
 }
 
 bool DeviceManager::RegisterListener(Listener* lsn) {
-	mListeners.Append(lsn);
-	for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it)
-		lsn->OnDriverRegistered(mDevices[it]);
+	_listeners.Append(lsn);
+	for (DeviceList::It it = _devices.First(); it != _devices.End(); ++it)
+		lsn->OnDriverRegistered(_devices[it]);
 	return true;
 }
 
 bool DeviceManager::UnregisterListener(Listener* lsn) {
-	mListeners.RemoveAt(mListeners.FindFirst(lsn));
+	_listeners.RemoveAt(_listeners.FindFirst(lsn));
 	return true;
 }
 
-int DeviceManager::GetDeviceCount() {
-	return mDevices.Count();
+int DeviceManager::GetDeviceQty() {
+	return _devices.Count();
 }
 
 void DeviceManager::Print() {
 	(*console) << "======== Registered devices: ================" << endl;
-	for (DeviceList::It it = mDevices.First(); it != mDevices.End(); ++it) {
-		(*console) << mDevices[it]->GetDescription() << endl;
+	for (DeviceList::It it = _devices.First(); it != _devices.End(); ++it) {
+		(*console) << _devices[it]->GetDescription() << endl;
 	}
 	(*console) << "=============================================" << endl;
 }

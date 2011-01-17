@@ -1,5 +1,9 @@
-#ifndef _INC_Stack_H
-#define _INC_Stack_H
+#ifndef INC_STACK_HPP
+#define INC_STACK_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -100,5 +104,4 @@ Stack<T, SIZE>::Peek(T& item)
 	return true;
 }
 
-#endif // _INC_Stack_H
-
+#endif // INC_STACK_HPP

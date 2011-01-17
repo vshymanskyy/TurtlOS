@@ -12,7 +12,7 @@ namespace InitrdFs {
 struct InitrdHeader {
 	uint32_t magic;
 	uint8_t version;
-	uint32_t count;
+	uint32_t qty;
 };
 
 struct InitrdFileHeader {
@@ -22,21 +22,21 @@ struct InitrdFileHeader {
 };
 
 InitrdFsFileData::InitrdFsFileData(InitrdFs* root)
-	: mRootNode(root)
+	: _rootNode(root)
 {
 }
 
 size_t
-InitrdFsFileData::Read (size_t offset, size_t count, ptr buffer)
+InitrdFsFileData::Read (size_t offset, size_t qty, ptr buffer)
 {
-	return mRootNode->mDrive->Read(mRootNode->mFileHeaders[Inode].offset+offset, count, buffer);
+	return _rootNode->_drive->Read(_rootNode->_fileHeaders[Inode].offset+offset, qty, buffer);
 }
 
 size_t
-InitrdFsFileData::Write (size_t offset, size_t count, const ptr buffer)
+InitrdFsFileData::Write (size_t offset, size_t qty, const ptr buffer)
 {
 	argused(offset);
-	argused(count);
+	argused(qty);
 	argused(buffer);
 	return 0;
 }
@@ -59,14 +59,14 @@ InitrdFs::InitrdFs(iDevDrive* drive)
 {
 	InitrdHeader header;
 	drive->Read(0, sizeof(InitrdHeader), &header);
-	mCount = header.count;
-	mFileHeaders = new InitrdFileHeader[mCount];
-	drive->Read(sizeof(InitrdHeader), sizeof(InitrdFileHeader)*mCount, mFileHeaders);
+	_fileQty = header.qty;
+	_fileHeaders = new InitrdFileHeader[_fileQty];
+	drive->Read(sizeof(InitrdHeader), sizeof(InitrdFileHeader)*_fileQty, _fileHeaders);
 }
 
 InitrdFs::~InitrdFs() {
-	if (mFileHeaders) {
-		delete[] mFileHeaders;
+	if (_fileHeaders) {
+		delete[] _fileHeaders;
 	}
 }
 
@@ -74,11 +74,11 @@ FileList
 InitrdFs::GetFiles()
 {
 	FileList result;
-	for(unsigned i=0; i<mCount; i++) {
+	for(unsigned i=0; i<_fileQty; i++) {
 		File n(new InitrdFsFileData(this));
 		n->Inode = i;
-		n->Name = mFileHeaders[i].name;
-		n->Length = mFileHeaders[i].length;
+		n->Name = _fileHeaders[i].name;
+		n->Length = _fileHeaders[i].length;
 		n->UID = n->GID = n->Mask = 0;
 		result.Append(n);
 	}
@@ -88,12 +88,12 @@ InitrdFs::GetFiles()
 File
 InitrdFs::FindFile(const String name)
 {
-	for(unsigned i=0; i<mCount; i++) {
-		if (name == String(mFileHeaders[i].name)) {
+	for(unsigned i=0; i<_fileQty; i++) {
+		if (name == String(_fileHeaders[i].name)) {
 			InitrdFsFileData* data = new InitrdFsFileData(this);
 			data->Inode = i;
-			data->Name = mFileHeaders[i].name;
-			data->Length = mFileHeaders[i].length;
+			data->Name = _fileHeaders[i].name;
+			data->Length = _fileHeaders[i].length;
 			data->UID = data->GID = data->Mask = 0;
 			return File(data);
 		}
@@ -103,7 +103,7 @@ InitrdFs::FindFile(const String name)
 
 String
 InitrdFs::GetDescription() const{
-	return String("InitrdFs on <") + mDrive->GetDescription() + String(">");
+	return String("InitrdFs on <") + _drive->GetDescription() + String(">");
 }
 
 }

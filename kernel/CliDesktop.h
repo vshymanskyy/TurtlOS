@@ -15,17 +15,17 @@ public:
 	CliDesktop(const Rect& bounds)
 		: CliPanel(bounds)
 	{
-		delete[] mCanvas.Buffer();
-		mCanvas.Buffer((uint16_t*)0xB8000);
+		delete[] _canvas.Buffer();
+		_canvas.Buffer((uint16_t*)0xB8000);
 		Invalidate();
 	}
 
 	~CliDesktop() {
-		mCanvas.Buffer(NULL);
+		_canvas.Buffer(NULL);
 	}
 
 	void SetCursor(const Vec2d& p) {
-		const uint16_t pos = static_cast<uint16_t>(mCanvas.Size().x * p.y + p.x);
+		const uint16_t pos = static_cast<uint16_t>(_canvas.Size().x * p.y + p.x);
 		outportb(TEXT_INDEX, TEXT_CURSOR_LO);
 		outportb(TEXT_DATA, static_cast<uint8_t>(pos));
 		outportb(TEXT_INDEX, TEXT_CURSOR_HI);

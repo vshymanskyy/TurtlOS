@@ -22,20 +22,20 @@ CpuDesc::CpuDesc(uint32_t lapic_id, bool enabled)
 }
 
 Processors::Processors()
-	: mBspLapicId(0xFF)
-	, mLock(false)
+	: _bspLapicId(0xFF)
+	, _lock(false)
 {
 }
 
 Processors::~Processors()
 {
-	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
-		if (mProcessors[i].stack) {
-			if (mProcessors[i].stack) {
-				free(mProcessors[i].stack);
+	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
+		if (_processors[i].stack) {
+			if (_processors[i].stack) {
+				free(_processors[i].stack);
 			}
-			if (mProcessors[i].lapic) {
-				free(mProcessors[i].lapic);
+			if (_processors[i].lapic) {
+				free(_processors[i].lapic);
 			}
 		}
 	}
@@ -44,9 +44,9 @@ Processors::~Processors()
 CpuDesc*
 Processors::GetCpu(uint32_t lapicId)
 {
-	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
-		if (mProcessors[i].lapicId == lapicId) {
-			return &mProcessors[i];
+	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
+		if (_processors[i].lapicId == lapicId) {
+			return &_processors[i];
 		}
 	}
 	return NULL;
@@ -65,9 +65,9 @@ Processors::Startup()
 	InitBsp();
 
 	CpuWaker waker(CpuWaker::Entry(Processors::Instance(), &Processors::InitAp));
-	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
-		CpuDesc& cpu = mProcessors[i];
-		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == mBspLapicId) {
+	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
+		CpuDesc& cpu = _processors[i];
+		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == _bspLapicId) {
 			continue;
 		}
 		(*console2) << "CPU " << (int)cpu.lapicId << ": ";
@@ -77,7 +77,7 @@ Processors::Startup()
 			if (!waker.StartCpu(cpu.lapicId)) {
 				(*console2) << esc << "[31m fail" << esc << "[m" << endl;
 			}
-			mLock.Wait();
+			_lock.Wait();
 		} else {
 			static const char* labels[5] = { "Disabled", "Stopped", "Booting", "Init", "Ready" };
 			(*console2) << labels[cpu.state] << endl;
@@ -87,8 +87,8 @@ Processors::Startup()
 
 void
 Processors::InitBsp() {
-	assert (mBspLapicId != 0xFF);
-	CpuDesc* cpu = GetCpu(mBspLapicId);
+	assert (_bspLapicId != 0xFF);
+	CpuDesc* cpu = GetCpu(_bspLapicId);
 	cpu->state = CpuDesc::CPU_INIT;
 	cpu->stack = NULL;
 	cpu->lapic = NULL;
@@ -101,7 +101,7 @@ Processors::InitBsp() {
 
 void
 Processors::InitAp() {
-	mLock.Lock();
+	_lock.Lock();
 	(*console2) << esc << "[32m ok" << esc << "[m" << endl;
 	CpuDesc* cpu = GetCpu(lapicGetID());
 	cpu->state = CpuDesc::CPU_INIT;
@@ -116,7 +116,7 @@ Processors::InitAp() {
 	lapicStart();
 
 	cpu->state = CpuDesc::CPU_HALTED;
-	mLock.Unlock();
+	_lock.Unlock();
 	cpuHalt();
 
 	fatal("executing after cpuHalt");
@@ -126,17 +126,17 @@ void
 Processors::AddCpu (uint32_t lapicId, bool enabled, bool bsp)
 {
 	if (bsp) {
-		mBspLapicId = lapicId;
+		_bspLapicId = lapicId;
 	}
-	mProcessors.Append(CpuDesc(lapicId, enabled));
+	_processors.Append(CpuDesc(lapicId, enabled));
 }
 
 int
-Processors::GetReadyCount()const
+Processors::GetReadyQty()const
 {
 	int result = 0;
-	for(Container::It i = mProcessors.First(); i != mProcessors.End(); ++i) {
-		if (mProcessors[i].state == CpuDesc::CPU_READY) {
+	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
+		if (_processors[i].state == CpuDesc::CPU_READY) {
 			++result;
 		}
 	}
@@ -144,8 +144,8 @@ Processors::GetReadyCount()const
 }
 
 int
-Processors::GetCount()const
+Processors::GetCpuQty()const
 {
-	return mProcessors.Count();
+	return _processors.Count();
 }
 

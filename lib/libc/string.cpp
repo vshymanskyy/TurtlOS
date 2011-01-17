@@ -27,12 +27,12 @@ strlen(const char* s)
 }
 
 unsigned
-strnlen(const char* s, unsigned count)
+strnlen(const char* s, unsigned length)
 {
 	unsigned rc = 0;
-	while (s[rc] != '\0' && count>0) {
+	while (s[rc] != '\0' && length>0) {
 		++rc;
-		--count;
+		--length;
 	}
 	return rc;
 }
@@ -47,14 +47,15 @@ strcpy(char* s1, const char* s2)
 }
 
 char*
-strncpy(char* dest, const char* source, unsigned count)
+strncpy(char* dest, const char* source, unsigned length)
 {
 	char* start = dest;
-	while (count && (*dest++ = *source++)) {
-		count--;
+	while (length && (*dest++ = *source++)) {
+		length--;
 	}
-	if (count)
+	if (length) {
 		*dest = '\0';
+	}
 	return start;
 }
 
@@ -74,8 +75,9 @@ strcat(char* s1, const char* s2)
 char*
 strdup(const char* s)
 {
-	if (!s)
+	if (!s) {
 		return NULL;
+	}
 	size_t sl = strlen(s);
 	char* t = (char*)malloc(sl + 1);
 	memcpy(t, (const void*)s, sl + 1);
@@ -125,7 +127,7 @@ strnicmp(const char* s1, const char* s2, int n)
 char*
 strchr(const char* s, int c)
 {
-	do{
+	do {
 		if (*s == (char) c) {
 			return (char*) s;
 		}
@@ -139,7 +141,7 @@ strrchr(const char* s, int c)
 	size_t i = 0;
 	while (s[i++]) {
 	}
-	do{
+	do {
 		if (s[--i] == (char)c)
 			return (char*) s + i;
 	} while (i);
@@ -260,11 +262,11 @@ strtok (char* s1, const char* s2)
 }
 
 int
-snprintf(char* buffer, size_t count, const char* format, ...)
+snprintf(char* buffer, size_t length, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	int result = vsnprintf(buffer, count, format, args);
+	int result = vsnprintf(buffer, length, format, args);
 	va_end(args);
 	return result;
 }

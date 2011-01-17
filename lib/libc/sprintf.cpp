@@ -50,10 +50,11 @@ putUnsigned (unsigned long long value, char* buf, long base, bool capt)
 }
 
 int
-vsnprintf (char* buffer, size_t count, const char* format, va_list args)
+vsnprintf (char* buffer, size_t buffSize, const char* format, va_list args)
 {
-	// TODO: implement count handling
-	argused(count);
+	// TODO: implement buffSize handling
+	argused(buffSize);
+
 	char* p = buffer;
 	for (; *format; format++) {
 		if (*format == '%') {
@@ -203,7 +204,7 @@ vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 				char* prevP = p;
 				if (sign) {
 					if (length == 2) {
-						int16_t value = va_arg(args, int16_t);
+						int value = va_arg(args, int);
 						p = putSigned(value, p, base, capt, plus);
 					} else if (length == 4) {
 						int32_t value = va_arg(args, int32_t);
@@ -214,7 +215,7 @@ vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 					}
 				} else {
 					if (length == 2) {
-						uint16_t value = va_arg(args, uint16_t);
+						int value = va_arg(args, int);
 						p = putUnsigned(value, p, base, capt);
 					} else if (length == 4) {
 						uint32_t value = va_arg(args, uint32_t);

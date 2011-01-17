@@ -16,15 +16,15 @@ public:
 
 	bool ReadBlock(size_t offset, ptr buffer);
 	bool WriteBlock(size_t offset, const ptr buffer);
-	size_t ReadBlocks(size_t offset, size_t count, ptr buffer);
-	size_t WriteBlocks(size_t offset, size_t count, const ptr buffer);
-	size_t Read(size_t offset, size_t count, ptr buffer);
-	size_t Write(size_t offset, size_t count, const ptr buffer);
-	size_t GetBlocksCount();
+	size_t ReadBlocks(size_t offset, size_t qty, ptr buffer);
+	size_t WriteBlocks(size_t offset, size_t qty, const ptr buffer);
+	size_t Read(size_t offset, size_t qty, ptr buffer);
+	size_t Write(size_t offset, size_t qty, const ptr buffer);
+	size_t GetBlocksQty();
 
 	bool IsCached() const;
 
 private:
-	char* mData;
-	size_t mBlocksCount;
+	char*	_data;
+	size_t	_blocksQty;
 };

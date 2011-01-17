@@ -1,47 +1,47 @@
 #include "CliWindow.h"
 
 CliWindow::CliWindow (const Rect& bounds)
-	: mOffset(bounds.TopLeft())
-	, mBackground(BLACK)
-	, mForeground(WHITE)
-	, mCanvas(new uint16_t[bounds.Width()*bounds.Height()], bounds.Width(), bounds.Height())
+	: _offset(bounds.TopLeft())
+	, _background(BLACK)
+	, _foreground(WHITE)
+	, _canvas(new uint16_t[bounds.Width()*bounds.Height()], bounds.Width(), bounds.Height())
 {
 }
 
 CliWindow::~CliWindow()
 {
-	if (mCanvas.Buffer())
-		delete[] mCanvas.Buffer();
+	if (_canvas.Buffer())
+		delete[] _canvas.Buffer();
 }
 
 void
 CliWindow::Redraw(const Rect& region)
 {
-	mCanvas.Fill(region, GetAttr(0));
+	_canvas.Fill(region, GetAttr(0));
 }
 
 void
 CliWindow::Invalidate()
 {
-	Rect bounds = mCanvas.GetDrawBounds();
+	Rect bounds = _canvas.GetDrawBounds();
 	Redraw(bounds);
-	if (mParent) {
+	if (_parent) {
 		bounds = Bounds();
-		bounds.Move(mParent->ClientOffset());
-		mParent->Invalidate(bounds);
+		bounds.Move(_parent->ClientOffset());
+		_parent->Invalidate(bounds);
 	}
 }
 
 void
 CliWindow::Invalidate (const Rect& region)
 {
-	Rect bounds = mCanvas.GetDrawBounds();
+	Rect bounds = _canvas.GetDrawBounds();
 	if (bounds.Intersects(region)) {
 		bounds = bounds.Intersect(region);
 		Redraw(bounds);
-		if (mParent) {
-			bounds.Move(Bounds().TopLeft()+mParent->ClientOffset());
-			mParent->Invalidate(bounds);
+		if (_parent) {
+			bounds.Move(Bounds().TopLeft()+_parent->ClientOffset());
+			_parent->Invalidate(bounds);
 		}
 	}
 }
@@ -50,40 +50,40 @@ void
 CliWindow::Move(const Vec2d& p)
 {
 	Rect prev_b = Bounds();
-	mOffset = p;
-	if (mParent) {
-		prev_b.Move(mParent->ClientOffset());
-		mParent->Invalidate(prev_b);
+	_offset = p;
+	if (_parent) {
+		prev_b.Move(_parent->ClientOffset());
+		_parent->Invalidate(prev_b);
 
 		prev_b = Bounds();
-		prev_b.Move(mParent->ClientOffset());
-		mParent->Invalidate(prev_b);
+		prev_b.Move(_parent->ClientOffset());
+		_parent->Invalidate(prev_b);
 	}
 }
 
 void
 CliWindow::SetCursor (const Vec2d& p)
 {
-	if (mCanvas.GetDrawBounds().Contains(p)) {
-		if (mParent) {
-			mParent->SetCursor(p + mOffset + mParent->ClientOffset());
+	if (_canvas.GetDrawBounds().Contains(p)) {
+		if (_parent) {
+			_parent->SetCursor(p + _offset + _parent->ClientOffset());
 		}
 	} else {
-		mParent->SetCursor(Vec2d(-1,-1));
+		_parent->SetCursor(Vec2d(-1,-1));
 	}
 }
 
 void
 CliWindow::Resize (int w, int h)
 {
-	mCanvas.Size().x = w;
-	mCanvas.Size().y = h;
-	if (mCanvas.Buffer()) {
-		delete[] mCanvas.Buffer();
-		mCanvas.Buffer(new uint16_t[mCanvas.Size().x*mCanvas.Size().y]);
+	_canvas.Size().x = w;
+	_canvas.Size().y = h;
+	if (_canvas.Buffer()) {
+		delete[] _canvas.Buffer();
+		_canvas.Buffer(new uint16_t[_canvas.Size().x*_canvas.Size().y]);
 	}
-	if (mParent) {
-		mParent->Invalidate();
+	if (_parent) {
+		_parent->Invalidate();
 	}
 }
 

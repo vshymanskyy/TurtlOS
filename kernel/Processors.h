@@ -38,8 +38,8 @@ public:
 
 	void Startup();
 
-	int GetCount()const;
-	int GetReadyCount()const;
+	int GetCpuQty()const;
+	int GetReadyQty()const;
 	CpuDesc* GetCpu(uint32_t lapicId);
 
 	~Processors();
@@ -51,8 +51,9 @@ private:
 	void InitBsp();
 
 private:
-	uint32_t mBspLapicId;
-	typedef Array<CpuDesc, 256> Container;
-	Container mProcessors;
-	Spinlock mLock;
+	typedef Array<CpuDesc, 256> CpuList;
+
+	uint32_t	_bspLapicId;
+	CpuList		_processors;
+	Spinlock	_lock;
 };

@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_LIST_HPP
+#define INC_LIST_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -336,7 +341,7 @@ inline
 void
 List<T>::Prepend(const T& item)
 {
-    Node*& next = _head->mPrev;
+    Node*& next = _head->_prev;
     Node* const node = new Node(item, _head, next);
     assert(node);
     next->_prev = node;
@@ -448,3 +453,5 @@ typename List<T>::It
 List<T>::End() const{
     return It((Node*)&_head);
 }
+
+#endif // INC_LIST_HPP

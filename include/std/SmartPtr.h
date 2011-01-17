@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_SMARTPTR_HPP
+#define INC_SMARTPTR_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -84,3 +89,5 @@ public:
 public:
 	T* mData;
 };
+
+#endif // INC_SMARTPTR_HPP

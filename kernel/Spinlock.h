@@ -29,12 +29,12 @@ private:
 		LOCKED		= 1
 	};
 
-	size_t mValue;
+	size_t _value;
 };
 
 inline
 Spinlock::Spinlock(bool locked)
-	: mValue(locked ? LOCKED : UNLOCKED)
+	: _value(locked ? LOCKED : UNLOCKED)
 {
 }
 
@@ -47,7 +47,7 @@ inline
 void
 Spinlock::Lock()
 {
-	while(atomicCompareExchange(&mValue, UNLOCKED, LOCKED) == LOCKED) {
+	while(atomicCompareExchange(&_value, UNLOCKED, LOCKED) == LOCKED) {
 	};
 }
 
@@ -55,7 +55,7 @@ inline
 void
 Spinlock::Unlock()
 {
-	atomicExchange(&mValue, UNLOCKED);
+	atomicExchange(&_value, UNLOCKED);
 }
 
 inline
@@ -71,7 +71,7 @@ bool
 Spinlock::Wait(size_t cycles)
 {
 	size_t cycle = 0;
-	while(atomicCompareExchange(&mValue, UNLOCKED, LOCKED) == LOCKED) {
+	while(atomicCompareExchange(&_value, UNLOCKED, LOCKED) == LOCKED) {
 		if (cycle++ > cycles) {
 			return false;
 		}

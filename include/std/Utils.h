@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_UTILS_HPP
+#define INC_UTILS_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -20,3 +25,5 @@ void hexdump (const T* data, unsigned count = 1, unsigned columnsMask = HEXDMP_A
 }
 
 char* printsize(const unsigned long long bytes, char* buff, size_t len);
+
+#endif // INC_UTILS_HPP

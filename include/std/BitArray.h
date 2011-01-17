@@ -1,4 +1,9 @@
-#pragma once
+#ifndef INC_BITARRAY_HPP
+#define INC_BITARRAY_HPP
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
@@ -102,3 +107,5 @@ BitArray::FindFirstSet() const
 #undef INDEX_FROM_BIT
 #undef BIT_FROM_INDEX
 #undef OFFSET_FROM_BIT
+
+#endif // INC_BITARRAY_HPP

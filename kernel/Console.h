@@ -89,22 +89,16 @@ private:
 	void UpdateCursor();
 
 private:
-	/// Pointer to current cursor location
-	uint16_t* mCursor;
-	/// Tab width
-	int mTab;
 
-	/// Line wrapping switch
-	bool mLineWrap;
-	/// Reverse video switch
-	bool mReverseVideo;
+	uint16_t*	_cursor;	/// Pointer to current cursor location
+	int			_tab;		/// Tab width
+	bool		_lineWrap;	/// Line wrapping switch
+	bool		_reverseVideo;	/// Reverse video switch
 
-	/// Saved cursor positions
-	Stack<uint16_t*, 64> mAnsiEscCursorPosStack;
-	/// Buffer for current esc sequence
-	char mAnsiEscBuffer[30];
-	/// Position in sequence buffer
-	int mAnsiEscBufferPos;
+
+	char		_ansiBuffer[30];	/// Buffer for current esc sequence
+	int			_ansiBufferPos;		/// Position in sequence buffer
+	Stack<uint16_t*, 64> _ansiCursorStack;		/// Saved cursor positions
 };
 
 inline

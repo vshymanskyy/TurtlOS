@@ -3,9 +3,9 @@
 
 class MultibootParser {
 
-	struct multiboot_info* mTable;
-	struct module* mModules;
-	struct memory_map* mMemMap;
+	struct multiboot_info*	_table;
+	struct module*			_modules;
+	struct memory_map*		_memMap;
 
 	MultibootParser();
 
@@ -14,9 +14,9 @@ public:
 	static MultibootParser* Instance();
 
 	struct Module {
-		void* data;
-		uint32_t length;
-		char* command;
+		void*		data;
+		uint32_t	length;
+		char*		command;
 	};
 
 	struct MemoryMap {
@@ -33,12 +33,10 @@ public:
 		Type type;
 	};
 
-
-
-	bool GetModule(uint32_t index, Module& mod)const;
+	bool GetModule(uint32_t index, Module& mod) const;
 	uint32_t GetMemoryMap(MemoryMap*& mmap) const;
 
-	uint32_t GetModulesCount() const;
+	uint32_t GetModulesQty() const;
 
 	size_t GetUpperMemory() const;
 	size_t GetLowerMemory() const;

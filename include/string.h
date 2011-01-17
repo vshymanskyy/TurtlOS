@@ -12,7 +12,7 @@ extern "C" {
 char *strlast (char *s);
 char *strrev (char *s);
 unsigned strlen (const char *s);
-unsigned strnlen (const char *s, unsigned count);
+unsigned strnlen (const char *s, unsigned qty);
 char *strcpy (char *s1, const char *s2);
 char *strdup (const char *s);
 char *strcat (char *s1, const char *s2);
@@ -22,13 +22,13 @@ char *strpadr (char *s, const size_t fl, const char c);
 bool strlike (char *str, char *mask);
 char *strtok (char *s1, const char *s2);
 char *strstr (const char *s1, const char *s2);
-char *strncpy (char *dest, const char *source, unsigned count);
+char *strncpy (char *dest, const char *source, unsigned qty);
 int strcmp (const char *s1, const char *s2);
 int stricmp (const char *s1, const char *s2);
 int strncmp(const char* s1, const char* s2, int n);
 int strnicmp(const char* s1, const char* s2, int n);
-int vsnprintf(char* buffer, size_t count, const char* format, va_list args);
-int snprintf(char* buffer, size_t count, const char* format, ...);
+int vsnprintf(char* buffer, size_t length, const char* format, va_list args);
+int snprintf(char* buffer, size_t qty, const char* format, ...);
 
 long strtol (const char *buf, char **endptr, int base);
 char *itoa (int value, char *buf, int base);

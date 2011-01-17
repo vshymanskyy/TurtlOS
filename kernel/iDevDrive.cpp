@@ -2,7 +2,7 @@
 
 namespace DreamDDM {
 
-const size_t iDevDrive::_BlockSize = 512;
+const size_t iDevDrive::BlockSize = 512;
 
 iDevDrive::iDevDrive() {
 
@@ -12,34 +12,34 @@ iDevDrive::~iDevDrive() {
 
 }
 
-size_t iDevDrive::ReadBlocks(size_t offset, size_t count, ptr buffer) {
+size_t iDevDrive::ReadBlocks(size_t offset, size_t qty, ptr buffer) {
 	size_t i = 0;
-	for(; i<count; i++) {
-		if (!ReadBlock(offset+i, static_cast<char*>(buffer) + (i * _BlockSize)))
+	for(; i<qty; i++) {
+		if (!ReadBlock(offset+i, static_cast<char*>(buffer) + (i * BlockSize)))
 			break;
 	}
 	return i;
 }
 
-size_t iDevDrive::WriteBlocks(size_t offset, size_t count, const ptr buffer) {
+size_t iDevDrive::WriteBlocks(size_t offset, size_t qty, const ptr buffer) {
 	size_t i = 0;
-	for(; i<count; i++) {
-		if (!WriteBlock(offset+i, static_cast<char*>(buffer) + (i * _BlockSize)))
+	for(; i<qty; i++) {
+		if (!WriteBlock(offset+i, static_cast<char*>(buffer) + (i * BlockSize)))
 			break;
 	}
 	return i;
 }
 
-size_t iDevDrive::Read(size_t offset, size_t count, ptr buffer) {
+size_t iDevDrive::Read(size_t offset, size_t qty, ptr buffer) {
 	argused(offset);
-	argused(count);
+	argused(qty);
 	argused(buffer);
 	return 0;
 }
 
-size_t iDevDrive::Write(size_t offset, size_t count, const ptr buffer) {
+size_t iDevDrive::Write(size_t offset, size_t qty, const ptr buffer) {
 	argused(offset);
-	argused(count);
+	argused(qty);
 	argused(buffer);
 	return 0;
 }

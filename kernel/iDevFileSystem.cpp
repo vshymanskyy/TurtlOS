@@ -3,7 +3,7 @@
 namespace DreamDDM {
 
 iDevFileSystem::iDevFileSystem (iDevDrive* drive)
-	: mDrive(drive)
+	: _drive(drive)
 {
 }
 

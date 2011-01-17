@@ -42,7 +42,7 @@ public:
         default:            break;
         }
 
-		debug_print("%s %s %s\n", log, mod, msg);
+		debug_print("%s %s %s %s\n", time, mod, log, msg);
     }
 };
 
@@ -74,7 +74,7 @@ int main() {
 
 	MultibootParser::MemoryMap* mmap = NULL;
 	uint32_t mmap_len = MultibootParser::Instance()->GetMemoryMap(mmap);
-	static const char* mmapTypes[6] = { "usable", "reserved", "acpi recl", "acpi nvs", "bad" };
+	static const char* mmapTypes[6] = { "Usable", "Reserved", "Acpi recl", "Acpi nvs", "Bad" };
 	if (mmap) {
 		for (uint32_t i = 0; i < mmap_len; i++) {
 			(*console) << mmap[i].addr << ": " << mmap[i].length << " - " << mmapTypes[mmap[i].type - 1] << endl;
@@ -83,7 +83,7 @@ int main() {
 	}
 
 	DeviceManager::Instance()->RegisterListener(new InitrdFs::Listener());
-	for (uint32_t i = 0; i < MultibootParser::Instance()->GetModulesCount(); i++) {
+	for (uint32_t i = 0; i < MultibootParser::Instance()->GetModulesQty(); i++) {
 		MultibootParser::Module mod;
 		if (MultibootParser::Instance()->GetModule(i, mod)) {
 			(*console) << "Module:  " << mod.command << " at " << mod.data << endl;
@@ -108,4 +108,3 @@ int main() {
 
 	return 0;
 }
-

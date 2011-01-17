@@ -36,7 +36,7 @@ struct ConfigTable{
 	uint8_t		ProductID[12];		//An ASCII string that identifies the product family of the system. This string is not null terminated.
 	uint32_t	pOEM_Table;			//An optional pointer to an OEM-defined configuration table. If no OEM table is present, this field is zero.
 	uint16_t	OEM_TableSize;		//The size (if it exists) of the OEM table. If the OEM table does not exist, this field is zero.
-	uint16_t	EntryCount;			//The number of entries following this base header table in Memory:: This allows software to find the end of the table when parsing the entries.
+	uint16_t	EntryQty;			//The number of entries following this base header table in Memory:: This allows software to find the end of the table when parsing the entries.
 	uint32_t	LAPIC_Address;		//The physical address where each processor's local APIC is mapped. Each processor memory maps its own local APIC into this address range.
 	uint16_t	ExtTableLength;		//The total size of the extended table (entries) in bytes. If there are no extended entries, this field is zero.
 	uint8_t		ExtTableChecksum;	//A checksum of all the bytes in the extended table. All off the bytes in the extended table must sum to this value. If there are no extended entries, this field is zero.
@@ -114,23 +114,23 @@ CheckFPS(FPS *fps)
 
 ImpsParser::ImpsParser()
 {
-	mFps = FindFPS(0xF0000, 0xFFFFF);
-	if (!mFps) {
+	_fps = FindFPS(0xF0000, 0xFFFFF);
+	if (!_fps) {
 		(*console) << "FPS not found!" << endl;
  		Processors::Instance()->AddCpu(0, true, true);
 		return;
 	}
 
-	assert(CheckFPS(mFps));
-	mConfigTable = (ConfigTable*)mFps->pConfigTable;
-	assert(mConfigTable);
+	assert(CheckFPS(_fps));
+	_configTable = (ConfigTable*)_fps->pConfigTable;
+	assert(_configTable);
 
 	//__debug_print("IMPS v1 %d BSP APIC config: \" %s mode\", address: 0x%x \n", mFps->Version, (mFps->Features[1] & IMPS_FPS_IMCRP_BIT)?"IMCR and PIC":"Virtual Wire", ct ? ct->LAPIC_Address : LAPIC_ADDR_DEFAULT);
 
-	mLapicAddr = mConfigTable ? mConfigTable->LAPIC_Address : LAPIC_ADDR_DEFAULT;
+	_lapicAddr = _configTable ? _configTable->LAPIC_Address : LAPIC_ADDR_DEFAULT;
 
-	char* p = (char*)mConfigTable + sizeof(ConfigTable);
-	int count = mConfigTable->EntryCount;
+	char* p = (char*)_configTable + sizeof(ConfigTable);
+	int count = _configTable->EntryQty;
 
 	while (count-- > 0) {
 		switch(*p) {
@@ -207,5 +207,5 @@ ImpsParser::~ImpsParser()
 size_t
 ImpsParser::GetLapicAddr()
 {
-	return mLapicAddr;
+	return _lapicAddr;
 }

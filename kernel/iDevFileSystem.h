@@ -20,7 +20,7 @@ namespace DreamDDM {
 		iDevFileSystem(iDevDrive* drive);
 
 	protected:
-		iDevDrive* mDrive;
+		iDevDrive* _drive;
 
 	};
 

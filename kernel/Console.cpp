@@ -14,7 +14,7 @@ static const char* symb = "0123456789abcdefghijklmnopqrstuvwxyz";
 Vec2d
 Console::GetCursorPos()
 {
-	return mCanvas.OffsetLocation(mCursor);
+	return _canvas.OffsetLocation(_cursor);
 }
 
 void
@@ -26,8 +26,8 @@ Console::UpdateCursor()
 
 Console::Console(const Rect& bounds)
 	: CliWindow(bounds)
-	, mCursor(mCanvas.Buffer())
-	, mTab(4)
+	, _cursor(_canvas.Buffer())
+	, _tab(4)
 {
 	ResetAttributes();
 	Erase(BOTH, false);
@@ -46,13 +46,13 @@ Console::ResetAttributes()
 void
 Console::SetLineWrap(bool enabled)
 {
-	mLineWrap = enabled;
+	_lineWrap = enabled;
 }
 
 void
 Console::SetReverseVideo (bool enabled)
 {
-	mReverseVideo = enabled;
+	_reverseVideo = enabled;
 }
 
 void
@@ -105,8 +105,8 @@ Console::Erase(EraseDirection d, bool line)
 			case BACKWARD:
 				break;
 			case BOTH: {
-				mCanvas.Fill(attr);
-				mCursor = mCanvas.Buffer();
+				_canvas.Fill(attr);
+				_cursor = _canvas.Buffer();
 				UpdateCursor();
 
 				Invalidate();
@@ -136,29 +136,29 @@ AnsiEscParseParams(char* s, long buff[])
 bool
 Console::AnsiEscFilter(const char c)
 {
-	if (mAnsiEscBufferPos == 0 && c == (char)0x9B) {
-		mAnsiEscBufferPos = 2;
+	if (_ansiBufferPos == 0 && c == (char)0x9B) {
+		_ansiBufferPos = 2;
 		return true;
-	}else if (mAnsiEscBufferPos == 0 && c == (char)0x1B) {
-		mAnsiEscBufferPos = 1;
+	}else if (_ansiBufferPos == 0 && c == (char)0x1B) {
+		_ansiBufferPos = 1;
 		return true;
-	}else if (mAnsiEscBufferPos == 1) {
+	}else if (_ansiBufferPos == 1) {
 		if (c == '[') {
-			mAnsiEscBufferPos = 2;
+			_ansiBufferPos = 2;
 			return true;
 		} else {
-			mAnsiEscBufferPos = 0;
+			_ansiBufferPos = 0;
 			return false;
 		}
-	}else if (mAnsiEscBufferPos > 1) {
+	}else if (_ansiBufferPos > 1) {
 		if (isdigit(c) || c == ';') {
-			mAnsiEscBuffer[mAnsiEscBufferPos++] = c;
+			_ansiBuffer[_ansiBufferPos++] = c;
 		} else {
-			mAnsiEscBuffer[mAnsiEscBufferPos] = '\0';
-			mAnsiEscBufferPos = 0;
+			_ansiBuffer[_ansiBufferPos] = '\0';
+			_ansiBufferPos = 0;
 
 			long params[10] = {0};
-			const int parQty = AnsiEscParseParams(&mAnsiEscBuffer[2], params);
+			const int parQty = AnsiEscParseParams(&_ansiBuffer[2], params);
 			switch(c) {
 				case 'c':	// Reset Device
 					ResetAttributes();
@@ -176,28 +176,28 @@ Console::AnsiEscFilter(const char c)
 					if (!parQty)
 						params[0] = 1;
 					//
-					mCursor -= mCanvas.Size().x*params[0];
+					_cursor -= _canvas.Size().x*params[0];
 					UpdateCursor();
 					break;
 				case 'B':	// [nB Cursor Down
 					if (!parQty)
 						params[0] = 1;
 					//
-					mCursor += mCanvas.Size().x*params[0];
+					_cursor += _canvas.Size().x*params[0];
 					UpdateCursor();
 					break;
 				case 'C':	// [nC Cursor Forward
 					if (!parQty)
 						params[0] = 1;
 					//
-					mCursor += params[0];
+					_cursor += params[0];
 					UpdateCursor();
 					break;
 				case 'D':	// [nD Cursor Backward
 					if (!parQty)
 						params[0] = 1;
 					//
-					mCursor -= params[0];
+					_cursor -= params[0];
 					UpdateCursor();
 					break;
 				case 'H':	// [y;xH Cursor Home
@@ -207,14 +207,14 @@ Console::AnsiEscFilter(const char c)
 						params[1] = 0;	// X
 					}
 					//
-					mCursor = mCanvas.Buffer() + mCanvas.Size().x*params[0] + params[1];
+					_cursor = _canvas.Buffer() + _canvas.Size().x*params[0] + params[1];
 					UpdateCursor();
 					break;
 				case 's':	// [s Save Cursor
-					mAnsiEscCursorPosStack.Push(mCursor);
+					_ansiCursorStack.Push(_cursor);
 					break;
 				case 'u':	// [u Unsave Cursor
-					mCursor = mAnsiEscCursorPosStack.Pop();
+					_cursor = _ansiCursorStack.Pop();
 					UpdateCursor();
 					break;
 				case 'J':	// [nJ
@@ -283,7 +283,7 @@ Console::AnsiEscFilter(const char c)
 					}
 					break;
 				default:		//the command was not recognized
-					char* p = mAnsiEscBuffer;
+					char* p = _ansiBuffer;
 					while(*p)
 						PutChar(*p++);
 					break;
@@ -297,46 +297,46 @@ Console::AnsiEscFilter(const char c)
 void
 Console::PutNewLine()
 {
-	if (mCursor > mCanvas.BufferEnd()-mCanvas.Size().x) {
+	if (_cursor > _canvas.BufferEnd()-_canvas.Size().x) {
 		Scroll();
 	}
 
-	const int count = mCanvas.Size().x - mCanvas.GetOffset(mCursor)%mCanvas.Size().x;
+	const int count = _canvas.Size().x - _canvas.GetOffset(_cursor)%_canvas.Size().x;
 
-	memsetw(mCursor, GetAttr(0), count);
-	mCursor += count;
+	memsetw(_cursor, GetAttr(0), count);
+	_cursor += count;
 
-	Invalidate(Rect(0, GetCursorPos().y-1, mCanvas.Size().x, 2));
+	Invalidate(Rect(0, GetCursorPos().y-1, _canvas.Size().x, 2));
 }
 
 void
 Console::PutTab()
 {
-	const int count = mTab - mCanvas.GetOffset(mCursor)%mTab;
-	if (mCursor+count > mCanvas.BufferEnd()-1) {
+	const int count = _tab - _canvas.GetOffset(_cursor)%_tab;
+	if (_cursor+count > _canvas.BufferEnd()-1) {
 		Scroll();
 	}
 	for(int i=0; i<count; i++) {
-		*mCursor++ = GetAttr(0);
+		*_cursor++ = GetAttr(0);
 	}
-	Invalidate(Rect(0, GetCursorPos().y-1, mCanvas.Size().x, 2));
+	Invalidate(Rect(0, GetCursorPos().y-1, _canvas.Size().x, 2));
 }
 
 void
 Console::PutReturn ()
 {
-	mCursor -= (((size_t)mCursor-(size_t)mCanvas.Buffer())/2)%mCanvas.Size().x;
+	_cursor -= (((size_t)_cursor-(size_t)_canvas.Buffer())/2)%_canvas.Size().x;
 }
 
 void
 Console::PutBackspace ()
 {
-	if ((char)(*(mCursor-1) & 0xFF) == '\0') {
-		while((char)(*(--mCursor) & 0xFF) == '\0') {
+	if ((char)(*(_cursor-1) & 0xFF) == '\0') {
+		while((char)(*(--_cursor) & 0xFF) == '\0') {
 		}
-		mCursor++;
+		_cursor++;
 	} else {
-		*(--mCursor) = GetAttr(0);
+		*(--_cursor) = GetAttr(0);
 		const Vec2d p = GetCursorPos();
 		Invalidate(Rect(p.x, p.y, 1, 1));
 	}
@@ -345,12 +345,12 @@ Console::PutBackspace ()
 void
 Console::PutChar (char c)
 {
-	if (mCursor < mCanvas.BufferEnd()-1) {
+	if (_cursor < _canvas.BufferEnd()-1) {
 		const Vec2d p = GetCursorPos();
-		*(mCursor++) = GetAttr(c);
+		*(_cursor++) = GetAttr(c);
 		Invalidate(Rect(p.x, p.y, 1, 1));
 	} else {
-		*(mCursor++) = GetAttr(c);
+		*(_cursor++) = GetAttr(c);
 		Scroll();
 	}
 }
@@ -467,10 +467,10 @@ Console::Redraw (const Rect& region)
 void
 Console::Scroll()
 {
-	memmove(mCanvas.Buffer(), mCanvas.Buffer()+mCanvas.Size().x, (mCanvas.Size().x*(mCanvas.Size().y-1))*sizeof(uint16_t));
-	mCursor -= mCanvas.Size().x;
-	for(int i=0; i<mCanvas.Size().x; i++) {
-		mCursor[i] = GetAttr(0);
+	memmove(_canvas.Buffer(), _canvas.Buffer()+_canvas.Size().x, (_canvas.Size().x*(_canvas.Size().y-1))*sizeof(uint16_t));
+	_cursor -= _canvas.Size().x;
+	for(int i=0; i<_canvas.Size().x; i++) {
+		_cursor[i] = GetAttr(0);
 	}
 	Invalidate();
 }

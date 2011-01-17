@@ -40,7 +40,7 @@ memsum(void* const s, size_t n)
 }
 
 void*
-memcpy(void* dest, const void* src, size_t count)
+memcpy(void* dest, const void* src, size_t qty)
 {
 	size_t* dq;
 	uint8_t* db;
@@ -49,20 +49,20 @@ memcpy(void* dest, const void* src, size_t count)
 
 	dq = (size_t*)dest;
 	sx = (const size_t*)src;
-	while(count >= sizeof(size_t)) {
+	while(qty >= sizeof(size_t)) {
 		*dq++ = *sx++;
-		count -= sizeof(size_t);
+		qty -= sizeof(size_t);
 	}
 	db = (uint8_t*)dq;
 	sb = (const uint8_t*)sx;
-	while(count--) {
+	while(qty--) {
 		*db++ = *sb++;
 	}
 	return dest;
 }
 
 void*
-memset(void* dest, uint8_t val, size_t count)
+memset(void* dest, uint8_t val, size_t qty)
 {
 	size_t* dq;
 	uint8_t* db;
@@ -72,56 +72,56 @@ memset(void* dest, uint8_t val, size_t count)
 		vx |= (vx << i);
 	}
 	dq = (size_t*)dest;
-	while(count >= sizeof(size_t)) {
+	while(qty >= sizeof(size_t)) {
 		*dq++ = vx;
-		count -= sizeof(size_t);
+		qty -= sizeof(size_t);
 	}
 	db = (uint8_t*)dq;
-	while(count--) {
+	while(qty--) {
 		*db++ = val;
 	}
 	return dest;
 }
 
 void*
-memsetw(void* dest, uint16_t val, size_t count)
+memsetw(void* dest, uint16_t val, size_t qty)
 {
 	uint16_t* d = (uint16_t*)dest;
-	while(count--) {
+	while(qty--) {
 		*d++ = val;
 	}
 	return dest;
 }
 
 void*
-memsetd(void* dest, uint32_t val, size_t count)
+memsetd(void* dest, uint32_t val, size_t qty)
 {
 	uint32_t* d = (uint32_t*)dest;
-	while(count--) {
+	while(qty--) {
 		*d++ = val;
 	}
 	return dest;
 }
 
 void*
-memzero(void* dest, size_t count)
+memzero(void* dest, size_t qty)
 {
 	size_t* dx;
 	uint8_t* db;
 	dx = (size_t*)dest;
-	while(count >= sizeof(size_t)) {
+	while(qty >= sizeof(size_t)) {
 		*dx++ = 0;
-		count -= sizeof(size_t);
+		qty -= sizeof(size_t);
 	}
 	db = (uint8_t*)dx;
-	while(count--) {
+	while(qty--) {
 		*db++ = 0;
 	}
 	return dest;
 }
 
 void*
-memmove(void* dest, const void* src, size_t count)
+memmove(void* dest, const void* src, size_t qty)
 {
 	size_t* dq;
 	const size_t* sx;
@@ -129,17 +129,17 @@ memmove(void* dest, const void* src, size_t count)
 	const uint8_t* sb;
 
 	if (dest < src) {
-		return memcpy(dest, src, count);
+		return memcpy(dest, src, qty);
 	}else if (dest > src) {
-		dq = (size_t*)((char*)dest + count);
-		sx = (const size_t*)((const char*)src + count);
-		while(count >= sizeof(size_t)) {
+		dq = (size_t*)((char*)dest + qty);
+		sx = (const size_t*)((const char*)src + qty);
+		while(qty >= sizeof(size_t)) {
 			*--dq = *--sx;
-			count -= sizeof(size_t);
+			qty -= sizeof(size_t);
 		}
 		db = (uint8_t*)dq;
 		sb = (const uint8_t*)sx;
-		while(count--) {
+		while(qty--) {
 			*--db = *--sb;
 		}
 		return dest;
