@@ -1,3 +1,10 @@
+#ifndef INC_LINKER_H
+#define INC_LINKER_H
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
+
 /* kernel */
 extern size_t __kernelStart;
 extern size_t __kernelEnd;
@@ -39,3 +46,4 @@ extern size_t __bssEnd;
 extern size_t __commonStart;
 extern size_t __commonEnd;
 
+#endif /* INC_LINKER_H */

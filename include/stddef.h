@@ -1,9 +1,13 @@
-#ifndef STDDEF_H
-#define STDDEF_H
+#ifndef INC_STDDEF_H
+#define INC_STDDEF_H
 
-//*******************************************************
-//  size_t
-//*******************************************************
+#if _MSC_VER > 1000
+	#pragma once
+#endif
+
+/********************************************************
+ *  size_t
+ *******************************************************/
 #if		TARGET == TARGET_X86
 	typedef unsigned int		size_t;
 	typedef signed int			ptrdiff_t;
@@ -23,18 +27,18 @@
 	#error "Platform not supported."
 #endif
 
-//*******************************************************
-//  NULL
-//*******************************************************
+/********************************************************
+ *  NULL
+ *******************************************************/
 #ifdef __cplusplus
 #	define NULL 0
 #else
 #	define NULL ((void*)0)
 #endif
 
-//*******************************************************
-//  StdDefs
-//*******************************************************
+/********************************************************
+ *  StdDefs
+ *******************************************************/
 #define offsetof(type, member) ((size_t)&(((type*)0)->member))
 #define _bit(val, i) ((size_t)(*(val)) & ((size_t)1 << (i)))
 #define _countof(arr) (sizeof(arr)/sizeof(arr[0]))
@@ -66,5 +70,5 @@
 #endif
 
 
-#endif // STDDEF_H
+#endif /* INC_STDDEF_H */
 

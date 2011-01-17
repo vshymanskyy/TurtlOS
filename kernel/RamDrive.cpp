@@ -1,5 +1,7 @@
 #include "RamDrive.h"
 
+#include <memory.h>
+
 RamDrive::RamDrive(ptr data, const size_t blocks) :
 	mData((char*) data), mBlocksCount(blocks) {
 }

@@ -1,5 +1,9 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef INC_STRING_H
+#define INC_STRING_H
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,11 +27,14 @@ int strcmp (const char *s1, const char *s2);
 int stricmp (const char *s1, const char *s2);
 int strncmp(const char* s1, const char* s2, int n);
 int strnicmp(const char* s1, const char* s2, int n);
-int vsnprintf(char* buffer, unsigned count, const char* format, va_list args);
-int snprintf(char* buffer, unsigned count, const char* format, ...);
+int vsnprintf(char* buffer, size_t count, const char* format, va_list args);
+int snprintf(char* buffer, size_t count, const char* format, ...);
+
+long strtol (const char *buf, char **endptr, int base);
+char *itoa (int value, char *buf, int base);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // STRING_H
+#endif /* INC_STRING_H */

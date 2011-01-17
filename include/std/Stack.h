@@ -1,6 +1,10 @@
 #ifndef _INC_Stack_H
 #define _INC_Stack_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 /// Represents a generic Stack (LIFO) with fixed size
 template <class T, unsigned SIZE>
 class Stack

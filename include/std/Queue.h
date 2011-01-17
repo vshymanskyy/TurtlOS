@@ -1,6 +1,10 @@
 #ifndef _INC_QUEUE_H
 #define _INC_QUEUE_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 /// Represents a generic circular (FIFO) index-based Queue with fixed size
 /// Recommendation: Use this Queue with SIZE = 2^n to get fast results
 template<class T, unsigned SIZE>

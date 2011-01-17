@@ -5,10 +5,10 @@ Arch		?= x86
 Build		?= Debug
 
 #GenMap		?= true
-CppGenAsm	?= true
+#CppGenAsm	?= true
 #Strip		?= true
 #BinOutput	?= true
-ObjDump		?= true
+#ObjDump	?= true
 
 #---------------------------------------------------------
 # BINARIES
@@ -38,8 +38,8 @@ endif
 INCLUDE		 = include
 BUILD		 = build
 DOCS		 = $(BUILD)/docs
-DEST		 = $(BUILD)/$(Arch)
-TEMP		 = $(BUILD)/temp/$(Arch)
+DEST		 = $(BUILD)/$(Build)/$(Arch)
+TEMP		 = $(BUILD)/temp/$(Build)/$(Arch)
 TEMP_ISO	 = $(TEMP).iso
 
 #---------------------------------------------------------
@@ -84,13 +84,14 @@ GRUBCONF	 = $(DEST)/grub.cfg
 IMAGE		 = $(DEST)/image.iso
 
 ASMFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.s")
+CFILES	     = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.c")
 CPPFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.cpp")
 HDRFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.h")
 INLFILES	 = $(shell find $(BUILDPATHS) ! -path "*.svn*" -a -name "*.inl")
 
 OUTFILES	 = $(patsubst %.s, $(TEMP)/%.b, $(ASMFILES))
-OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.obj, $(CPPFILES))
-DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.dep, $(CPPFILES))
+OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.obj, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.o, $(CFILES))
+DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.dep, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.d, $(CFILES))
 
 LINKFILES	 = $(OUTFILES) $(OBJFILES)
 
@@ -102,10 +103,11 @@ TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES
 CCFLAGS		 = -nostartfiles   \
 			   -nodefaultlibs  \
 			   -ffreestanding  \
-			   -fno-exceptions \
-			   -fno-rtti       \
 			   -fno-builtin    \
 			   -MMD -MP -MF $(@:.obj=.dep)
+			   
+CPPFLAGS	 = -fno-exceptions \
+			   -fno-rtti
  
 LDFLAGS		 = -nodefaultlibs
 ASFLAGS		 = -w+gnu-elf-extensions
@@ -141,8 +143,13 @@ CCFLAGS		+= -pedantic \
 			   -Wpointer-arith \
 			   -Wredundant-decls \
 			   -Wmissing-declarations \
-			   -Woverloaded-virtual \
+			   -Wno-variadic-macros \
 			   -g -fstack-protector-all
+
+CFLAGS		+= -std=c99
+
+CPPFLAGS	+= -Woverloaded-virtual
+
 DEFINES		+= -D DEBUG
 else ifeq ($(Build),Release)
 CCFLAGS		+= -O4 -fno-stack-protector
@@ -180,8 +187,10 @@ endif
 image: $(IMAGE)
 
 all:
-	$(MAKE) image Arch=x86
-	$(MAKE) image Arch=x86-64
+	$(MAKE) image Arch=x86 Build=Debug
+	$(MAKE) image Arch=x86 Build=Release
+	$(MAKE) image Arch=x86-64 Build=Debug
+	$(MAKE) image Arch=x86-64 Build=Release
 	
 tools: $(BIN2INL) $(MKINITRD)
 
@@ -204,9 +213,17 @@ endif
 $(TEMP)/%.obj: %.cpp $(INCLUDE)/$(GLOBALINC)
 	$(ECHO) Compiling $<
 	$(MKDIR) $(shell dirname $@)
-	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -o $@ -c $<
+	$(CC) $(CCFLAGS) $(CPPFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -o $@ -c $<
 ifdef CppGenAsm
-	$(CC) $(CCFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.obj=.lst) -o $(@:.obj=.lst2) -S $<
+	$(CC) $(CCFLAGS) $(CPPFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.obj=.lst) -o $(@:.obj=.lst2) -S $<
+endif
+
+$(TEMP)/%.o: %.c $(INCLUDE)/$(GLOBALINC)
+	$(ECHO) Compiling $<
+	$(MKDIR) $(shell dirname $@)
+	$(CC) $(CCFLAGS) $(CFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -o $@ -c $<
+ifdef CppGenAsm
+	$(CC) $(CCFLAGS) $(CFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.obj=.lst) -o $(@:.obj=.lst2) -S $<
 endif
 
 $(TEMP)/%.b: %.s

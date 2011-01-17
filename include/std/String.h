@@ -1,6 +1,10 @@
 #ifndef _INC_STRING_H
 #define _INC_STRING_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 /// An ANSI COW string, length is stored internally
 class String
 {

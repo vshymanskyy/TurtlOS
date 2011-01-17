@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 #ifdef DEBUG
 extern int SmartPtrGlobalCounter;
 #endif

@@ -1,5 +1,9 @@
-#ifndef _INC_PLATFORM_H
-#define _INC_PLATFORM_H
+#ifndef INC_PLATFORM_H
+#define INC_PLATFORM_H
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #define TARGET_X86 1
 #define TARGET_X86_64 2
@@ -58,4 +62,4 @@
 #define NORETURN __declspec(noreturn)
 #define NOINLINE __declspec(noinline)
 
-#endif  // _INC_PLATFORM_H
+#endif  /* INC_PLATFORM_H */

@@ -1,6 +1,10 @@
 #include "Console.h"
-#include <std/klib.h>
+
 #include <hal/portio.h>
+
+#include <string.h>
+#include <memory.h>
+#include <ctype.h>
 
 const char endl = '\n';
 const char esc = (char)0x1B;

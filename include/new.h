@@ -1,5 +1,5 @@
-#ifndef NEW_H
-#define NEW_H
+#ifndef INC_NEW_H
+#define INC_NEW_H
 
 #ifdef __cplusplus
 #include <stddef.h>
@@ -18,4 +18,4 @@ void operator delete[] (void* p);
 
 #endif
 
-#endif // NEW_H
+#endif /* INC_NEW_H */

@@ -1,6 +1,8 @@
 #include "CachedDrive.h"
 #include "DeviceManager.h"
 
+#include <memory.h>
+
 using namespace DreamDDM;
 
 namespace CachedDrive {

@@ -1,5 +1,5 @@
-#ifndef ASSERT_H
-#define ASSERT_H
+#ifndef INC_ASSERT_H
+#define INC_ASSERT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,4 +26,4 @@ void __attribute__((noreturn)) fatal_soft (const char *msg, const char *file, co
 }
 #endif
 
-#endif // ASSERT_H
+#endif /* INC_ASSERT_H */

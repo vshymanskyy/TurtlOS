@@ -1,6 +1,10 @@
 #ifndef POOL_H
 #define POOL_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 #include <assert.h>
 #include "Stack.h"
 

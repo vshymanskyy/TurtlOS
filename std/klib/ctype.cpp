@@ -1,4 +1,4 @@
-#include <std/klib.h>
+#include <ctype.h>
 
 enum {
 	_UPPER		= 0x1     // Upper case letter

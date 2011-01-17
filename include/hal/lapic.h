@@ -1,16 +1,24 @@
 #ifndef _INC_LAPIC_H
 #define _INC_LAPIC_H
 
-void lapicInit();
-void lapicStart();
-void lapicStartCpu(uint32_t id, uint32_t entry);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void lapicClearErrorStatus();
-void lapicSetBase(size_t addr);
-size_t lapicGetBase();
+	void lapicInit();
+	void lapicStart();
+	void lapicStartCpu(uint32_t id, uint32_t entry);
 
-uint32_t lapicGetID();
-uint32_t lapicReadErrorStatus();
+	void lapicClearErrorStatus();
+	void lapicSetBase(size_t addr);
+	size_t lapicGetBase();
+
+	uint32_t lapicGetID();
+	uint32_t lapicReadErrorStatus();
+
+#ifdef __cplusplus
+}
+#endif
 
 #include <../hal/common/lapic.inl>
 

@@ -27,4 +27,3 @@ VirtualFsDirData::FindDir(const String name)
 }
 
 }
-

@@ -2,6 +2,8 @@
 #include "Processors.h"
 #include "Console.h"
 
+#include <memory.h>
+
 #define IMPS_MAX_CPUS			0xFF
 #define IMPS_FPS_IMCRP_BIT		0x80
 #define IMPS_FPS_DEFAULT_MAX	7

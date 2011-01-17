@@ -1,8 +1,12 @@
 #ifndef _INC_Array_H
 #define _INC_Array_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 /// Represents a generic Array
-template<class T, unsigned SIZE>
+template <class T, unsigned SIZE>
 class Array {
 
 public:

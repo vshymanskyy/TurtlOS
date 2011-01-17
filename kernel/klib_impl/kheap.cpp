@@ -1,4 +1,4 @@
-#include <std/klib.h>
+#include <memory.h>
 #include "../Heap.h"
 
 Heap heap((void*)0x200000, 0x1000000);

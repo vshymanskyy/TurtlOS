@@ -1,5 +1,6 @@
 #include <std/String.h>
 #include <string.h>
+#include <memory.h>
 
 String
 String::Format(const char* format, ...)
@@ -135,6 +136,8 @@ String::EndsWith(const String& s) const
 String
 String::Substring(int offset, int count)
 {
+	argused(offset);
+	argused(count);
 	//TODO implement it
 	return "";
 }

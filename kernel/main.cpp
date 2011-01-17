@@ -11,7 +11,7 @@
 #include <hal/lapic.h>
 #include <hal/cpu.h>
 
-#include <std/HexDump.h>
+#include <std/Utils.h>
 
 #include "MultibootParser.h"
 #include "ImpsParser.h"
@@ -47,15 +47,13 @@ public:
 };
 
 int main() {
-
-	//DebugLogViewer lv;
-	//LogManager::Instance()->AddLogger(&lv);
+	/*DebugLogViewer lv;
+	LogManager::Instance()->AddLogger(&lv);
 
 	Log l ("main");
-
 	l() << "hello";
 
-	for(;;);
+	for(;;);*/
 
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(0, 0, 39, 25));
@@ -103,7 +101,6 @@ int main() {
 
 	Processors::Instance()->~Processors();
 	DeviceManager::Instance()->~DeviceManager();
-
 
 	delete console;
 	delete console2;

@@ -1,5 +1,9 @@
-#ifndef _H
-#define _H
+#ifndef INC__H
+#define INC__H
+
+#if _MSC_VER > 1000
+	#pragma once
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,4 +15,4 @@ extern "C" {
 }
 #endif
 
-#endif // _H
+#endif // INC__H

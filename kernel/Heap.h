@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef DEBUG
-	#include <std/klib.h>
+	#include <assert.h>
 	#define HeapHeadSig 0x96
 	#define HeapFootSig 0xB5
 

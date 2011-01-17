@@ -51,9 +51,16 @@
 
 #ifndef Delegate_H
 #define Delegate_H
+
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
+#include <memory.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //						Configuration options

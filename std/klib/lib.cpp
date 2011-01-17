@@ -1,8 +1,10 @@
+#include <string.h>
+#include <ctype.h>
+#include <memory.h>
+
 #ifdef TEST
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
-#include <ctype.h>
 #include <assert.h>
 #endif
 
@@ -17,19 +19,6 @@ static const signed char vals[] = {
 	-1, -1, -1, -1, -1, -1,
 	10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35
 };
-
-void*
-memrev(void* b, void* e)
-{
-	char* beg = (char*)b;
-	char* end = (char*)e;
-	while (end > beg) {
-		char tmp = *end;
-		*end-- = *beg;
-		*beg++ = tmp;
-	}
-	return b;
-}
 
 char*
 itoa(int value, char* buf, int base)

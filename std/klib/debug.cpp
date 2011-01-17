@@ -1,6 +1,7 @@
-#include <std/klib.h>
 #include <hal/cpu.h>
+
 #include <string.h>
+#include <memory.h>
 
 static
 void

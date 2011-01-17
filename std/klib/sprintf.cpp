@@ -1,7 +1,8 @@
 #include <string.h>
+#include <memory.h>
+
 static const char* symbSmall = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static const char* symbCapital = "0123456789abcdefghijklmnopqrstuvwxyz";
-
 
 static
 char*
@@ -37,8 +38,9 @@ putUnsigned (unsigned long long value, char* buf, long base, bool capt)
 }
 
 int
-vsnprintf (char* buffer, unsigned count, const char* format, va_list args)
+vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 {
+	// TODO: implement count handling
 	argused(count);
 	char* p = buffer;
 	for (; *format; format++) {

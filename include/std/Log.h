@@ -1,6 +1,10 @@
 #ifndef LOG_H
 #define LOG_H
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 #include <string.h>
 #include "String.h"
 #include "List.h"
@@ -57,10 +61,10 @@ private:
         int         pos;
         char        buff[__LOG_ENTRY_SIZE];
 
-        LogStreamData(const Log* log, LogLevel level)
+        LogStreamData(const Log* l, LogLevel lvl)
             : ref   (1)
-            , log   (log)
-            , level (level)
+            , log   (l)
+            , level (lvl)
             , pos   (0)
         {}
 

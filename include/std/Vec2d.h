@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef __cplusplus
+#error "This C++ header was included in C file"
+#endif
+
 /// Represents integer size or a point
 struct Vec2d
 {
