@@ -134,10 +134,10 @@ String::EndsWith(const String& s) const
 }
 
 String
-String::Substring(int offset, int count)
+String::Substring(int offset, int length)
 {
 	argused(offset);
-	argused(count);
+	argused(length);
 	//TODO implement it
 	return "";
 }
