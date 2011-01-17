@@ -1,4 +1,4 @@
-%include "hal/common/boot/linker.inc"
+%include "../../common/boot/linker.inc"
 
 MULTIBOOT_PAGE_ALIGN	equ 1<<0
 MULTIBOOT_MEMORY_INFO	equ 1<<1

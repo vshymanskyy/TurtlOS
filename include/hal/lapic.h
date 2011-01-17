@@ -20,6 +20,6 @@ extern "C" {
 }
 #endif
 
-#include <../hal/common/lapic.inl>
+#include INCLUDE_COMMON(../lib/hal,lapic.inl)
 
 #endif // _INC_LAPIC_H

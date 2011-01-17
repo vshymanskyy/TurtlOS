@@ -59,16 +59,16 @@ GENFILES	 = $(TARBALL) \
 			   cscope.*   \
 			   tags
 
-BUILDPATHS	 = hal/common  \
-			   hal/$(Arch) \
-			   kernel      \
-			   std
+BUILDPATHS	 = lib/hal/common   \
+			   lib/hal/$(Arch)  \
+			   lib/std          \
+			   lib/libc         \
+			   kernel
 
 TARPATHS	 = config      \
-			   hal         \
 			   include     \
 			   kernel      \
-			   std         \
+			   lib         \
 			   tools       \
 			   .git        \
 			   .settings
@@ -231,7 +231,7 @@ $(TEMP)/%.b: %.s
 	$(MKDIR) $(shell dirname $@)
 	$(AS) $(ASFLAGS) -i $(shell dirname $<)/ -o $@ $<
 
-$(WAKER): hal/$(Arch)/boot/waker.asm
+$(WAKER): lib/hal/$(Arch)/boot/waker.asm
 	$(ECHO) Assembling $<
 	$(AS) -i $(shell dirname $<)/ -o $@ $<
 

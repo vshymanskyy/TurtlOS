@@ -25,7 +25,7 @@ extern "C" {
 }
 #endif
 
-#include INCLUDE_COMMON(../hal,cpu.inl)
-#include INCLUDE_TARGET(../hal,cpu.inl)
+#include INCLUDE_COMMON(../lib/hal,cpu.inl)
+#include INCLUDE_TARGET(../lib/hal,cpu.inl)
 
 #endif  // _INC_CPU_H

@@ -8,6 +8,6 @@ extern "C" {
 
 }
 
-#include <../hal/common/atomic.inl>
+#include INCLUDE_COMMON(../lib/hal,atomic.inl)
 
 #endif  // _INC_ATOMIC_H

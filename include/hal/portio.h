@@ -22,6 +22,6 @@ extern "C" {
 }
 #endif
 
-#include <../hal/common/portio.inl>
+#include INCLUDE_COMMON(../lib/hal,portio.inl)
 
 #endif //_INC_PORTIO_H
