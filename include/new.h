@@ -16,6 +16,6 @@ void operator delete[] (void* p);
 	#define new new(__FILE__, __LINE__)
 #endif
 
-#endif
+#endif /* __cplusplus */
 
 #endif /* INC_NEW_H */

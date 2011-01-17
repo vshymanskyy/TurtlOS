@@ -5,19 +5,21 @@
 	#pragma once
 #endif
 
+#include <stdint.h>
+
 /********************************************************
  *  size_t
  *******************************************************/
 #if		TARGET == TARGET_X86
-	typedef unsigned int		size_t;
-	typedef signed int			ptrdiff_t;
+	typedef uint32_t			size_t;
+	typedef int32_t				ptrdiff_t;
 
 	#define SIZE_T_MIN			0
 	#define SIZE_T_MAX			0xffffffffUL
 	#define SIZE_T_SIZE			4
 #elif		TARGET == TARGET_X86_64
-	typedef unsigned long		size_t;
-	typedef signed long			ptrdiff_t;
+	typedef long unsigned int	size_t;
+	typedef long signed int		ptrdiff_t;
 
 	#define SIZE_T_MIN			0
 	#define SIZE_T_MAX			0xffffffffffffffffULL

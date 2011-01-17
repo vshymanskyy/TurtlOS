@@ -1,8 +1,8 @@
 #include <string.h>
 #include <memory.h>
 
-static const char* symbSmall = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-static const char* symbCapital = "0123456789abcdefghijklmnopqrstuvwxyz";
+static const char* symbCaps = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static const char* symbNorm = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 static
 char*
@@ -18,9 +18,15 @@ putSigned (long long value, char* buf, long base, bool capt, bool plus)
 		ud = value;
 	}
 	char* p = buf;
-	do {
-		*p++ = (capt?symbCapital:symbSmall)[ud%base];
-	} while (ud /= base);
+	if (capt) {
+		do {
+			*p++ = symbCaps[ud%base];
+		} while (ud /= base);
+	} else {
+		do {
+			*p++ = symbNorm[ud%base];
+		} while (ud /= base);
+	}
 	memrev(buf, p - 1);
 	return p;
 }
@@ -30,9 +36,15 @@ char*
 putUnsigned (unsigned long long value, char* buf, long base, bool capt)
 {
 	char* p = buf;
-	do {
-		*p++ = (capt?symbCapital:symbSmall)[value%base];
-	} while (value /= base);
+	if (capt) {
+		do {
+			*p++ = symbCaps[value%base];
+		} while (value /= base);
+	} else {
+		do {
+			*p++ = symbNorm[value%base];
+		} while (value /= base);
+	}
 	memrev(buf, p - 1);
 	return p;
 }
@@ -68,6 +80,7 @@ vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 			while (true) {
 				switch (*format++) {
 					case ' ': space = true; continue;
+					case '^': capt = true;  continue;
 					case '-': left = true;  continue;
 					case '+': plus = true;  continue;
 					case '0': zero = true;  continue;
@@ -144,9 +157,13 @@ vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 				sign = false;
 				goto integer;
 			case 'X': // Unsigned hexadecimal integer (capital letters)
+				base = 16;
 				capt = true;
+				sign = false;
+				goto integer;
 			case 'x': // Unsigned hexadecimal integer
 				base = 16;
+				capt = false;
 				sign = false;
 				goto integer;
 			case 'p': // Pointer address
@@ -207,10 +224,25 @@ vsnprintf (char* buffer, size_t count, const char* format, va_list args)
 						p = putUnsigned(value, p, base, capt);
 					}
 				}
-				ptrdiff_t curWidth = p - prevP;
-				width -= curWidth;
-				while (width-- > 0) {
-					*p++ = (zero)?'0': ' ';
+				if (width > 0) {
+					if (left) {
+						const ptrdiff_t curWidth = p - prevP;
+						width -= curWidth;
+						while (width-- > 0) {
+							*p++ = (zero)?'0': ' ';
+						}
+					} else {
+						const ptrdiff_t curWidth = p - prevP;
+						width -= curWidth;
+
+						if (width > 0) {
+							memmove(prevP+width, prevP, curWidth);
+							p += width;
+							while (width-- > 0) {
+								*prevP++ = (zero)?'0': ' ';
+							}
+						}
+					}
 				}
 				continue;
 			}

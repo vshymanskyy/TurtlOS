@@ -9,7 +9,7 @@ extern int SmartPtrGlobalCounter;
 extern Heap heap;
 #endif
 
-extern int main();
+int main();
 
 struct atexit_func {
 	void (*f)(void*);
@@ -109,10 +109,28 @@ entry()
 	debug_print("Kernel entry executed\n");
 	__stack_chk_guard_setup();
 
+	// Sanity checks
+	assert(sizeof(int8_t)  == 1);
+	assert(sizeof(int16_t) == 2);
+	assert(sizeof(int32_t) == 4);
+	assert(sizeof(int64_t) == 8);
+	assert(sizeof(uint8_t)  == 1);
+	assert(sizeof(uint16_t) == 2);
+	assert(sizeof(uint32_t) == 4);
+	assert(sizeof(uint64_t) == 8);
+#if TARGET == TARGET_X86
+	assert(sizeof(size_t) == 4);
+#elif TARGET == TARGET_X86_64
+	assert(sizeof(size_t) == 8);
+#else
+#error "Target not supported"
+#endif
+	debug_print("Sanity checks passed\n");
+
 	// Call all static constructors
 	for (size_t* call = &__ctorsStart; call < &__ctorsEnd; call++) {
 		if (*call) {
-			debug_print("Calling ctor 0x%08X\n", *call);
+			debug_print("Calling ctor 0x%p\n", *call);
 			((pproc_t)*call)();
 		}
 	}
@@ -123,7 +141,7 @@ entry()
 	// Call all static destructors
 	for (size_t* call = &__dtorsStart; call < &__dtorsEnd; call++) {
 		if (*call) {
-			debug_print("Calling dtor 0x%08X\n", *call);
+			debug_print("Calling dtor 0x%p\n", *call);
 			((pproc_t)*call)();
 		}
 	}

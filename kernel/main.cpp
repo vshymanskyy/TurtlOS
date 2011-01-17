@@ -47,14 +47,14 @@ public:
 };
 
 int main() {
-	/*DebugLogViewer lv;
+/*	DebugLogViewer lv;
 	LogManager::Instance()->AddLogger(&lv);
 
 	Log l ("main");
 	l() << "hello";
 
-	for(;;);*/
-
+	for(;;);
+*/
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(0, 0, 39, 25));
 

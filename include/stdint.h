@@ -9,7 +9,7 @@
 
 	#define __int8 char
 	#define __int16 short
-	#define __int32 long int
+	#define __int32 int
 	#define __int64 long long
 
 	typedef signed __int8		int8_t;

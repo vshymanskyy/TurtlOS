@@ -73,10 +73,9 @@ private:
         char* getPos() {
             return buff+pos;
         }
-
+#ifndef DEBUG
         static Pool <LogStreamData, __LOG_ENTRY_QTY> entries;
 
-/*
         void* operator new(size_t) {
             return entries.allocate();
         }
@@ -84,7 +83,7 @@ private:
         void operator delete(void* ptr) {
             entries.release(ptr);
         }
-*/
+#endif
     };
 
     LogStreamData* _data;
