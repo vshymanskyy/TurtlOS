@@ -67,7 +67,7 @@ int main() {
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;
 	}
-	(*console) << "Kernel:  TurtlOS " << __string(TARGET) << " (" << __COMPILER__ << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
+	(*console) << "Kernel:  TurtlOS " __string_def(TARGET_PATH) " (" << __COMPILER__ << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
 	if (char* cmdl = MultibootParser::Instance()->GetCommandLine()) {
 		(*console) << "Command: " << cmdl << endl;
 	}

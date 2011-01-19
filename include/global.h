@@ -16,8 +16,9 @@ typedef void     (*pproc_t)(void);
 typedef int      (*pfunc_t)(void);
 typedef void*    ptr;
 
-#define __concat(x,y) x ## y
-#define __string(x) #x
+#define __concat(x,y) x ## y		/*  */
+#define __string(x) #x				/*  */
+#define __string_def(x) __string(x)	/*  */
 
 #ifdef __cplusplus
 	extern class Console* console;

@@ -1,15 +1,12 @@
+#include "crt.h"
+
 #include <linker.h>
 #include <hal/cpu.h>
-#include "../Heap.h"
 
 #define MAX_ATEXIT_HANDLERS 128
 
-#ifdef DEBUG
-extern int SmartPtrGlobalCounter;
-extern Heap heap;
-#endif
-
 int main();
+extern "C" void entry();
 
 struct atexit_func {
 	void (*f)(void*);
@@ -22,25 +19,6 @@ static unsigned objectQty;
 
 void* __dso_handle;
 void* __stack_chk_guard;
-
-extern "C" {
-
-	int __cxa_atexit(void(*f)(void*), void* p, void* d);
-	void __cxa_finalize(void* d);
-	void __cxa_pure_virtual();
-	void __stack_chk_guard_setup();
-	void __stack_chk_fail();
-
-	void entry();
-
-	namespace __cxxabiv1 {
-		__extension__ typedef int __guard __attribute__((mode (__DI__)));
-
-		int __cxa_guard_acquire (__guard* g);
-		void __cxa_guard_release (__guard* g);
-		void __cxa_guard_abort (__guard*);
-	}
-}
 
 int
 __cxxabiv1::__cxa_guard_acquire (__guard* g)
@@ -103,13 +81,9 @@ __cxa_pure_virtual ()
 	fatal("pure virtual function called");
 }
 
-void
-entry()
+static void
+sanityChecks()
 {
-	debug_print("Kernel entry executed\n");
-	__stack_chk_guard_setup();
-
-	// Sanity checks
 	assert(sizeof(int8_t)  == 1);
 	assert(sizeof(int16_t) == 2);
 	assert(sizeof(int32_t) == 4);
@@ -119,13 +93,32 @@ entry()
 	assert(sizeof(uint32_t) == 4);
 	assert(sizeof(uint64_t) == 8);
 #if TARGET == TARGET_X86
-	assert(sizeof(size_t) == 4);
+	assert(sizeof(char)			== 1);
+	assert(sizeof(short)		== 2);
+	assert(sizeof(int)			== 4);
+	assert(sizeof(long)			== 4);
+	assert(sizeof(long long)	== 8);
+	assert(sizeof(size_t)		== 4);
 #elif TARGET == TARGET_X86_64
-	assert(sizeof(size_t) == 8);
+	assert(sizeof(char)			== 1);
+	assert(sizeof(short)		== 2);
+	assert(sizeof(int)			== 4);
+	assert(sizeof(long)			== 8);
+	assert(sizeof(long long)	== 8);
+	assert(sizeof(size_t)		== 8);
 #else
 #error "Target not supported"
 #endif
 	debug_print("Sanity checks passed\n");
+}
+
+void
+entry()
+{
+	debug_print("Kernel entry executed\n");
+	__stack_chk_guard_setup();
+
+	sanityChecks();
 
 	// Call all static constructors
 	for (size_t* call = &__ctorsStart; call < &__ctorsEnd; call++) {
@@ -145,15 +138,6 @@ entry()
 			((pproc_t)*call)();
 		}
 	}
-/*
-	#ifdef DEBUG
-	if (SmartPtrGlobalCounter != 0) {
-		debug_print("CHECK SMART POINTERS, %d OBJECTS LEFT\n", SmartPtrGlobalCounter);
-	} else if (!heap.IsEmpty()) {
-		debug_print("MEMORY LEAKS:\n");
-		heap.DumpDebug();
-	}
-	#endif
-*/
+
 	cpuStop();
 }

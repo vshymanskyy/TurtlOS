@@ -25,11 +25,11 @@ RMDIR		 = rm -rf
 MKDIR		 = mkdir -p
 
 ifeq ($(Arch),x86)
-EM			 = qemu
-GDB			 = gdb
+	EM			 = qemu
+	GDB			 = gdb
 else ifeq ($(Arch),x86-64)
-EM			 = qemu-system-x86_64
-GDB			 = x86_64-linux-gnu-gdb
+	EM			 = qemu-system-x86_64
+	GDB			 = x86_64-linux-gnu-gdb
 endif
 
 #---------------------------------------------------------
@@ -115,46 +115,48 @@ EMFLAGS		 = -m 64 -smp 6 -boot d
 
 #----- Platform-dependent --------------------------------
 ifeq ($(Arch),x86)
-ASFLAGS		+= -f elf32
-CCFLAGS		+= -m32
-LDFLAGS		+= -m elf_i386
-DEFINES		+= -D __x86
+	ASFLAGS		+= -f elf32
+	CCFLAGS		+= -m32
+	LDFLAGS		+= -m elf_i386
+	DEFINES		+= -D __x86
 else ifeq ($(Arch),x86-64)
-ASFLAGS		+= -f elf64
-CCFLAGS		+= -m64
-LDFLAGS		+= -m elf_x86_64
-DEFINES		+= -D __x86_64
+	ASFLAGS		+= -f elf64
+	CCFLAGS		+= -m64
+	LDFLAGS		+= -m elf_x86_64
+	DEFINES		+= -D __x86_64
 else
-$(error Target platform '$(Arch)' not supported)
+	$(error Target platform '$(Arch)' not supported)
 endif
 
 #----- Build type ----------------------------------------
 ifeq ($(Build),Debug)
-CCFLAGS		+= -pedantic \
-			   -W \
-			   -Wall \
-			   -Wextra \
-			   -Wshadow \
-			   -Winline \
-			   -Wconversion \
-			   -Wcast-align \
-			   -Wno-long-long \
-			   -Wwrite-strings \
-			   -Wpointer-arith \
-			   -Wredundant-decls \
-			   -Wmissing-declarations \
-			   -Wno-variadic-macros \
-			   -g -fstack-protector-all
-
-CFLAGS		+= -std=c99
-
-CPPFLAGS	+= -Woverloaded-virtual
-
-DEFINES		+= -D DEBUG
+	CCFLAGS		+= -pedantic \
+				   -W \
+				   -Wall \
+				   -Wvla \
+				   -Wextra \
+				   -Wshadow \
+				   -Winline \
+				   -Wconversion \
+				   -Wcast-align \
+				   -Wno-long-long \
+				   -Wwrite-strings \
+				   -Wpointer-arith \
+				   -Wredundant-decls \
+				   -Wmissing-declarations \
+				   -Wunsafe-loop-optimizations \
+				   -Wno-variadic-macros \
+				   -g -fstack-protector-all
+	
+	CFLAGS		+= -std=c99
+	
+	CPPFLAGS	+= -Woverloaded-virtual
+	
+	DEFINES		+= -D DEBUG
 else ifeq ($(Build),Release)
-CCFLAGS		+= -O4 -fno-stack-protector
-LDFLAGS		+= -O4 -x -X
-DEFINES		+= -D RELEASE
+	CCFLAGS		+= -O4 -fno-stack-protector
+	LDFLAGS		+= -O4 -x -X
+	DEFINES		+= -D RELEASE
 ifeq ($(Arch),x86)
 	CCFLAGS		+= -mregparm=3
 endif
