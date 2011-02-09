@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+	void cpuInit();
+
 	int cpuBcdToInt(const uint8_t bcd);
 	uint8_t cpuIntToBcd(const int i);
 	void cpuDisableInterrupts();

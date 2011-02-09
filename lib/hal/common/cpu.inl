@@ -92,7 +92,7 @@ inline
 void
 cpuSetMSR(uint32_t msr, uint64_t val)
 {
-	uint32_t hi = uint32_t(val >> 32);
+	uint32_t hi = (uint32_t)(val >> 32);
 	uint32_t lo = val & 0xFFFFFFFF;
 	asm("wrmsr"::"a"(lo),"d"(hi),"c"(msr));
 }

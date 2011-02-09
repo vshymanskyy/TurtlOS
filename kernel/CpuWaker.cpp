@@ -50,6 +50,10 @@ CpuWaker::StartCpu(uint32_t lapicId)
 	const bool locked = _lock.Wait(10000000);
 	_lock.Unlock();
 	return locked;
+	
+	//_lock.Lock();
+	//_lock.Unlock();
+	//return true;
 }
 
 void

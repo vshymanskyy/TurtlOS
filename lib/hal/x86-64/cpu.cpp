@@ -44,37 +44,6 @@ struct IdtEntry {
 	uint32_t reserved1;
 } PACKED;
 
-/// Task state segment entry
-struct TssEntry {
-	uint32_t prev_tss; // The previous TSS
-	uint32_t esp0; // The stack pointer to load when we change to kernel mode.
-	uint32_t ss0; // The stack segment to load when we change to kernel mode.
-	uint32_t esp1; // Unused...
-	uint32_t ss1;
-	uint32_t esp2;
-	uint32_t ss2;
-	uint32_t cr3;
-	uint32_t eip;
-	uint32_t eflags;
-	uint32_t eax;
-	uint32_t ecx;
-	uint32_t edx;
-	uint32_t ebx;
-	uint32_t esp;
-	uint32_t ebp;
-	uint32_t esi;
-	uint32_t edi;
-	uint32_t es; // The value to load into ES when we change to kernel mode.
-	uint32_t cs; // The value to load into CS when we change to kernel mode.
-	uint32_t ss; // The value to load into SS when we change to kernel mode.
-	uint32_t ds; // The value to load into DS when we change to kernel mode.
-	uint32_t fs; // The value to load into FS when we change to kernel mode.
-	uint32_t gs; // The value to load into GS when we change to kernel mode.
-	uint32_t ldt; // Unused...
-	uint16_t trap;
-	uint16_t iomap_base;
-} PACKED;
-
 union CpuIdRegister {
 	uint32_t value;
 	uint16_t words[2];
@@ -87,44 +56,115 @@ struct CpuIdResult {
 
 union ControlRegister0 {
 	struct __cr0_bitfield {
-		size_t PE :1, MP :1, EM :1, TS :1, ET :1, NE :1, reserved0 :10, WP :1, reserved1 :1, AM :1, reserved2 :10, NW :1, CD :1, PG :1;
+		uint64_t
+			PE			:1,
+			MP			:1,
+			EM			:1,
+			TS			:1,
+			ET			:1,
+			NE			:1,
+			reserved0	:10,
+			WP			:1,
+			reserved1	:1,
+			AM			:1,
+			reserved2	:10,
+			NW			:1,
+			CD			:1,
+			PG			:1;
 	};
-	size_t value;
+	uint64_t value;
 } PACKED;
 
 union ControlRegister3 {
 	struct __cr3_bitfield {
-		size_t reserved :3, WriteThough :1, CacheDisable :1;
+		uint64_t
+			reserved0	:3,
+			writethough	:1,
+			disable		:1;
 	};
-	size_t value;
+	uint64_t value;
 } PACKED;
 
 union ControlRegister4 {
 	struct __cr4_bitfield {
-		size_t VME :1, PVI :1, TSD :1, DE :1, PSE :1, PAE :1, MCE :1, PGE :1, PCE :1, OSFXSR :1, OSXMMEXCPT :1, reserved :2, VMXE :1, SMXE :1;
+		uint64_t
+			VME			:1,
+			PVI			:1,
+			TSD			:1,
+			DE			:1,
+			PSE			:1,
+			PAE			:1,
+			MCE			:1,
+			PGE			:1,
+			PCE			:1,
+			OSFXSR		:1,
+			OSXMMEXCPT	:1,
+			reserved0	:2,
+			VMXE		:1,
+			SMXE		:1;
 	};
-	size_t value;
+	uint64_t value;
 } PACKED;
 
 union PagePml4Entry {
 	struct __pml4_entry_bitfield {
-		uint64_t present :1, writable :1, user :1, writethough :1, cache_disable :1, accessed :1, ign :1, mbz :2, avl :3, address :40, avaliable :11, nx :1;
+		uint64_t
+			present		:1,
+			writable	:1,
+			user		:1,
+			writethough	:1,
+			cache_disable :1,
+			accessed	:1,
+			ign			:1,
+			mbz			:2,
+			avl			:3,
+			address		:40,
+			avaliable	:11,
+			nx			:1;
 	};
-	uint64_t Value;
+	uint64_t value;
 } PACKED;
 
 union PagePdpEntry {
 	struct __pdp_entry_bitfield {
-		uint64_t present :1, writable :1, user :1, writethough :1, cache_disable :1, accessed :1, ign :1, big :1, mbz :1, avl :3, address :40, avaliable :11, nx :1;
+		uint64_t
+			present		:1,
+			writable	:1,
+			user		:1,
+			writethough	:1,
+			cache_disable :1,
+			accessed	:1,
+			ign			:1,
+			big			:1,
+			mbz			:1,
+			avl			:3,
+			address		:40,
+			avaliable	:11,
+			nx			:1;
 	};
-	uint64_t Value;
+	uint64_t value;
 } PACKED;
 
 union PagePdEntry {
 	struct __pd_entry_bitfield {
-		uint64_t present :1, writable :1, user :1, writethough :1, cache_disable :1, accessed :1, dirty :1, big :1, global :1, avl :3, pat :1, mbz :8, address :31, avaliable :11, nx :1;
+		uint64_t
+			present		:1,
+			writable	:1,
+			user		:1,
+			writethough	:1,
+			cache_disable :1,
+			accessed	:1,
+			dirty		:1,
+			big			:1,
+			global		:1,
+			avl			:3,
+			pat			:1,
+			mbz			:8,
+			address		:31,
+			avaliable	:11,
+			nx			:1;
 	};
-	uint64_t Value;
+	uint64_t value;
 } PACKED;
 
 END_PACKED_REGION
