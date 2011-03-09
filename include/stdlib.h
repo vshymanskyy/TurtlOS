@@ -17,7 +17,7 @@ void *aligned_alloc (size_t size, size_t alignment);
 void aligned_free (void *ptr);
 
 
-void abort();
+void __attribute__((noreturn)) abort();
 
 
 #ifdef __cplusplus

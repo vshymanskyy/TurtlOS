@@ -1,7 +1,7 @@
 #include <hal/cpu.h>
 
 #include <string.h>
-#include <memory.h>
+#include <stdio.h>
 
 static
 void
@@ -22,7 +22,6 @@ debug_putc (const char c)
 	}
 }
 
-static
 void
 debug_puts (const char* s)
 {

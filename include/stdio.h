@@ -9,10 +9,7 @@
 extern "C" {
 #endif
 
-struct __IO_FILE {
-
-};
-typedef __IO_FILE* FILE;
+typedef void* FILE;
 
 FILE* fopen(const char* fn, const char*mode);
 void fclose(FILE* f);
