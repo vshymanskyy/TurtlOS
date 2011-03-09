@@ -1,7 +1,7 @@
 #include <std/Utils.h>
 
 #include <ctype.h>
-#include <string.h>
+#include <stdio.h>
 
 void
 hexdump(const void* data, size_t length, unsigned columnsMask)

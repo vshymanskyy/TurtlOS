@@ -19,6 +19,8 @@ void aligned_free (void *ptr);
 
 void __attribute__((noreturn)) abort();
 
+long strtol (const char *buf, char **endptr, int base);
+char *itoa (int value, char *buf, int base);
 
 #ifdef __cplusplus
 }

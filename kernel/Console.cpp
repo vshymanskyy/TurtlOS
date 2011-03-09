@@ -3,7 +3,7 @@
 #include <hal/portio.h>
 
 #include <string.h>
-#include <memory.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 const char endl = '\n';

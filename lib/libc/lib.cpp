@@ -1,6 +1,6 @@
 #include <string.h>
 #include <ctype.h>
-#include <memory.h>
+#include <stdlib.h>
 
 #ifdef TEST
 #include <stdlib.h>

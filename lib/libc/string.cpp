@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctype.h>
 
 char*
@@ -259,15 +260,5 @@ strtok (char* s1, const char* s2)
 		++tmp;
 	}
 	return (tmp = NULL);
-}
-
-int
-snprintf(char* buffer, size_t length, const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int result = vsnprintf(buffer, length, format, args);
-	va_end(args);
-	return result;
 }
 

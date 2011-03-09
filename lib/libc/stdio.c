@@ -10,6 +10,16 @@ void fclose(FILE* f)
 }
 
 int
+snprintf(char* buffer, size_t length, const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int result = vsnprintf(buffer, length, format, args);
+	va_end(args);
+	return result;
+}
+
+int
 printf (const char* format, ...)
 {
 	static char buffer[1024];

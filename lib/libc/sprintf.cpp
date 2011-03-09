@@ -1,5 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <memory.h>
 
 static const char* symbCaps = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static const char* symbNorm = "0123456789abcdefghijklmnopqrstuvwxyz";

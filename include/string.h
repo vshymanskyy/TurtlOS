@@ -27,11 +27,6 @@ int strcmp (const char *s1, const char *s2);
 int stricmp (const char *s1, const char *s2);
 int strncmp(const char* s1, const char* s2, int n);
 int strnicmp(const char* s1, const char* s2, int n);
-int vsnprintf(char* buffer, size_t length, const char* format, va_list args);
-int snprintf(char* buffer, size_t qty, const char* format, ...);
-
-long strtol (const char *buf, char **endptr, int base);
-char *itoa (int value, char *buf, int base);
 
 /********************************************************
 *  Operations
