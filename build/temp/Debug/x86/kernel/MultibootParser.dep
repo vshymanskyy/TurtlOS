@@ -1,0 +1,20 @@
+build/temp/Debug/x86/kernel/MultibootParser.obj: \
+ kernel/MultibootParser.cpp include/global.h include/platform.h \
+ include/stdint.h include/stddef.h include/stdarg.h include/assert.h \
+ include/new.h kernel/MultibootParser.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/MultibootParser.h:

@@ -1,0 +1,20 @@
+build/temp/Debug/x86/lib/std/MemoryLeakDetector.obj: \
+ lib/std/MemoryLeakDetector.cpp include/global.h include/platform.h \
+ include/stdint.h include/stddef.h include/stdarg.h include/assert.h \
+ include/new.h include/std/MemoryLeakDetector.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+include/std/MemoryLeakDetector.h:

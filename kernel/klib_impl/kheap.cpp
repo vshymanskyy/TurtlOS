@@ -1,4 +1,5 @@
-#include <memory.h>
+#include <stdlib.h>
+#include <string.h>
 #include "../Heap.h"
 
 Heap heap((void*)0x200000, 0x1000000);
@@ -9,21 +10,11 @@ free(void* p)
 	heap.Free(p);
 }
 
-#ifdef DEBUG
-void*
-malloc_debug(size_t size, const char* file, int line)
-{
-	return heap.AllocateDebug(size, file, line);
-}
-#else
-
 void*
 malloc(size_t size)
 {
 	return heap.Allocate(size);
 }
-#endif
-
 
 void*
 mallocat(void* p ,size_t size)

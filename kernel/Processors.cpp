@@ -3,6 +3,7 @@
 #include "Console.h"
 #include <hal/lapic.h>
 #include <hal/cpu.h>
+#include <stdlib.h>
 
 CpuDesc::CpuDesc()
 	: lapicId (-1)

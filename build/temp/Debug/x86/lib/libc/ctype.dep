@@ -1,0 +1,19 @@
+build/temp/Debug/x86/lib/libc/ctype.obj: lib/libc/ctype.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h include/ctype.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+include/ctype.h:

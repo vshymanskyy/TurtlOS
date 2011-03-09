@@ -101,6 +101,7 @@ TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES
 # General FLAGS
 #---------------------------------------------------------
 CCFLAGS		 = -nostartfiles   \
+			   -I include/std  \
 			   -nodefaultlibs  \
 			   -ffreestanding  \
 			   -fno-builtin    \

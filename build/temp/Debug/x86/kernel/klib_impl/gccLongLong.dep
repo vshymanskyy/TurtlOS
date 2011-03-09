@@ -1,0 +1,18 @@
+build/temp/Debug/x86/kernel/klib_impl/gccLongLong.obj: \
+ kernel/klib_impl/gccLongLong.cpp include/global.h include/platform.h \
+ include/stdint.h include/stddef.h include/stdarg.h include/assert.h \
+ include/new.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:

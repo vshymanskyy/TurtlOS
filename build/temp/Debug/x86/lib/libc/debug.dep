@@ -1,0 +1,27 @@
+build/temp/Debug/x86/lib/libc/debug.obj: lib/libc/debug.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h include/hal/cpu.h \
+ include/../lib/hal/common/cpu.inl include/../lib/hal/x86/cpu.inl \
+ include/string.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+include/hal/cpu.h:
+
+include/../lib/hal/common/cpu.inl:
+
+include/../lib/hal/x86/cpu.inl:
+
+include/string.h:

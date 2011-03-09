@@ -9,6 +9,8 @@
 #error "This C++ header was included in C file"
 #endif
 
+#include <stddef.h>
+
 /// An ANSI COW string, length is stored internally
 class String
 {

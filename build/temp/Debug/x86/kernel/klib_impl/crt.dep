@@ -1,0 +1,29 @@
+build/temp/Debug/x86/kernel/klib_impl/crt.obj: kernel/klib_impl/crt.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h kernel/klib_impl/crt.h \
+ include/linker.h include/hal/cpu.h include/../lib/hal/common/cpu.inl \
+ include/../lib/hal/x86/cpu.inl
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/klib_impl/crt.h:
+
+include/linker.h:
+
+include/hal/cpu.h:
+
+include/../lib/hal/common/cpu.inl:
+
+include/../lib/hal/x86/cpu.inl:

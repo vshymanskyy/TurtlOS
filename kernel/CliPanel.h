@@ -37,7 +37,7 @@ public:
 		int index = 0;
 		for(List<CliWindow*>::It it = _children.First(); it != _children.End(); ++it) {
 			if (_children[it] == win) {
-				_children.RemoveAt(it);
+				_children.Remove(it);
 			}
 			index++;
 		}

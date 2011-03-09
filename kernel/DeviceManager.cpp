@@ -9,8 +9,8 @@ DeviceManager* DeviceManager::Instance() {
 }
 
 DeviceManager::~DeviceManager() {
-	_devices.DeleteAll();
-	_listeners.DeleteAll();
+// TODO: _devices.DeleteAll();
+	// TODO: 	_listeners.DeleteAll();
 }
 
 bool DeviceManager::RegisterDevice(iDevice* device) {
@@ -21,7 +21,8 @@ bool DeviceManager::RegisterDevice(iDevice* device) {
 }
 
 bool DeviceManager::UnregisterDevice(iDevice* device) {
-	_devices.RemoveAt(_devices.FindFirst(device));
+	DeviceList::It dev = _devices.FindAfter(_devices.First(), device);
+	_devices.Remove(dev);
 	for (ListenerList::It it = _listeners.First(); it != _listeners.End(); ++it)
 		_listeners[it]->OnDriverUnregistered(device);
 	return true;
@@ -35,7 +36,8 @@ bool DeviceManager::RegisterListener(Listener* lsn) {
 }
 
 bool DeviceManager::UnregisterListener(Listener* lsn) {
-	_listeners.RemoveAt(_listeners.FindFirst(lsn));
+	ListenerList::It it = _listeners.FindAfter(_listeners.First(), lsn);
+	_listeners.Remove(it);
 	return true;
 }
 

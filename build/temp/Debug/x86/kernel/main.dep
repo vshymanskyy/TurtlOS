@@ -1,0 +1,118 @@
+build/temp/Debug/x86/kernel/main.obj: kernel/main.cpp include/global.h \
+ include/platform.h include/stdint.h include/stddef.h include/stdarg.h \
+ include/assert.h include/new.h kernel/Console.h include/std/Stack.h \
+ kernel/CliWindow.h include/std/Vec2d.h include/std/Rect.h \
+ include/std/Vec2d.h include/std/List.h include/std/Helpers.h \
+ include/std/String.h kernel/Canvas.h kernel/CliDesktop.h \
+ kernel/CliPanel.h include/hal/portio.h \
+ include/../lib/hal/common/portio.inl kernel/CliFrame.h \
+ kernel/DeviceManager.h kernel/iDevice.h kernel/iDevFileSystem.h \
+ kernel/iDevDrive.h kernel/VirtualFs.h include/std/SmartPtr.h \
+ kernel/RamDrive.h kernel/InitrdFs.h include/hal/lapic.h \
+ include/../lib/hal/common/lapic.inl include/hal/cpu.h \
+ include/../lib/hal/common/cpu.inl include/../lib/hal/x86/cpu.inl \
+ include/std/Utils.h kernel/MultibootParser.h kernel/ImpsParser.h \
+ kernel/Processors.h include/std/Array.h kernel/Spinlock.h \
+ include/hal/atomic.h include/../lib/hal/common/atomic.inl kernel/Heap.h \
+ include/std/Log.h include/stdlib.h include/stdio.h \
+ include/std/PoolAlloc.h include/std/Pool.h include/std/Stack.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/Console.h:
+
+include/std/Stack.h:
+
+kernel/CliWindow.h:
+
+include/std/Vec2d.h:
+
+include/std/Rect.h:
+
+include/std/Vec2d.h:
+
+include/std/List.h:
+
+include/std/Helpers.h:
+
+include/std/String.h:
+
+kernel/Canvas.h:
+
+kernel/CliDesktop.h:
+
+kernel/CliPanel.h:
+
+include/hal/portio.h:
+
+include/../lib/hal/common/portio.inl:
+
+kernel/CliFrame.h:
+
+kernel/DeviceManager.h:
+
+kernel/iDevice.h:
+
+kernel/iDevFileSystem.h:
+
+kernel/iDevDrive.h:
+
+kernel/VirtualFs.h:
+
+include/std/SmartPtr.h:
+
+kernel/RamDrive.h:
+
+kernel/InitrdFs.h:
+
+include/hal/lapic.h:
+
+include/../lib/hal/common/lapic.inl:
+
+include/hal/cpu.h:
+
+include/../lib/hal/common/cpu.inl:
+
+include/../lib/hal/x86/cpu.inl:
+
+include/std/Utils.h:
+
+kernel/MultibootParser.h:
+
+kernel/ImpsParser.h:
+
+kernel/Processors.h:
+
+include/std/Array.h:
+
+kernel/Spinlock.h:
+
+include/hal/atomic.h:
+
+include/../lib/hal/common/atomic.inl:
+
+kernel/Heap.h:
+
+include/std/Log.h:
+
+include/stdlib.h:
+
+include/stdio.h:
+
+include/std/PoolAlloc.h:
+
+include/std/Pool.h:
+
+include/std/Stack.h:

@@ -1,0 +1,72 @@
+build/temp/Debug/x86/kernel/Processors.obj: kernel/Processors.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h kernel/Processors.h \
+ include/std/List.h include/std/Helpers.h include/std/Array.h \
+ kernel/Spinlock.h include/hal/atomic.h \
+ include/../lib/hal/common/atomic.inl kernel/CpuWaker.h \
+ include/std/Delegate.h kernel/Console.h include/std/Stack.h \
+ kernel/CliWindow.h include/std/Vec2d.h include/std/Rect.h \
+ include/std/Vec2d.h include/std/String.h kernel/Canvas.h \
+ include/hal/lapic.h include/../lib/hal/common/lapic.inl \
+ include/hal/cpu.h include/../lib/hal/common/cpu.inl \
+ include/../lib/hal/x86/cpu.inl include/stdlib.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/Processors.h:
+
+include/std/List.h:
+
+include/std/Helpers.h:
+
+include/std/Array.h:
+
+kernel/Spinlock.h:
+
+include/hal/atomic.h:
+
+include/../lib/hal/common/atomic.inl:
+
+kernel/CpuWaker.h:
+
+include/std/Delegate.h:
+
+kernel/Console.h:
+
+include/std/Stack.h:
+
+kernel/CliWindow.h:
+
+include/std/Vec2d.h:
+
+include/std/Rect.h:
+
+include/std/Vec2d.h:
+
+include/std/String.h:
+
+kernel/Canvas.h:
+
+include/hal/lapic.h:
+
+include/../lib/hal/common/lapic.inl:
+
+include/hal/cpu.h:
+
+include/../lib/hal/common/cpu.inl:
+
+include/../lib/hal/x86/cpu.inl:
+
+include/stdlib.h:

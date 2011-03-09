@@ -1,0 +1,40 @@
+build/temp/Debug/x86/kernel/InitrdFs.obj: kernel/InitrdFs.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h kernel/InitrdFs.h \
+ kernel/iDevFileSystem.h kernel/iDevDrive.h kernel/iDevice.h \
+ include/std/String.h kernel/VirtualFs.h include/std/List.h \
+ include/std/Helpers.h include/std/SmartPtr.h kernel/DeviceManager.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/InitrdFs.h:
+
+kernel/iDevFileSystem.h:
+
+kernel/iDevDrive.h:
+
+kernel/iDevice.h:
+
+include/std/String.h:
+
+kernel/VirtualFs.h:
+
+include/std/List.h:
+
+include/std/Helpers.h:
+
+include/std/SmartPtr.h:
+
+kernel/DeviceManager.h:

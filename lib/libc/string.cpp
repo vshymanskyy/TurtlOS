@@ -1,5 +1,5 @@
 #include <string.h>
-#include <memory.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 char*
@@ -188,7 +188,7 @@ strpadr (char* s, const size_t fl, const char c)
 	return s;
 }
 
-bool
+int
 strlike (char* str, char* mask)
 {
 	if (!(str && mask)) {

@@ -1,0 +1,25 @@
+build/temp/Debug/x86/kernel/klib_impl/kheap.obj: \
+ kernel/klib_impl/kheap.cpp include/global.h include/platform.h \
+ include/stdint.h include/stddef.h include/stdarg.h include/assert.h \
+ include/new.h include/stdlib.h include/string.h \
+ kernel/klib_impl/../Heap.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+include/stdlib.h:
+
+include/string.h:
+
+kernel/klib_impl/../Heap.h:

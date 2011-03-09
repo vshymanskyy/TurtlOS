@@ -1,0 +1,54 @@
+build/temp/Debug/x86/kernel/DeviceManager.obj: kernel/DeviceManager.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h kernel/DeviceManager.h \
+ include/std/List.h include/std/Helpers.h kernel/iDevice.h \
+ include/std/String.h kernel/iDevFileSystem.h kernel/iDevDrive.h \
+ kernel/VirtualFs.h include/std/SmartPtr.h kernel/Console.h \
+ include/std/Stack.h kernel/CliWindow.h include/std/Vec2d.h \
+ include/std/Rect.h include/std/Vec2d.h kernel/Canvas.h
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/DeviceManager.h:
+
+include/std/List.h:
+
+include/std/Helpers.h:
+
+kernel/iDevice.h:
+
+include/std/String.h:
+
+kernel/iDevFileSystem.h:
+
+kernel/iDevDrive.h:
+
+kernel/VirtualFs.h:
+
+include/std/SmartPtr.h:
+
+kernel/Console.h:
+
+include/std/Stack.h:
+
+kernel/CliWindow.h:
+
+include/std/Vec2d.h:
+
+include/std/Rect.h:
+
+include/std/Vec2d.h:
+
+kernel/Canvas.h:

@@ -1,17 +1,7 @@
 #include <new.h>
-#include <memory.h>
+#include <stdlib.h>
 
 #undef new
-
-#ifdef DEBUG
-void* operator new (size_t size, const char* file, int line) {
-	return malloc_debug(size, file, line);
-}
-
-void* operator new[] (size_t size, const char* file, int line) {
-	return malloc_debug(size, file, line);
-}
-#endif
 
 void* operator new (size_t size) {
 	return malloc(size);

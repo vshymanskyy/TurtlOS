@@ -1,0 +1,79 @@
+build/temp/Debug/x86/kernel/CpuWaker.obj: kernel/CpuWaker.cpp \
+ include/global.h include/platform.h include/stdint.h include/stddef.h \
+ include/stdarg.h include/assert.h include/new.h kernel/CpuWaker.h \
+ kernel/Spinlock.h include/hal/atomic.h \
+ include/../lib/hal/common/atomic.inl include/std/Delegate.h \
+ kernel/DeviceManager.h include/std/List.h include/std/Helpers.h \
+ kernel/iDevice.h include/std/String.h kernel/iDevFileSystem.h \
+ kernel/iDevDrive.h kernel/VirtualFs.h include/std/SmartPtr.h \
+ kernel/Console.h include/std/Stack.h kernel/CliWindow.h \
+ include/std/Vec2d.h include/std/Rect.h include/std/Vec2d.h \
+ kernel/Canvas.h include/hal/lapic.h include/../lib/hal/common/lapic.inl \
+ include/hal/cpu.h include/../lib/hal/common/cpu.inl \
+ include/../lib/hal/x86/cpu.inl
+
+include/global.h:
+
+include/platform.h:
+
+include/stdint.h:
+
+include/stddef.h:
+
+include/stdarg.h:
+
+include/assert.h:
+
+include/new.h:
+
+kernel/CpuWaker.h:
+
+kernel/Spinlock.h:
+
+include/hal/atomic.h:
+
+include/../lib/hal/common/atomic.inl:
+
+include/std/Delegate.h:
+
+kernel/DeviceManager.h:
+
+include/std/List.h:
+
+include/std/Helpers.h:
+
+kernel/iDevice.h:
+
+include/std/String.h:
+
+kernel/iDevFileSystem.h:
+
+kernel/iDevDrive.h:
+
+kernel/VirtualFs.h:
+
+include/std/SmartPtr.h:
+
+kernel/Console.h:
+
+include/std/Stack.h:
+
+kernel/CliWindow.h:
+
+include/std/Vec2d.h:
+
+include/std/Rect.h:
+
+include/std/Vec2d.h:
+
+kernel/Canvas.h:
+
+include/hal/lapic.h:
+
+include/../lib/hal/common/lapic.inl:
+
+include/hal/cpu.h:
+
+include/../lib/hal/common/cpu.inl:
+
+include/../lib/hal/x86/cpu.inl:

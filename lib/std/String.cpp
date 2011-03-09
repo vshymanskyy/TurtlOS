@@ -1,18 +1,20 @@
-#include <std/String.h>
+#include "String.h"
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <string.h>
-#include <memory.h>
+#include <assert.h>
 
 String
 String::Format(const char* format, ...)
 {
-
-
-	//char buf[1024];
-	//va_list args;
-	//va_start(args, format);
-	//vsprintf(buf, format, args);
-	//va_end(args);
-	return String(format);
+	char buff[1024];
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buff, 1024, format, args);
+	va_end(args);
+	return String(buff);
 }
 
 String::String() {
@@ -136,8 +138,6 @@ String::EndsWith(const String& s) const
 String
 String::Substring(int offset, int length)
 {
-	argused(offset);
-	argused(length);
 	//TODO implement it
 	return "";
 }

@@ -19,7 +19,7 @@ char *strcat (char *s1, const char *s2);
 char *strchr (const char *s, int c);
 char *strrchr (const char *s, int c);
 char *strpadr (char *s, const size_t fl, const char c);
-bool strlike (char *str, char *mask);
+int strlike (char *str, char *mask);
 char *strtok (char *s1, const char *s2);
 char *strstr (const char *s1, const char *s2);
 char *strncpy (char *dest, const char *source, unsigned qty);
@@ -32,6 +32,20 @@ int snprintf(char* buffer, size_t qty, const char* format, ...);
 
 long strtol (const char *buf, char **endptr, int base);
 char *itoa (int value, char *buf, int base);
+
+/********************************************************
+*  Operations
+********************************************************/
+void *memrev (void *b, void *e);
+char memsum (void *const s, size_t n);
+void *memcpy (void *dest, const void *src, size_t qty);
+void *memset (void *dest, uint8_t val, size_t qty);
+void *memsetw (void *dest, uint16_t val, size_t qty);
+void *memsetd (void *dest, uint32_t val, size_t qty);
+void *memzero (void *dest, size_t qty);
+void *memmove (void *dest, const void *src, size_t qty);
+int memcmp (const void *s1, const void *s2, size_t n);
+void swab (const void *src, void *dest, size_t n);
 
 #ifdef __cplusplus
 }
