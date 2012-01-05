@@ -1,7 +1,7 @@
 #include "Heap.h"
 #include "Console.h"
 
-#include <memory.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MinBlockSpace 16

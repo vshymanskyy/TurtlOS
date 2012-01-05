@@ -27,13 +27,13 @@ InitrdFsFileData::InitrdFsFileData(InitrdFs* root)
 }
 
 size_t
-InitrdFsFileData::Read (size_t offset, size_t qty, ptr buffer)
+InitrdFsFileData::Read (size_t offset, size_t qty, ptr_t buffer)
 {
 	return _rootNode->_drive->Read(_rootNode->_fileHeaders[Inode].offset+offset, qty, buffer);
 }
 
 size_t
-InitrdFsFileData::Write (size_t offset, size_t qty, const ptr buffer)
+InitrdFsFileData::Write (size_t offset, size_t qty, const ptr_t buffer)
 {
 	argused(offset);
 	argused(qty);

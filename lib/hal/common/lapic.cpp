@@ -138,7 +138,7 @@ lapicInit()
 }
 
 void
-lapicStart()
+lapicStart(void)
 {
 	lapicWrite(DFR, DFR_FLAT);	// Set flat delivery model
 	lapicWrite(LDR, lapicGetID() << LDR_SHIFT);
@@ -166,7 +166,7 @@ lapicSetBase(size_t addr)
 }
 
 size_t
-lapicGetBase()
+lapicGetBase(void)
 {
 	return (size_t)cpuGetMSR(CPU_MSR_APICBASE) & ~0xFFF;
 }

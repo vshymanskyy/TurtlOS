@@ -191,9 +191,9 @@ image: $(IMAGE)
 
 all:
 	$(MAKE) image Arch=x86 Build=Debug
-	$(MAKE) image Arch=x86 Build=Release
+#	$(MAKE) image Arch=x86 Build=Release
 	$(MAKE) image Arch=x86-64 Build=Debug
-	$(MAKE) image Arch=x86-64 Build=Release
+#	$(MAKE) image Arch=x86-64 Build=Release
 	
 tools: $(BIN2INL) $(MKINITRD)
 
@@ -341,4 +341,4 @@ todo:
 	-for file in $(ALLFILES); do fgrep --exclude Makefile --color=auto -H -n -e TODO -e FIXME $$file; done; true
 
 devenv:
-	apt-get install vim-gnome genisoimage cscope ctags g++ nasm qemu doxygen graphviz ddd gnuplot meld
+	apt-get install vim-gtk genisoimage cscope exuberant-ctags g++ nasm qemu meld git

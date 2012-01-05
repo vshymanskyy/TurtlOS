@@ -1,170 +1,175 @@
 #include <hal/cpu.h>
+#include <hal/portio.h>
+#include <string.h>
 
-BEGIN_PACKED_REGION
+extern "C" {
+	void halCpuFlushIdt(size_t);
 
-struct RegisterFrame {
-	// PushAll
-	uint64_t r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rbp, rsp, rbx, rdx, rcx, rax;
-	// Push from handler
-	uint64_t interrupt, error;
-	// Pushed on interrupt
-	uint64_t rip, cs, eflags, rspPrev, ss;
-} PACKED;
+	void isr0 ();
+	void isr1 ();
+	void isr2 ();
+	void isr3 ();
+	void isr4 ();
+	void isr5 ();
+	void isr6 ();
+	void isr7 ();
+	void isr8 ();
+	void isr9 ();
+	void isr10();
+	void isr11();
+	void isr12();
+	void isr13();
+	void isr14();
+	void isr15();
+	void isr16();
+	void isr17();
+	void isr18();
+	void isr19();
+	void isr20();
+	void isr21();
+	void isr22();
+	void isr23();
+	void isr24();
+	void isr25();
+	void isr26();
+	void isr27();
+	void isr28();
+	void isr29();
+	void isr30();
+	void isr31();
 
-/// Pointer to global descriptor table
-struct GdtPtr {
-	uint16_t limit; // The upper 16 bits of all selector limits.
-	uint64_t base; // The address of the first gdt_entry_t struct.
-} PACKED;
+	void isr32(); // system timer (cannot be changed)
+	void isr33(); // keyboard controller (cannot be changed)
+	void isr34(); // cascaded signals from IRQs 8–15
+	void isr35(); // serial port controller for COM2 (shared with COM4, if present)
+	void isr36(); // serial port controller for COM1 (shared with COM3, if present)
+	void isr37(); // LPT port 2  or  sound card
+	void isr38(); // floppy disk controller
+	void isr39(); // LPT port 1  or  It is used for printers or for any parallel port if a printer is not present
 
-/// Pointer to interrupt descriptor table
-struct IdtPtr {
-	uint16_t limit;
-	uint64_t base; // The address of the first element in our idt_entry_t array.
-} PACKED;
+	void isr40(); // RTC Timer
+	void isr41(); // The Interrupt is left open for the use of peripherals. open interrupt / available  or  SCSI host adapter
+	void isr42(); // The Interrupt is left open for the use of peripherals. open interrupt / available  or  SCSI  or  NIC
+	void isr43(); // The Interrupt is left open for the use of peripherals. open interrupt / available  or  SCSI  or  NIC
+	void isr44(); // mouse on PS/2 connector
+	void isr45(); // math co-processor  or  integrated floating point unit  or  inter-processor interrupt (use depends on OS)
+	void isr46(); // primary ATA channel
+	void isr47(); // secondary ATA channel
 
-/// Global descriptor table entry
-struct GdtEntry {
-	uint16_t limit_low; // The lower 16 bits of the limit.
-	uint16_t base_low; // The lower 16 bits of the base.
-	uint8_t base_middle; // The next 8 bits of the base.
-	uint8_t access; // Access flags, determine what ring this segment can be used in.
-	uint8_t granularity;
-	uint8_t base_high; // The last 8 bits of the base.
-} PACKED;
+	void isr128();
 
-/// Interrupt descriptor table entry
-struct IdtEntry {
-	uint16_t base_lo; // The lower 16 bits of the address to jump to when this interrupt fires.
-	uint16_t sel; // Kernel segment selector.
-	uint8_t reserved0; // This must always be zero.
-	uint8_t flags; // More flags. See documentation.
-	uint16_t base_hi; // The upper 16 bits of the address to jump to.
-	uint32_t base_hi2;
-	uint32_t reserved1;
-} PACKED;
+	void isr_handler();
+}
 
-union CpuIdRegister {
-	uint32_t value;
-	uint16_t words[2];
-	uint8_t bytes[4];
-} PACKED;
+IdtEntry idtEntries[MAX_INTERRUPTS];
+isr_t interrupt_handlers[MAX_INTERRUPTS];
 
-struct CpuIdResult {
-	CpuIdRegister a, b, c, d;
-} PACKED;
+void halCpuInitGdt()
+{
+}
 
-union ControlRegister0 {
-	struct __cr0_bitfield {
-		uint64_t
-			PE			:1,
-			MP			:1,
-			EM			:1,
-			TS			:1,
-			ET			:1,
-			NE			:1,
-			reserved0	:10,
-			WP			:1,
-			reserved1	:1,
-			AM			:1,
-			reserved2	:10,
-			NW			:1,
-			CD			:1,
-			PG			:1;
-	};
-	uint64_t value;
-} PACKED;
+void halCpuInitIdt()
+{
+	memset(&interrupt_handlers, 0, sizeof(isr_t)*MAX_INTERRUPTS);
+	memset(&idtEntries, 0, sizeof(IdtEntry)*MAX_INTERRUPTS);
 
-union ControlRegister3 {
-	struct __cr3_bitfield {
-		uint64_t
-			reserved0	:3,
-			writethough	:1,
-			disable		:1;
-	};
-	uint64_t value;
-} PACKED;
+	halCpuSetIdtGate( 0, (size_t)isr0 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 1, (size_t)isr1 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 2, (size_t)isr2 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 3, (size_t)isr3 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 4, (size_t)isr4 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 5, (size_t)isr5 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 6, (size_t)isr6 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 7, (size_t)isr7 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 8, (size_t)isr8 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate( 9, (size_t)isr9 , CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(10, (size_t)isr10, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(11, (size_t)isr11, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(12, (size_t)isr12, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(13, (size_t)isr13, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(14, (size_t)isr14, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(15, (size_t)isr15, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(16, (size_t)isr16, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(17, (size_t)isr17, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(18, (size_t)isr18, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(19, (size_t)isr19, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(20, (size_t)isr20, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(21, (size_t)isr21, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(22, (size_t)isr22, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(23, (size_t)isr23, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(24, (size_t)isr24, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(25, (size_t)isr25, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(26, (size_t)isr26, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(27, (size_t)isr27, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(28, (size_t)isr28, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(29, (size_t)isr29, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(30, (size_t)isr30, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(31, (size_t)isr31, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
 
-union ControlRegister4 {
-	struct __cr4_bitfield {
-		uint64_t
-			VME			:1,
-			PVI			:1,
-			TSD			:1,
-			DE			:1,
-			PSE			:1,
-			PAE			:1,
-			MCE			:1,
-			PGE			:1,
-			PCE			:1,
-			OSFXSR		:1,
-			OSXMMEXCPT	:1,
-			reserved0	:2,
-			VMXE		:1,
-			SMXE		:1;
-	};
-	uint64_t value;
-} PACKED;
+	halCpuSetIdtGate(32, (size_t)isr32, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(33, (size_t)isr33, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(34, (size_t)isr34, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(35, (size_t)isr35, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(36, (size_t)isr36, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(37, (size_t)isr37, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(38, (size_t)isr38, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(39, (size_t)isr39, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(40, (size_t)isr40, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(41, (size_t)isr41, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(42, (size_t)isr42, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(43, (size_t)isr43, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(44, (size_t)isr44, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(45, (size_t)isr45, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(46, (size_t)isr46, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
+	halCpuSetIdtGate(47, (size_t)isr47, CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
 
-union PagePml4Entry {
-	struct __pml4_entry_bitfield {
-		uint64_t
-			present		:1,
-			writable	:1,
-			user		:1,
-			writethough	:1,
-			cache_disable :1,
-			accessed	:1,
-			ign			:1,
-			mbz			:2,
-			avl			:3,
-			address		:40,
-			avaliable	:11,
-			nx			:1;
-	};
-	uint64_t value;
-} PACKED;
+	halCpuSetIdtGate(128,(size_t)isr128,CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
 
-union PagePdpEntry {
-	struct __pdp_entry_bitfield {
-		uint64_t
-			present		:1,
-			writable	:1,
-			user		:1,
-			writethough	:1,
-			cache_disable :1,
-			accessed	:1,
-			ign			:1,
-			big			:1,
-			mbz			:1,
-			avl			:3,
-			address		:40,
-			avaliable	:11,
-			nx			:1;
-	};
-	uint64_t value;
-} PACKED;
+	IdtPtr idtPtr;
+	idtPtr.limit = sizeof(IdtEntry)*MAX_INTERRUPTS -1;
+	idtPtr.base  = (size_t)&idtEntries;
+	halCpuFlushIdt((size_t)&idtPtr);
+}
 
-union PagePdEntry {
-	struct __pd_entry_bitfield {
-		uint64_t
-			present		:1,
-			writable	:1,
-			user		:1,
-			writethough	:1,
-			cache_disable :1,
-			accessed	:1,
-			dirty		:1,
-			big			:1,
-			global		:1,
-			avl			:3,
-			pat			:1,
-			mbz			:8,
-			address		:31,
-			avaliable	:11,
-			nx			:1;
-	};
-	uint64_t value;
-} PACKED;
+void halCpuSetIdtGate(uint8_t num, size_t base, uint16_t sel, uint8_t flags)
+{
+	idtEntries[num].base_lo = (uint16_t)(base & 0xFFFF);
+	idtEntries[num].base_hi = (uint16_t)((base >> 16) & 0xFFFF);
+	idtEntries[num].base_hi2 = (uint32_t)(base >> 32) & 0xFFFFFFFF;
 
-END_PACKED_REGION
+	idtEntries[num].sel = sel;
+	idtEntries[num].flags = flags;
+
+	idtEntries[num].reserved0 = 0;
+	idtEntries[num].reserved1 = 0;
+}
+
+void halCpuRegisterISR(int n, isr_t handler)
+{
+	interrupt_handlers[n] = handler;
+}
+
+// This gets called from our ASM interrupt handler stub.
+extern "C"
+void isr_handler()
+{
+	register RegisterFrame* regs __asm ("rcx");
+
+	// This line is important. When the processor extends the 8-bit interrupt number
+	// to a 32bit value, it sign-extends, not zero extends. So if the most significant
+	// bit (0x80) is set, regs.int_no will be very large (about 0xffffff80).
+	regs->interrupt &= 0xFF;
+	if (interrupt_handlers[regs->interrupt] != 0) {
+		interrupt_handlers[regs->interrupt](regs);
+	}
+
+	// Send an EOI (end of interrupt) signal to the PICs.
+	if (regs->interrupt >= 32 && regs->interrupt <= 47) {
+		if (regs->interrupt >= 40) {
+			// Send reset signal to slave.
+			outportb(0xA0, 0x20);
+		}
+		// Send reset signal to master.
+		outportb(0x20, 0x20);
+	}
+}

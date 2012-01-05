@@ -1,7 +1,7 @@
 #include "CachedDrive.h"
 #include "DeviceManager.h"
 
-#include <memory.h>
+#include <string.h>
 
 using namespace DreamDDM;
 
@@ -30,13 +30,13 @@ CachedDrive::~CachedDrive() {
 }
 
 size_t
-CachedDrive::Read(size_t offset, size_t qty, ptr buffer)
+CachedDrive::Read(size_t offset, size_t qty, ptr_t buffer)
 {
 	return _drive->Read(offset, qty, buffer);
 }
 
 size_t
-CachedDrive::Write(size_t offset, size_t qty, const ptr buffer)
+CachedDrive::Write(size_t offset, size_t qty, const ptr_t buffer)
 {
 	return _drive->Write(offset, qty, buffer);
 }
@@ -48,12 +48,12 @@ CachedDrive::GetBlocksQty()
 }
 
 bool
-CachedDrive::ReadBlock(size_t offset, ptr buffer)
+CachedDrive::ReadBlock(size_t offset, ptr_t buffer)
 {	return _drive->ReadBlock(offset, buffer);
 }
 
 bool
-CachedDrive::WriteBlock(size_t offset, const ptr buffer)
+CachedDrive::WriteBlock(size_t offset, const ptr_t buffer)
 {	return _drive->WriteBlock(offset, buffer);
 }
 

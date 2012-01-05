@@ -14,7 +14,7 @@
 
 typedef void     (*pproc_t)(void);
 typedef int      (*pfunc_t)(void);
-typedef void*    ptr;
+typedef void*    ptr_t;
 
 #define __concat(x,y) x ## y		/*  */
 #define __string(x) #x				/*  */
@@ -22,7 +22,6 @@ typedef void*    ptr;
 
 #ifdef __cplusplus
 	extern class Console* console;
-	extern class Console* console2;
 	extern class CliDesktop* desktop;
 #endif
 

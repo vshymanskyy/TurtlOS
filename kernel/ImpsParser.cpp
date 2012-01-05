@@ -2,7 +2,7 @@
 #include "Processors.h"
 #include "Console.h"
 
-#include <memory.h>
+#include <string.h>
 
 #define IMPS_MAX_CPUS			0xFF
 #define IMPS_FPS_IMCRP_BIT		0x80
@@ -117,7 +117,7 @@ ImpsParser::ImpsParser()
 	_fps = FindFPS(0xF0000, 0xFFFFF);
 	if (!_fps) {
 		(*console) << "FPS not found!" << endl;
- 		Processors::Instance()->AddCpu(0, true, true);
+		Processors::Instance()->AddCpu(0, true, true);
 		return;
 	}
 

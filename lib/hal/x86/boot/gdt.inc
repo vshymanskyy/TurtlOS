@@ -1,5 +1,6 @@
-GDT_SEL_DATA	equ gdt.data - gdt
-GDT_SEL_CODE	equ gdt.code - gdt
+GDT_SEL_DATA	equ gdt.data - gdt   ; 0x08
+GDT_SEL_CODE	equ gdt.code - gdt   ; 0x10
+
 
 align 8
 gdtr:
@@ -14,4 +15,3 @@ gdt:
 .code:
 	dw 0xFFFF,0,0x9A00,0x00CF
 .end:
-

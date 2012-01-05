@@ -1,4 +1,4 @@
-/** 
+/**
  * @file MemoryLeakDetector.cpp
  * Contains declaration of memory leak detector
  */
@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <memory.h>
 
 // Standard C functions
 extern "C"

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <std/Rect.h>
-#include <memory.h>
+#include <stdlib.h>
+#include <string.h>
 
 /// Rectangular canvas for software painting
 template <typename T>

@@ -1,3 +1,4 @@
+#include <global.h>
 #include "Console.h"
 #include "CliDesktop.h"
 #include "CliFrame.h"
@@ -19,15 +20,13 @@
 
 #include "Heap.h"
 
-#include <std/Log.h>
 extern Heap heap;
 
 Console* console;
-Console* console2;
 CliDesktop* desktop;
 
 int main();
-
+/*
 class DebugLogViewer
 	: public Logger
 {
@@ -45,24 +44,13 @@ public:
 		debug_print("%s %s %s %s\n", time, mod, log, msg);
 	}
 };
+*/
 
 int main() {
-	/*DebugLogViewer lv;
-	LogManager::Get().SetDefaultLogger(&lv);
-
-	Log l ("main");
-	l() << "hello";
-
-	for(;;);*/
-
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
-	console = new Console(Rect(0, 0, 39, 25));
-
-	console2 = new Console(Rect(40, 0, 39, 25));
+	console = new Console(Rect(0, 0, 80, 25));
 
 	desktop->AddChild(console);
-	desktop->AddChild(console2);
-
 
 	if (char* bootl = MultibootParser::Instance()->GetLoader()) {
 		(*console) << "Loader:  " << bootl << endl;
@@ -94,16 +82,21 @@ int main() {
 
 	lapicInit();
 
-	(*console) << "LAPIC at: " << (ptr)lapicGetBase() << endl;
+	(*console) << "LAPIC at: " << (ptr_t)lapicGetBase() << endl;
 
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
 
-	Processors::Instance()->~Processors();
-	DeviceManager::Instance()->~DeviceManager();
+	for(int n = 0; ; n++) {
+		(*console) << "Running (" << n << ")" << endl;
+		__asm volatile ("int $128");
+		//volatile int a = 6/0;
+		for(uint64_t i =0; i< 10000000; i++) {
+			cpuNoOperation();
+		}
+	}
 
 	delete console;
-	delete console2;
 	delete desktop;
 
 	return 0;

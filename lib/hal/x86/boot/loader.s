@@ -31,11 +31,11 @@ loader:
 	mov [mbiMagic], eax
 	mov [mbiTable], ebx
 
-	mov dword[0xB8000], 'L_o_'
-	mov dword[0xB8004], 'a_d_'
-	mov dword[0xB8008], 'i_n_'
-	mov dword[0xB800C], 'g_._'
-	mov dword[0xB8010], '._._'
+	mov dword[0xb8000], 'L_o_'
+	mov dword[0xb8004], 'a_d_'
+	mov dword[0xb8008], 'i_n_'
+	mov dword[0xb800c], 'g_._'
+	mov dword[0xb8010], '._._'
 
 	jmp entry
 

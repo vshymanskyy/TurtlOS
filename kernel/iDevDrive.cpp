@@ -12,7 +12,7 @@ iDevDrive::~iDevDrive() {
 
 }
 
-size_t iDevDrive::ReadBlocks(size_t offset, size_t qty, ptr buffer) {
+size_t iDevDrive::ReadBlocks(size_t offset, size_t qty, ptr_t buffer) {
 	size_t i = 0;
 	for(; i<qty; i++) {
 		if (!ReadBlock(offset+i, static_cast<char*>(buffer) + (i * BlockSize)))
@@ -21,7 +21,7 @@ size_t iDevDrive::ReadBlocks(size_t offset, size_t qty, ptr buffer) {
 	return i;
 }
 
-size_t iDevDrive::WriteBlocks(size_t offset, size_t qty, const ptr buffer) {
+size_t iDevDrive::WriteBlocks(size_t offset, size_t qty, const ptr_t buffer) {
 	size_t i = 0;
 	for(; i<qty; i++) {
 		if (!WriteBlock(offset+i, static_cast<char*>(buffer) + (i * BlockSize)))
@@ -30,14 +30,14 @@ size_t iDevDrive::WriteBlocks(size_t offset, size_t qty, const ptr buffer) {
 	return i;
 }
 
-size_t iDevDrive::Read(size_t offset, size_t qty, ptr buffer) {
+size_t iDevDrive::Read(size_t offset, size_t qty, ptr_t buffer) {
 	argused(offset);
 	argused(qty);
 	argused(buffer);
 	return 0;
 }
 
-size_t iDevDrive::Write(size_t offset, size_t qty, const ptr buffer) {
+size_t iDevDrive::Write(size_t offset, size_t qty, const ptr_t buffer) {
 	argused(offset);
 	argused(qty);
 	argused(buffer);

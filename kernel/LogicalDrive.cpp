@@ -26,26 +26,26 @@ Listener::OnDriverRegistered (iDevice* dev)
 }
 
 size_t
-LogicalDrive::Read(size_t offset, size_t qty, ptr buffer)
+LogicalDrive::Read(size_t offset, size_t qty, ptr_t buffer)
 {
 	return _drive->Read(_startBlock*BlockSize + offset, qty, buffer);
 }
 
 size_t
-LogicalDrive::Write(size_t offset, size_t qty, const ptr buffer)
+LogicalDrive::Write(size_t offset, size_t qty, const ptr_t buffer)
 {
 	return _drive->Read(_startBlock*BlockSize + offset, qty, buffer);
 }
 
 size_t
-LogicalDrive::ReadBlocks(size_t offset, size_t qty, ptr buffer)
+LogicalDrive::ReadBlocks(size_t offset, size_t qty, ptr_t buffer)
 {
 	assert(offset + qty <= _blocksQty);
 	return _drive->ReadBlocks(offset + _startBlock, qty, buffer);
 }
 
 size_t
-LogicalDrive::WriteBlocks(size_t offset, size_t qty, const ptr buffer)
+LogicalDrive::WriteBlocks(size_t offset, size_t qty, const ptr_t buffer)
 {
 	assert(offset + qty <= _blocksQty);
 	return _drive->WriteBlocks(offset + _startBlock, qty, buffer);
@@ -58,14 +58,14 @@ LogicalDrive::GetBlocksQty()
 }
 
 bool
-LogicalDrive::LogicalDrive::ReadBlock(size_t offset, ptr buffer)
+LogicalDrive::LogicalDrive::ReadBlock(size_t offset, ptr_t buffer)
 {
 	assert(offset < _blocksQty);
 	return _drive->ReadBlock(offset + _startBlock, buffer);
 }
 
 bool
-LogicalDrive::LogicalDrive::WriteBlock(size_t offset, const ptr buffer)
+LogicalDrive::LogicalDrive::WriteBlock(size_t offset, const ptr_t buffer)
 {
 	assert(offset < _blocksQty);
 	return _drive->WriteBlock(offset + _startBlock, buffer);

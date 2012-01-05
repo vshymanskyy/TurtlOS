@@ -36,8 +36,8 @@ namespace VirtualFs {
 	public:
 		size_t Length;
 
-		virtual size_t Read(size_t offset, size_t qty, ptr buffer) = 0;
-		virtual size_t Write(size_t offset, size_t qty, const ptr buffer) = 0;
+		virtual size_t Read(size_t offset, size_t qty, ptr_t buffer) = 0;
+		virtual size_t Write(size_t offset, size_t qty, const ptr_t buffer) = 0;
 
 		virtual ~VirtualFsFileData() {}
 	};

@@ -58,8 +58,8 @@
 #  error "Compiler not recognized"
 #endif
 
-#define NAKED __declspec(naked)
-#define NORETURN __declspec(noreturn)
-#define NOINLINE __declspec(noinline)
+#define NAKED __declspec((naked))
+#define NORETURN __declspec((noreturn))
+#define NOINLINE __declspec((noinline))
 
 #endif  /* INC_PLATFORM_H */

@@ -14,8 +14,8 @@ class InitrdFsFileData: public VirtualFsFileData {
 public:
 	InitrdFsFileData(InitrdFs* root);
 
-	size_t Read(size_t offset, size_t qty, ptr buffer);
-	size_t Write(size_t offset, size_t qty, const ptr buffer);
+	size_t Read(size_t offset, size_t qty, ptr_t buffer);
+	size_t Write(size_t offset, size_t qty, const ptr_t buffer);
 
 	virtual ~InitrdFsFileData() {}
 

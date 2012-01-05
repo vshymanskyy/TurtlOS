@@ -3,7 +3,112 @@
 #include "Console.h"
 #include <hal/lapic.h>
 #include <hal/cpu.h>
+#include <hal/pic.h>
 #include <stdlib.h>
+
+
+static
+const char* ExceptionMsgs[] = {
+	"Division by zero",
+	"Debug",
+	"Non maskable interrupt",
+	"Breakpoint",
+	"Into detected overflow",
+	"Out of bounds",
+	"Invalid opcode",
+	"No coprocessor",
+	"Double fault ->",
+	"Coprocessor segment overrun",
+	"Bad TSS ->",
+	"Segment not present ->",
+	"Stack fault ->",
+	"General protection fault ->",
+	"Page fault ->",
+	"Unknown interrupt exception",
+	"Coprocessor fault",
+	"Alignment check",
+	"Machine check"
+};
+
+static
+void
+DefaultIsrHandler(RegisterFrame* regs)
+{
+	(*console) << "Unhandled int on CPU" << (size_t)lapicGetID() <<  " (" << (size_t)(regs->interrupt) << ")" << endl;
+}
+
+#if TARGET == TARGET_X86
+
+static
+void
+HandleException(RegisterFrame* regs)
+{
+	(*console)
+		<< esc << "[41;93m"
+		<< "Exception on CPU" << (size_t)lapicGetID() << ": "
+		<< ExceptionMsgs[regs->interrupt]
+		<< " (" << (size_t)regs->interrupt << ") at "
+		<< (int)regs->cs << ':' << (ptr_t)regs->eip << endl
+		<< " Error code: " << (ptr_t)regs->error << endl
+		<< " AX:" << (ptr_t)regs->eax
+		<< " BX:" << (ptr_t)regs->ebx
+		<< " CX:" << (ptr_t)regs->ecx
+		<< " DX:" << (ptr_t)regs->edx
+		<< " FL:" << (ptr_t)regs->eflags << endl
+		<< " BP:" << (ptr_t)regs->ebp
+		<< " SP:" << (ptr_t)regs->esp
+		<< " DI:" << (ptr_t)regs->edi
+		<< " SI:" << (ptr_t)regs->esi << endl
+		<< esc << "[m";
+	cpuHalt();
+}
+
+#elif TARGET == TARGET_X86_64
+
+static
+void
+HandleException(RegisterFrame* regs)
+{
+	(*console)
+		<< esc << "[41;93m"
+		<< "Exception on CPU" << (size_t)lapicGetID() << ": "
+		<< ExceptionMsgs[regs->interrupt]
+		<< " (" << (size_t)regs->interrupt << ") at "
+		<< (int)regs->cs << ':' << (ptr_t)regs->rip << endl
+		<< " Error code: " << (ptr_t)regs->error << endl
+		<< " AX:" << (ptr_t)regs->rax
+		<< " BX:" << (ptr_t)regs->rbx
+		<< " CX:" << (ptr_t)regs->rcx
+		<< " DX:" << (ptr_t)regs->rdx
+		<< " 9 :" << (ptr_t)regs->r9
+		<< " 10:" << (ptr_t)regs->r10
+		<< " 11:" << (ptr_t)regs->r11
+		<< " 12:" << (ptr_t)regs->r12
+		<< " 13:" << (ptr_t)regs->r13
+		<< " 14:" << (ptr_t)regs->r14
+		<< " 15:" << (ptr_t)regs->r15
+		<< " FL:" << (ptr_t)regs->eflags
+		<< " BP:" << (ptr_t)regs->rbp
+		<< " SP:" << (ptr_t)regs->rsp
+		<< " DI:" << (ptr_t)regs->rdi
+		<< " SI:" << (ptr_t)regs->rsi << endl
+		<< esc << "[m";
+	cpuHalt();
+}
+
+#else
+	#error "Target not supported"
+#endif
+
+
+void SetExceptionHandlers(void) {
+	for(int i=0; i<MAX_INTERRUPTS; ++i) {
+		halCpuRegisterISR(i, &DefaultIsrHandler);
+	}
+	for(int i=0; i<_countof(ExceptionMsgs); ++i) {
+		halCpuRegisterISR(i, &HandleException);
+	}
+}
 
 CpuDesc::CpuDesc()
 	: lapicId (-1)
@@ -65,23 +170,25 @@ Processors::Startup()
 {
 	InitBsp();
 
+	return;
+
 	CpuWaker waker(CpuWaker::Entry(Processors::Instance(), &Processors::InitAp));
 	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
 		CpuDesc& cpu = _processors[i];
 		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == _bspLapicId) {
 			continue;
 		}
-		(*console2) << "CPU " << (int)cpu.lapicId << ": ";
+		(*console) << "CPU " << (int)cpu.lapicId << ": ";
 		if (cpu.state == CpuDesc::CPU_STOPPED) {
-			(*console2) << "Starting...";
+			(*console) << "Starting...";
 			cpu.state = CpuDesc::CPU_BOOTING;
 			if (!waker.StartCpu(cpu.lapicId)) {
-				(*console2) << esc << "[31m fail" << esc << "[m" << endl;
+				(*console) << esc << "[31m fail" << esc << "[m" << endl;
 			}
 			_lock.Wait();
 		} else {
 			static const char* labels[5] = { "Disabled", "Stopped", "Booting", "Init", "Ready" };
-			(*console2) << labels[cpu.state] << endl;
+			(*console) << labels[cpu.state] << endl;
 		}
 	}
 }
@@ -90,12 +197,20 @@ void
 Processors::InitBsp() {
 	assert (_bspLapicId != 0xFF);
 	CpuDesc* cpu = GetCpu(_bspLapicId);
-	cpu->state = CpuDesc::CPU_INIT;
 	cpu->stack = NULL;
 	cpu->lapic = NULL;
+
+	halCpuInitGdt();
+	halCpuInitIdt();
+	picRemap(0x20, 0x28);
+	SetExceptionHandlers();
+	cpuEnableInterrupts();
+	lapicStart();
+
+	cpu->state = CpuDesc::CPU_INIT;
+
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
 	//lapicSetBase((size_t)cpu->lapic);
-	lapicStart();
 
 	cpu->state = CpuDesc::CPU_READY;
 }
@@ -103,21 +218,27 @@ Processors::InitBsp() {
 void
 Processors::InitAp() {
 	_lock.Lock();
-	(*console2) << esc << "[32m ok" << esc << "[m" << endl;
+	(*console) << esc << "[32m ok" << esc << "[m" << endl;
 	CpuDesc* cpu = GetCpu(lapicGetID());
-	cpu->state = CpuDesc::CPU_INIT;
 
+	cpu->state = CpuDesc::CPU_INIT;
 	cpu->stackSize = 0x4096;
 	cpu->stack = malloc(cpu->stackSize);
 	cpu->lapic = NULL;
 
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
-
 	//lapicSetBase((size_t)cpu->lapic);
 	lapicStart();
 
+	//for(;;) {
+	//	(*console) << cpu->lapicId << endl;
+	//}
+
+
 	cpu->state = CpuDesc::CPU_HALTED;
+
 	_lock.Unlock();
+
 	cpuHalt();
 
 	fatal("executing after cpuHalt");

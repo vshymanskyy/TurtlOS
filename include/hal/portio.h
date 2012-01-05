@@ -1,6 +1,8 @@
 #ifndef _INC_PORTIO_H
 #define _INC_PORTIO_H
 
+#include <global.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

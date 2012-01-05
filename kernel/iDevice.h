@@ -1,4 +1,5 @@
 #pragma once
+#include <global.h>
 #include <std/String.h>
 
 namespace DreamDDM {

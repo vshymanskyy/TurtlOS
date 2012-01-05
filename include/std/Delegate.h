@@ -1,14 +1,14 @@
 /// @name Undoc
 /// @{
 
-//						Delegate.h 
+//						Delegate.h
 //	Efficient delegates in C++ that generate only two lines of asm code!
 //  Documentation is found at http://www.codeproject.com/cpp/Delegate.asp
 //
 //						- Don Clugston, Mar 2004.
 //		Major contributions were made by Jody Hagins.
 // History:
-// 24-Apr-04 1.0  * Submitted to CodeProject. 
+// 24-Apr-04 1.0  * Submitted to CodeProject.
 // 28-Apr-04 1.1  * Prevent most unsafe uses of evil static function hack.
 //				  * Improved syntax for horrible_cast (thanks Paul Bludov).
 //				  * Tested on Metrowerks MWCC and Intel ICL (IA32)
@@ -16,7 +16,7 @@
 //	27-Jun-04 1.2 * Now works on Borland C++ Builder 5.5
 //				  * Now works on /clr "managed C++" code on VC7, VC7.1
 //				  * Comeau C++ now compiles without warnings.
-//				  * Prevent the virtual inheritance case from being used on 
+//				  * Prevent the virtual inheritance case from being used on
 //					  VC6 and earlier, which generate incorrect code.
 //				  * Improved warning and error messages. Non-standard hacks
 //					 now have compile-time checks to make them safer.
@@ -40,7 +40,7 @@
 //				  * Standardised all the compiler-specific workarounds.
 //                * MFP conversion now works for CodePlay (but not yet supported in the full code).
 //                * Now compiles without warnings on _any_ supported compiler, including BCC 5.5.1
-//				  * New syntax: Delegate< int (char *, double) >. 
+//				  * New syntax: Delegate< int (char *, double) >.
 // 14-Feb-05 1.4.1* Now treats =0 as equivalent to .clear(), ==0 as equivalent to .empty(). (Thanks elfric).
 //				  * Now tested on Intel ICL for AMD64, VS2005 Beta for AMD64 and Itanium.
 // 30-Mar-05 1.5  * Safebool idiom: "if (dg)" is now equivalent to "if (!dg.empty())"
@@ -60,7 +60,7 @@
 #error "This C++ header was included in C file"
 #endif
 
-#include <memory.h>
+#include <string.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 //						Configuration options
@@ -70,7 +70,7 @@
 // Uncomment the following #define for optimally-sized delegates.
 // In this case, the generated asm code is almost identical to the code you'd get
 // if the compiler had native support for delegates.
-// It will not work on systems where sizeof(dataptr) < sizeof(codeptr). 
+// It will not work on systems where sizeof(dataptr) < sizeof(codeptr).
 // Thus, it will not work for DOS compilers using the medium model.
 // It will also probably fail on some DSP systems.
 #define Delegate_USESTATICFUNCTIONHACK
@@ -98,7 +98,7 @@
 
 // Does the compiler uses Microsoft's member function pointer structure?
 // If so, it needs special treatment.
-// Metrowerks CodeWarrior, Intel, and CodePlay fraudulently define Microsoft's 
+// Metrowerks CodeWarrior, Intel, and CodePlay fraudulently define Microsoft's
 // identifier, _MSC_VER. We need to filter Metrowerks out.
 #if defined(_MSC_VER) && !defined(__MWERKS__)
 #define FASTDLGT_MICROSOFT_MFP
@@ -124,7 +124,7 @@
 #define Delegate_ALLOW_FUNCTION_TYPE_SYNTAX
 #endif
 
-#ifdef __GNUC__ // Workaround GCC bug #8271 
+#ifdef __GNUC__ // Workaround GCC bug #8271
 // At present, GCC doesn't recognize constness of MFPs in templates
 #define Delegate_GCC_BUG_8271
 #endif
@@ -150,10 +150,10 @@
 namespace ImplDetails {	// we'll hide the implementation details in a nested namespace.
 
 	//		implicit_cast< >
-	// I believe this was originally going to be in the C++ standard but 
+	// I believe this was originally going to be in the C++ standard but
 	// was left out by accident. It's even milder than static_cast.
 	// I use it instead of static_cast<> to emphasize that I'm not doing
-	// anything nasty. 
+	// anything nasty.
 	// Usage is identical to static_cast<>
 	template <class OutputClass, class InputClass>
 	inline OutputClass implicit_cast(InputClass input) {
@@ -161,11 +161,11 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	}
 
 	//		horrible_cast< >
-	// This is truly evil. It completely subverts C++'s type system, allowing you 
-	// to cast from any class to any other class. Technically, using a union 
+	// This is truly evil. It completely subverts C++'s type system, allowing you
+	// to cast from any class to any other class. Technically, using a union
 	// to perform the cast is undefined behaviour (even in C). But we can see if
 	// it is OK by checking that the union is the same size as each of its members.
-	// horrible_cast<> should only be used for compiler-specific workarounds. 
+	// horrible_cast<> should only be used for compiler-specific workarounds.
 	// Usage is identical to reinterpret_cast<>.
 
 	// This union is declared outside the horrible_cast because BCC 5.5.1
@@ -182,7 +182,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 		// Cause a compile-time error if in, out and u are not the same size.
 		// If the compile fails here, it means the compiler has peculiar
 		// unions which would prevent the cast from working.
-		typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u) 
+		typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u)
 			&& sizeof(InputClass)==sizeof(OutputClass) ? 1 : -1];
 		u.in = input;
 		return u.out;
@@ -213,9 +213,9 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	// Workaround for (2): On VC6, the code for calling a void function is
 	//   identical to the code for calling a non-void function in which the
 	//   return value is never used, provided the return value is returned
-	//   in the EAX register, rather than on the stack. 
+	//   in the EAX register, rather than on the stack.
 	//   This is true for most fundamental types such as int, enum, void *.
-	//   Const void * is the safest option since it doesn't participate 
+	//   Const void * is the safest option since it doesn't participate
 	//   in any automatic conversions. But on a 16-bit compiler it might
 	//   cause extra code to be generated, so we disable it for all compilers
 	//   except for VC6 (and VC5).
@@ -261,15 +261,15 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 #ifdef  FASTDLGT_MICROSOFT_MFP
 
 #ifdef FASTDLGT_HASINHERITANCE_KEYWORDS
-	// For Microsoft and Intel, we want to ensure that it's the most efficient type of MFP 
-	// (4 bytes), even when the /vmg option is used. Declaring an empty class 
+	// For Microsoft and Intel, we want to ensure that it's the most efficient type of MFP
+	// (4 bytes), even when the /vmg option is used. Declaring an empty class
 	// would give 16 byte pointers in this case....
 	class __single_inheritance GenericClass;
 #endif
 	// ...but for Codeplay, an empty class *always* gives 4 byte pointers.
 	// If compiled with the /clr option ("managed C++"), the JIT compiler thinks
 	// it needs to load GenericClass before it can call any of its functions,
-	// (compiles OK but crashes at runtime!), so we need to declare an 
+	// (compiles OK but crashes at runtime!), so we need to declare an
 	// empty class to make it happy.
 	// Codeplay and VC4 can't cope with the unknown_inheritance case either.
 	class GenericClass {};
@@ -282,41 +282,41 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 
 	//						SimplifyMemFunc< >::Convert()
 	//
-	//	A template function that converts an arbitrary member function pointer into the 
+	//	A template function that converts an arbitrary member function pointer into the
 	//	simplest possible form of member function pointer, using a supplied 'this' pointer.
 	//  According to the standard, this can be done legally with reinterpret_cast<>.
-	//	For (non-standard) compilers which use member function pointers which vary in size 
-	//  depending on the class, we need to use	knowledge of the internal structure of a 
+	//	For (non-standard) compilers which use member function pointers which vary in size
+	//  depending on the class, we need to use	knowledge of the internal structure of a
 	//  member function pointer, as used by the compiler. Template specialization is used
-	//  to distinguish between the sizes. Because some compilers don't support partial 
+	//  to distinguish between the sizes. Because some compilers don't support partial
 	//	template specialisation, I use full specialisation of a wrapper struct.
 
 	// general case -- don't know how to convert it. Force a compile failure
 	template <int N>
 	struct SimplifyMemFunc {
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
-			GenericMemFuncType &bound_func) { 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
+			GenericMemFuncType &bound_func) {
 				// Unsupported member function type -- force a compile failure.
 				// (it's illegal to have a array with negative size).
 				typedef char ERROR_Unsupported_member_function_pointer_on_this_compiler[N-100];
-				return 0; 
+				return 0;
 		}
 	};
 
 	// For compilers where all member func ptrs are the same size, everything goes here.
 	// For non-standard compilers, only single_inheritance classes go here.
 	template <>
-	struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>  {	
+	struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>  {
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 			GenericMemFuncType &bound_func) {
-#if defined __DMC__  
-				// Digital Mars doesn't allow you to cast between abitrary PMF's, 
+#if defined __DMC__
+				// Digital Mars doesn't allow you to cast between abitrary PMF's,
 				// even though the standard says you can. The 32-bit compiler lets you
 				// static_cast through an int, but the DOS compiler doesn't.
 				bound_func = horrible_cast<GenericMemFuncType>(function_to_bind);
-#else 
+#else
 				bound_func = reinterpret_cast<GenericMemFuncType>(function_to_bind);
 #endif
 				return reinterpret_cast<GenericClass *>(pthis);
@@ -344,13 +344,13 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	template<>
 	struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) >  {
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
-			GenericMemFuncType &bound_func) { 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
+			GenericMemFuncType &bound_func) {
 				// We need to use a horrible_cast to do this conversion.
 				// In MSVC, a multiple inheritance member pointer is internally defined as:
 				union {
 					XFuncType func;
-					struct {	 
+					struct {
 						GenericMemFuncType funcaddress; // points to the actual member function
 						int delta;	     // #BYTES to be added to the 'this' pointer
 					}s;
@@ -359,7 +359,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 				typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)? 1 : -1];
 				u.func = function_to_bind;
 				bound_func = u.s.funcaddress;
-				return reinterpret_cast<GenericClass *>(reinterpret_cast<char *>(pthis) + u.s.delta); 
+				return reinterpret_cast<GenericClass *>(reinterpret_cast<char *>(pthis) + u.s.delta);
 		}
 	};
 
@@ -368,10 +368,10 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	// enable conversion to a closure pointer. Earlier versions of this code didn't
 	// work for all cases, and generated a compile-time error instead.
 	// But a very clever hack invented by John M. Dlugosz solves this problem.
-	// My code is somewhat different to his: I have no asm code, and I make no 
+	// My code is somewhat different to his: I have no asm code, and I make no
 	// assumptions about the calling convention that is used.
 
-	// In VC++ and ICL, a virtual_inheritance member pointer 
+	// In VC++ and ICL, a virtual_inheritance member pointer
 	// is internally defined as:
 	struct MicrosoftVirtualMFP {
 		void (GenericClass::*codeptr)(); // points to the actual member function
@@ -399,7 +399,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	{
 
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 			GenericMemFuncType &bound_func) {
 				union {
 					XFuncType func;
@@ -416,7 +416,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 				typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)
 					&& sizeof(function_to_bind)==sizeof(u.ProbeFunc)
 					&& sizeof(u2.virtfunc)==sizeof(u2.s) ? 1 : -1];
-				// Unfortunately, taking the address of a MF prevents it from being inlined, so 
+				// Unfortunately, taking the address of a MF prevents it from being inlined, so
 				// this next line can't be completely optimised away by the compiler.
 				u2.virtfunc = &GenericVirtualClass::GetThis;
 				u.s.codeptr = u2.s.codeptr;
@@ -433,55 +433,55 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 	struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 	{
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 			GenericMemFuncType &bound_func) {
 				// There is an apalling but obscure compiler bug in MSVC6 and earlier:
-				// vtable_index and 'vtordisp' are always set to 0 in the 
+				// vtable_index and 'vtordisp' are always set to 0 in the
 				// unknown_inheritance case!
 				// This means that an incorrect function could be called!!!
 				// Compiling with the /vmg option leads to potentially incorrect code.
 				// This is probably the reason that the IDE has a user interface for specifying
-				// the /vmg option, but it is disabled -  you can only specify /vmg on 
+				// the /vmg option, but it is disabled -  you can only specify /vmg on
 				// the command line. In VC1.5 and earlier, the compiler would ICE if it ever
 				// encountered this situation.
 				// It is OK to use the /vmg option if /vmm or /vms is specified.
 
 				// Fortunately, the wrong function is only called in very obscure cases.
-				// It only occurs when a derived class overrides a virtual function declared 
-				// in a virtual base class, and the member function 
+				// It only occurs when a derived class overrides a virtual function declared
+				// in a virtual base class, and the member function
 				// points to the *Derived* version of that function. The problem can be
-				// completely averted in 100% of cases by using the *Base class* for the 
+				// completely averted in 100% of cases by using the *Base class* for the
 				// member fpointer. Ie, if you use the base class as an interface, you'll
 				// stay out of trouble.
 				// Occasionally, you might want to point directly to a derived class function
-				// that isn't an override of a base class. In this case, both vtable_index 
+				// that isn't an override of a base class. In this case, both vtable_index
 				// and 'vtordisp' are zero, but a virtual_inheritance pointer will be generated.
 				// We can generate correct code in this case. To prevent an incorrect call from
-				// ever being made, on MSVC6 we generate a warning, and call a function to 
-				// make the program crash instantly. 
+				// ever being made, on MSVC6 we generate a warning, and call a function to
+				// make the program crash instantly.
 				typedef char ERROR_VC6CompilerBug[-100];
-				return 0; 
+				return 0;
 		}
 	};
 
 
-#else 
+#else
 
 	// Nasty hack for Microsoft and Intel (IA32 and Itanium)
-	// unknown_inheritance classes go here 
+	// unknown_inheritance classes go here
 	// This is probably the ugliest bit of code I've ever written. Look at the casts!
 	// There is a compiler bug in MSVC6 which prevents it from using this code.
 	template <>
 	struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 	{
 		template <class X, class XFuncType, class GenericMemFuncType>
-		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind, 
+		inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 			GenericMemFuncType &bound_func) {
 				// The member function pointer is 16 bytes long. We can't use a normal cast, but
 				// we can use a union to do the conversion.
 				union {
 					XFuncType func;
-					// In VC++ and ICL, an unknown_inheritance member pointer 
+					// In VC++ and ICL, an unknown_inheritance member pointer
 					// is internally defined as:
 					struct {
 						GenericMemFuncType m_funcaddress; // points to the actual member function
@@ -496,7 +496,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 				bound_func = u.s.funcaddress;
 				int virtual_delta = 0;
 				if (u.s.vtable_index) { // Virtual inheritance is used
-					// First, get to the vtable. 
+					// First, get to the vtable.
 					// It is 'vtordisp' bytes from the start of the class.
 					const int * vtable = *reinterpret_cast<const int *const*>(
 						reinterpret_cast<const char *>(pthis) + u.s.vtordisp);
@@ -528,7 +528,7 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 // It knows nothing about the calling convention or number of arguments used by
 // the function pointed to.
 // It supplies comparison operators so that it can be stored in STL collections.
-// It cannot be set to anything other than null, nor invoked directly: 
+// It cannot be set to anything other than null, nor invoked directly:
 //   it must be converted to a specific delegate.
 
 // Implementation:
@@ -536,14 +536,14 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 //				DelegateMemento - Safe version
 //
 // This implementation is standard-compliant, but a bit tricky.
-// A static function pointer is stored inside the class. 
+// A static function pointer is stored inside the class.
 // Here are the valid values:
 // +-- Static pointer --+--pThis --+-- pMemFunc-+-- Meaning------+
 // |   0				|  0       |   0        | Empty          |
 // |   !=0              |(dontcare)|  Invoker   | Static function|
 // |   0                |  !=0     |  !=0*      | Method call    |
 // +--------------------+----------+------------+----------------+
-//  * For Metrowerks, this can be 0. (first virtual function in a 
+//  * For Metrowerks, this can be 0. (first virtual function in a
 //       single_inheritance class).
 // When stored stored inside a specific delegate, the 'dontcare' entries are replaced
 // with a reference to the delegate itself. This complicates the = and == operators
@@ -551,20 +551,20 @@ namespace ImplDetails {	// we'll hide the implementation details in a nested nam
 
 //				DelegateMemento - Evil version
 //
-// For compilers where data pointers are at least as big as code pointers, it is 
-// possible to store the function pointer in the this pointer, using another 
+// For compilers where data pointers are at least as big as code pointers, it is
+// possible to store the function pointer in the this pointer, using another
 // horrible_cast. In this case the DelegateMemento implementation is simple:
 // +--pThis --+-- pMemFunc-+-- Meaning---------------------+
 // |    0     |  0         | Empty                         |
 // |  !=0     |  !=0*      | Static function or method call|
 // +----------+------------+-------------------------------+
-//  * For Metrowerks, this can be 0. (first virtual function in a 
+//  * For Metrowerks, this can be 0. (first virtual function in a
 //       single_inheritance class).
-// Note that the Sun C++ and MSVC documentation explicitly state that they 
+// Note that the Sun C++ and MSVC documentation explicitly state that they
 // support static_cast between void * and function pointers.
 
 class DelegateMemento {
-protected: 
+protected:
 	// the data is protected, not private, because many
 	// compilers have problems with template friends.
 	typedef void (ImplDetails::GenericClass::*GenericMemFuncType)(); // arbitrary MFP.
@@ -605,11 +605,11 @@ public:
 	inline bool IsLess(const DelegateMemento &right) const {
 		// deal with static function pointers first
 #if !defined(Delegate_USESTATICFUNCTIONHACK)
-		if (m_pStaticFunction !=0 || right.m_pStaticFunction!=0) 
+		if (m_pStaticFunction !=0 || right.m_pStaticFunction!=0)
 			return m_pStaticFunction < right.m_pStaticFunction;
 #endif
 		if (m_pthis !=right.m_pthis) return m_pthis < right.m_pthis;
-		// There are no ordering operators for member function pointers, 
+		// There are no ordering operators for member function pointers,
 		// but we can fake one by comparing each byte. The resulting ordering is
 		// arbitrary (and compiler-dependent), but it permits storage in ordered STL containers.
 		return memcmp(&m_pFunction, &right.m_pFunction, sizeof(m_pFunction)) < 0;
@@ -624,7 +624,7 @@ public:
 	{ return m_pthis==0 && m_pFunction==0; }
 public:
 	DelegateMemento & operator = (const DelegateMemento &right)  {
-		SetMementoFrom(right); 
+		SetMementoFrom(right);
 		return *this;
 	}
 	inline bool operator <(const DelegateMemento &right) {
@@ -633,7 +633,7 @@ public:
 	inline bool operator >(const DelegateMemento &right) {
 		return right.IsLess(*this);
 	}
-	DelegateMemento (const DelegateMemento &right)  : 
+	DelegateMemento (const DelegateMemento &right)  :
 	m_pthis(right.m_pthis), m_pFunction(right.m_pFunction)
 #if !defined(Delegate_USESTATICFUNCTIONHACK)
 		, m_pStaticFunction (right.m_pStaticFunction)
@@ -655,8 +655,8 @@ protected:
 // A private wrapper class that adds function signatures to DelegateMemento.
 // It's the class that does most of the actual work.
 // The signatures are specified by:
-// GenericMemFunc: must be a type of GenericClass member function pointer. 
-// StaticFuncPtr:  must be a type of function pointer with the same signature 
+// GenericMemFunc: must be a type of GenericClass member function pointer.
+// StaticFuncPtr:  must be a type of function pointer with the same signature
 //                 as GenericMemFunc.
 // UnvoidStaticFuncPtr: is the same as StaticFuncPtr, except on VC6
 //                 where it never returns void (returns DefaultVoid instead).
@@ -672,8 +672,8 @@ namespace ImplDetails {
 	public:
 		// These functions are for setting the delegate to a member function.
 
-		// Here's the clever bit: we convert an arbitrary member function into a 
-		// standard form. XMemFunc should be a member function of class X, but I can't 
+		// Here's the clever bit: we convert an arbitrary member function into a
+		// standard form. XMemFunc should be a member function of class X, but I can't
 		// enforce that here. It needs to be enforced by the wrapper class.
 		template < class X, class XMemFunc >
 		inline void bindmemfunc(X *pthis, XMemFunc function_to_bind) {
@@ -684,7 +684,7 @@ namespace ImplDetails {
 #endif
 		}
 		// For const member functions, we only need a const class pointer.
-		// Since we know that the member function is const, it's safe to 
+		// Since we know that the member function is const, it's safe to
 		// remove the const qualifier from the 'this' pointer with a const_cast.
 		// VC6 has problems if we just overload 'bindmemfunc', so we give it a different name.
 		template < class X, class XMemFunc>
@@ -734,32 +734,32 @@ namespace ImplDetails {
 				m_pthis=reinterpret_cast<GenericClass *>(pParent);
 			}
 		}
-		// For static functions, the 'static_function_invoker' class in the parent 
-		// will be called. The parent then needs to call GetStaticFunction() to find out 
+		// For static functions, the 'static_function_invoker' class in the parent
+		// will be called. The parent then needs to call GetStaticFunction() to find out
 		// the actual function to invoke.
 		template < class DerivedClass, class ParentInvokerSig >
-		inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker, 
+		inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker,
 			StaticFuncPtr function_to_bind) {
 				if (function_to_bind==0) { // cope with assignment to 0
 					m_pFunction=0;
-				} else { 
+				} else {
 					bindmemfunc(pParent, static_function_invoker);
 				}
 				m_pStaticFunction=reinterpret_cast<GenericFuncPtr>(function_to_bind);
 		}
-		inline UnvoidStaticFuncPtr GetStaticFunction() const { 
-			return reinterpret_cast<UnvoidStaticFuncPtr>(m_pStaticFunction); 
+		inline UnvoidStaticFuncPtr GetStaticFunction() const {
+			return reinterpret_cast<UnvoidStaticFuncPtr>(m_pStaticFunction);
 		}
 #else
 
 		//				ClosurePtr<> - Evil version
 		//
-		// For compilers where data pointers are at least as big as code pointers, it is 
-		// possible to store the function pointer in the this pointer, using another 
+		// For compilers where data pointers are at least as big as code pointers, it is
+		// possible to store the function pointer in the this pointer, using another
 		// horrible_cast. Invocation isn't any faster, but it saves 4 bytes, and
 		// speeds up comparison and assignment. If C++ provided direct language support
 		// for delegates, they would produce asm code that was almost identical to this.
-		// Note that the Sun C++ and MSVC documentation explicitly state that they 
+		// Note that the Sun C++ and MSVC documentation explicitly state that they
 		// support static_cast between void * and function pointers.
 
 		template< class DerivedClass >
@@ -767,23 +767,23 @@ namespace ImplDetails {
 			(void)(pParent);
 			SetMementoFrom(right);
 		}
-		// For static functions, the 'static_function_invoker' class in the parent 
-		// will be called. The parent then needs to call GetStaticFunction() to find out 
+		// For static functions, the 'static_function_invoker' class in the parent
+		// will be called. The parent then needs to call GetStaticFunction() to find out
 		// the actual function to invoke.
 		// ******** EVIL, EVIL CODE! *******
 		template < 	class DerivedClass, class ParentInvokerSig>
-		inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker, 
+		inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker,
 			StaticFuncPtr function_to_bind) {
 				if (function_to_bind==0) { // cope with assignment to 0
 					m_pFunction=0;
-				} else { 
+				} else {
 					// We'll be ignoring the 'this' pointer, but we need to make sure we pass
 					// a valid value to bindmemfunc().
 					bindmemfunc(pParent, static_function_invoker);
 				}
 
 				// WARNING! Evil hack. We store the function in the 'this' pointer!
-				// Ensure that there's a compilation failure if function pointers 
+				// Ensure that there's a compilation failure if function pointers
 				// and data pointers have different sizes.
 				// If you get this error, you need to #undef Delegate_USESTATICFUNCTIONHACK.
 				typedef int ERROR_CantUseEvilMethod[sizeof(GenericClass *)==sizeof(function_to_bind) ? 1 : -1];
@@ -798,7 +798,7 @@ namespace ImplDetails {
 		// We're just returning the 'this' pointer, converted into
 		// a function pointer!
 		inline UnvoidStaticFuncPtr GetStaticFunction() const {
-			// Ensure that there's a compilation failure if function pointers 
+			// Ensure that there's a compilation failure if function pointers
 			// and data pointers have different sizes.
 			// If you get this error, you need to #undef Delegate_USESTATICFUNCTIONHACK.
 			typedef int ERROR_CantUseEvilMethod[sizeof(UnvoidStaticFuncPtr)==sizeof(this) ? 1 : -1];
@@ -808,7 +808,7 @@ namespace ImplDetails {
 
 		// Does the closure contain this static function?
 		inline bool IsEqualToStaticFuncPtr(StaticFuncPtr funcptr) {
-			if (funcptr==0) return empty(); 
+			if (funcptr==0) return empty();
 			// For the Evil method, if it doesn't actually contain a static function, this will return an arbitrary
 			// value that is not equal to any valid function pointer.
 			else return funcptr==reinterpret_cast<StaticFuncPtr>(GetStaticFunction());
@@ -827,7 +827,7 @@ namespace ImplDetails {
 
 
 // Once we have the member function conversion templates, it's easy to make the
-// wrapper classes. So that they will work with as many compilers as possible, 
+// wrapper classes. So that they will work with as many compilers as possible,
 // the classes are of the form
 //   Delegate3<int, char *, double>
 // They can cope with any combination of parameters. The max number of parameters
@@ -838,7 +838,7 @@ namespace ImplDetails {
 
 // Because of the weird rule about the class of derived member function pointers,
 // you sometimes need to apply a downcast to the 'this' pointer.
-// This is the reason for the use of "implicit_cast<X*>(pthis)" in the code below. 
+// This is the reason for the use of "implicit_cast<X*>(pthis)" in the code below.
 // If CDerivedClass is derived from CBaseClass, but doesn't override SimpleVirtualFunction,
 // without this trick you'd need to write:
 //		MyDelegate(static_cast<CBaseClass *>(&d), &CDerivedClass::SimpleVirtualFunction);
@@ -856,7 +856,7 @@ namespace ImplDetails {
 // Some compilers (eg VC6) won't implicitly convert from 0 to an MDP, so
 // in that case the static function constructor is not made explicit; this
 // allows "if (dg==0) ..." to compile.
-namespace ImplDetails {	
+namespace ImplDetails {
 //N=0
 template<class RetType=ImplDetails::DefaultVoid>
 class Delegate0 {
@@ -907,7 +907,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)()) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)()) {
-		m_Closure.bindstaticfunc(this, &Delegate0::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate0::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() () const {
@@ -926,7 +926,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -992,7 +992,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1)) {
-		m_Closure.bindstaticfunc(this, &Delegate1::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate1::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1) const {
@@ -1011,7 +1011,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1077,7 +1077,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2)) {
-		m_Closure.bindstaticfunc(this, &Delegate2::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate2::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2) const {
@@ -1096,7 +1096,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1162,7 +1162,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
-		m_Closure.bindstaticfunc(this, &Delegate3::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate3::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3) const {
@@ -1181,7 +1181,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1247,7 +1247,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
-		m_Closure.bindstaticfunc(this, &Delegate4::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate4::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4) const {
@@ -1266,7 +1266,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1332,7 +1332,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
-		m_Closure.bindstaticfunc(this, &Delegate5::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate5::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const {
@@ -1351,7 +1351,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1417,7 +1417,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
-		m_Closure.bindstaticfunc(this, &Delegate6::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate6::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const {
@@ -1436,7 +1436,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1502,7 +1502,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
-		m_Closure.bindstaticfunc(this, &Delegate7::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate7::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const {
@@ -1521,7 +1521,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1587,7 +1587,7 @@ public:
 	void operator = (DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
 		bind(function_to_bind);	}
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
-		m_Closure.bindstaticfunc(this, &Delegate8::InvokeStaticFunction, 
+		m_Closure.bindstaticfunc(this, &Delegate8::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
 	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const {
@@ -1606,7 +1606,7 @@ public:
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
-	inline bool operator!=(StaticFunctionPtr funcptr) { 
+	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);    }
 	inline bool operator ! () const	{	// Is it bound to anything?
 		return !m_Closure; }
@@ -1625,7 +1625,7 @@ private:	// Invoker for static functions
 }
 ////////////////////////////////////////////////////////////////////////////////
 //						Fast Delegates, part 4:
-// 
+//
 //				Delegate<> class (Original author: Jody Hagins)
 //	Allows boost::function style syntax like:
 //			Delegate< double (int, long) >
@@ -1644,7 +1644,7 @@ class Delegate;
 //N=0
 // Specialization to allow use of
 // Delegate< R () >
-// instead of 
+// instead of
 // Delegate0 < R >
 template<typename R>
 class Delegate< R () >
@@ -1662,7 +1662,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)())
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1674,14 +1674,14 @@ public:
 
 	Delegate(R (*function_to_bind)())
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=1
 // Specialization to allow use of
 // Delegate< R (Param1) >
-// instead of 
+// instead of
 // Delegate1 < Param1, R >
 template<typename R, class Param1>
 class Delegate< R (Param1) >
@@ -1699,7 +1699,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1711,14 +1711,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=2
 // Specialization to allow use of
 // Delegate< R (Param1, Param2) >
-// instead of 
+// instead of
 // Delegate2 < Param1, Param2, R >
 template<typename R, class Param1, class Param2>
 class Delegate< R (Param1, Param2) >
@@ -1736,7 +1736,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1748,14 +1748,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=3
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3) >
-// instead of 
+// instead of
 // Delegate3 < Param1, Param2, Param3, R >
 template<typename R, class Param1, class Param2, class Param3>
 class Delegate< R (Param1, Param2, Param3) >
@@ -1773,7 +1773,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1785,14 +1785,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=4
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3, Param4) >
-// instead of 
+// instead of
 // Delegate4 < Param1, Param2, Param3, Param4, R >
 template<typename R, class Param1, class Param2, class Param3, class Param4>
 class Delegate< R (Param1, Param2, Param3, Param4) >
@@ -1810,7 +1810,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1822,14 +1822,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=5
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3, Param4, Param5) >
-// instead of 
+// instead of
 // Delegate5 < Param1, Param2, Param3, Param4, Param5, R >
 template<typename R, class Param1, class Param2, class Param3, class Param4, class Param5>
 class Delegate< R (Param1, Param2, Param3, Param4, Param5) >
@@ -1847,7 +1847,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1859,14 +1859,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=6
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6) >
-// instead of 
+// instead of
 // Delegate6 < Param1, Param2, Param3, Param4, Param5, Param6, R >
 template<typename R, class Param1, class Param2, class Param3, class Param4, class Param5, class Param6>
 class Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6) >
@@ -1884,7 +1884,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1896,14 +1896,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=7
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6, Param7) >
-// instead of 
+// instead of
 // Delegate7 < Param1, Param2, Param3, Param4, Param5, Param6, Param7, R >
 template<typename R, class Param1, class Param2, class Param3, class Param4, class Param5, class Param6, class Param7>
 class Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6, Param7) >
@@ -1921,7 +1921,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1933,14 +1933,14 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 
 //N=8
 // Specialization to allow use of
 // Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6, Param7, Param8) >
-// instead of 
+// instead of
 // Delegate8 < Param1, Param2, Param3, Param4, Param5, Param6, Param7, Param8, R >
 template<typename R, class Param1, class Param2, class Param3, class Param4, class Param5, class Param6, class Param7, class Param8>
 class Delegate< R (Param1, Param2, Param3, Param4, Param5, Param6, Param7, Param8) >
@@ -1958,7 +1958,7 @@ public:
 	Delegate() : BaseType() { }
 
 	template < class X, class Y >
-	Delegate(Y * pthis, 
+	Delegate(Y * pthis,
 		R (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8))
 		: BaseType(pthis, function_to_bind)  { }
 
@@ -1970,7 +1970,7 @@ public:
 
 	Delegate(R (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8))
 		: BaseType(function_to_bind)  { }
-	void operator = (const BaseType &x)  {	  
+	void operator = (const BaseType &x)  {
 		*static_cast<BaseType*>(this) = x; }
 };
 

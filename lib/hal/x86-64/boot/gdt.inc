@@ -1,6 +1,6 @@
-GDT_SEL_DATA	equ gdt.data - gdt
-GDT_SEL_CODE32	equ gdt.code32 - gdt
-GDT_SEL_CODE64	equ gdt.code64 - gdt
+GDT_SEL_DATA	equ gdt.data - gdt   ; 0x08
+GDT_SEL_CODE32	equ gdt.code32 - gdt ; 0x10
+GDT_SEL_CODE64	equ gdt.code64 - gdt ; 0x18
 
 align 8
 gdtr:
@@ -17,4 +17,3 @@ gdt:
 .code64:
 	dw 0xFFFF,0,0x9A00,0x00AF
 .end:
-

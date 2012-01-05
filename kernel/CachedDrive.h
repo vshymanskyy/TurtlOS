@@ -14,11 +14,11 @@ public:
 
 	String GetDescription() const;
 
-	bool ReadBlock(size_t offset, ptr buffer);
-	bool WriteBlock(size_t offset, const ptr buffer);
+	bool ReadBlock(size_t offset, ptr_t buffer);
+	bool WriteBlock(size_t offset, const ptr_t buffer);
 
-	size_t Read(size_t offset, size_t qty, ptr buffer);
-	size_t Write(size_t offset, size_t qty, const ptr buffer);
+	size_t Read(size_t offset, size_t qty, ptr_t buffer);
+	size_t Write(size_t offset, size_t qty, const ptr_t buffer);
 
 	size_t GetBlocksQty();
 
