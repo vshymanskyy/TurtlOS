@@ -89,8 +89,9 @@ int main() {
 
 	for(int n = 0; ; n++) {
 		(*console) << "Running (" << n << ")" << endl;
-		__asm volatile ("int $128");
+		//__asm volatile ("int $128");
 		//volatile int a = 6/0;
+		//char a = *((char*)(-1));
 		for(uint64_t i =0; i< 10000000; i++) {
 			cpuNoOperation();
 		}

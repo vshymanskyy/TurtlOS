@@ -4,6 +4,7 @@
 #include <hal/lapic.h>
 #include <hal/cpu.h>
 #include <hal/pic.h>
+#include <hal/timer.h>
 #include <stdlib.h>
 
 
@@ -87,7 +88,7 @@ HandleException(RegisterFrame* regs)
 		<< " 13:" << (ptr_t)regs->r13
 		<< " 14:" << (ptr_t)regs->r14
 		<< " 15:" << (ptr_t)regs->r15
-		<< " FL:" << (ptr_t)regs->eflags
+		<< " FL:" << (ptr_t)regs->rflags
 		<< " BP:" << (ptr_t)regs->rbp
 		<< " SP:" << (ptr_t)regs->rsp
 		<< " DI:" << (ptr_t)regs->rdi
@@ -170,8 +171,6 @@ Processors::Startup()
 {
 	InitBsp();
 
-	return;
-
 	CpuWaker waker(CpuWaker::Entry(Processors::Instance(), &Processors::InitAp));
 	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
 		CpuDesc& cpu = _processors[i];
@@ -200,11 +199,14 @@ Processors::InitBsp() {
 	cpu->stack = NULL;
 	cpu->lapic = NULL;
 
-	halCpuInitGdt();
-	halCpuInitIdt();
+	//halCpuInitIdt();
 	picRemap(0x20, 0x28);
+	for(int i = 0; i<16; i++) {
+		picSetMask(i);
+	}
+	timerSetFrequency(50);
 	SetExceptionHandlers();
-	cpuEnableInterrupts();
+	//cpuEnableInterrupts();
 	lapicStart();
 
 	cpu->state = CpuDesc::CPU_INIT;

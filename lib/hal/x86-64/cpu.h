@@ -13,7 +13,7 @@ struct RegisterFrame {
 	// Push from handler
 	uint64_t interrupt, error;
 	// Pushed on interrupt
-	uint64_t rip, cs, eflags, rspPrev, ss;
+	uint64_t rip, cs, rflags, rspPrev, ss;
 } PACKED;
 
 /// Pointer to global descriptor table

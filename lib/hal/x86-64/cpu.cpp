@@ -64,10 +64,6 @@ extern "C" {
 IdtEntry idtEntries[MAX_INTERRUPTS];
 isr_t interrupt_handlers[MAX_INTERRUPTS];
 
-void halCpuInitGdt()
-{
-}
-
 void halCpuInitIdt()
 {
 	memset(&interrupt_handlers, 0, sizeof(isr_t)*MAX_INTERRUPTS);
