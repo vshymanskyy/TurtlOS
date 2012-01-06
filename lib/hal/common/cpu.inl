@@ -74,7 +74,7 @@ inline
 size_t
 cpuGetPageTable()
 {
-	unsigned long cr3;
+	size_t cr3;
 	asm ("mov %%cr3, %0" : "=r" (cr3) :);
 	return cr3;
 }
@@ -84,7 +84,7 @@ uint64_t
 cpuGetMSR(uint32_t msr)
 {
 	uint32_t hi, lo;
-	asm ("rdmsr":"=a"(*&lo),"=d"(*&hi):"c"(msr));
+	asm ("rdmsr":"=a"(lo),"=d"(hi):"c"(msr));
 	return (((uint64_t)hi) << 32) | lo;
 }
 
@@ -97,3 +97,24 @@ cpuSetMSR(uint32_t msr, uint64_t val)
 	asm("wrmsr"::"a"(lo),"d"(hi),"c"(msr));
 }
 
+inline
+uint64_t
+cpuReadTimeStamp(void) {
+	uint32_t hi, lo;
+	asm ("rdtsc":"=a"(lo),"=d"(hi));
+	return (((uint64_t)hi) << 32) | lo;
+}
+
+inline
+void
+cpuSetIDT(void* base, uint16_t limit)
+{
+	struct {
+		uint16_t limit;
+		size_t base;
+	} __attribute__((__packed__)) IDTR;
+
+	IDTR.limit = limit;
+	IDTR.base = (size_t)base;
+	asm("lidt (%0)" : : "p"(&IDTR));
+}

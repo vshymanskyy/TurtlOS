@@ -23,13 +23,13 @@ public:
 	Console& operator <<(char c);
 
 	/// Prints an integer
-	Console& operator <<(int i);
+	Console& operator <<(int64_t i);
 
-	/// Prints an unsigned integer
-	Console& operator <<(size_t i);
+	Console& operator <<(uint64_t i);
 
-	/// Prints a memory address (in hex)
-	Console& operator <<(const void* i);
+	Console& operator <<(int32_t i);
+
+	Console& operator <<(uint32_t i);
 
 	/// Prints a boolean (true or false)
 	Console& operator <<(bool b);

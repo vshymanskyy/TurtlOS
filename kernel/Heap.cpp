@@ -92,7 +92,7 @@ void Heap::Dump() {
 			aSize += size;
 		}
 	}
-
+/*
 	(*console)
 		<< "Nodes #:   "  << (int)_nodesQty << "   A:" << aQty << "    F:" << fQty << endl
 		<< "Size:      " << _size/1024 << "K +" << _size%1024 << "b" << endl
@@ -100,6 +100,7 @@ void Heap::Dump() {
 		<< "Free:      " << fSize/1024 << "K +" << fSize%1024 << "b" << endl
 		<< "Max free:  " << fMax/1024  << "K +" << fMax%1024 << "b" << endl
 		<< "Inner use: " << GetOverhead()/1024 << "K +" << GetOverhead()%1024 << "b" << endl;
+		*/
 }
 
 bool Heap::IsEmpty() const {

@@ -109,7 +109,6 @@ sanityChecks()
 #else
 #error "Target not supported"
 #endif
-	debug_print("Sanity checks passed\n");
 }
 
 void

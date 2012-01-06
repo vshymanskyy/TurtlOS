@@ -12,11 +12,7 @@ typedef void (*isr_t)(RegisterFrame*);
 extern "C" {
 #endif
 
-	void halCpuInitGdt(void);
 	void halCpuInitIdt(void);
-	void halCpuSetGdtGate(uint32_t, uint32_t, uint32_t, uint8_t, uint8_t);
-	void halCpuSetTssGate(uint32_t, uint16_t, uint32_t);
-	void halCpuSetIdtGate(uint8_t, size_t, uint16_t, uint8_t);
 	void halCpuRegisterISR(int n, isr_t handler);
 
 	int cpuBcdToInt(const uint8_t bcd);
@@ -29,8 +25,7 @@ extern "C" {
 
 	size_t cpuGetPageTable();
 	void cpuSetPageTable(size_t base);
-	void cpuSetGDT(size_t base, uint16_t limit);
-	void cpuSetIDT(size_t base, uint16_t limit);
+	void cpuSetIDT(void* base, uint16_t limit);
 
 	uint64_t cpuGetMSR(uint32_t msr);
 	void cpuSetMSR(uint32_t msr, uint64_t val);

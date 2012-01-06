@@ -2,7 +2,7 @@
 #include <string.h>
 #include "../Heap.h"
 
-Heap heap((void*)0x200000, 0x1000000);
+Heap heap((void*)0x200000, 0x50000);
 
 void
 free(void* p)

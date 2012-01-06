@@ -35,7 +35,7 @@ static
 void
 DefaultIsrHandler(RegisterFrame* regs)
 {
-	(*console) << "Unhandled int on CPU" << (size_t)lapicGetID() <<  " (" << (size_t)(regs->interrupt) << ")" << endl;
+	(*console) << "Unhandled int on CPU" << lapicGetID() <<  " (" << regs->interrupt << ")" << endl;
 }
 
 #if TARGET == TARGET_X86
@@ -72,9 +72,9 @@ HandleException(RegisterFrame* regs)
 {
 	(*console)
 		<< esc << "[41;93m"
-		<< "Exception on CPU" << (size_t)lapicGetID() << ": "
+		<< "Exception on CPU" << (uint64_t)lapicGetID() << ": "
 		<< ExceptionMsgs[regs->interrupt]
-		<< " (" << (size_t)regs->interrupt << ") at "
+		<< " (" << (uint64_t)regs->interrupt << ") at "
 		<< (int)regs->cs << ':' << (ptr_t)regs->rip << endl
 		<< " Error code: " << (ptr_t)regs->error << endl
 		<< " AX:" << (ptr_t)regs->rax
@@ -199,14 +199,14 @@ Processors::InitBsp() {
 	cpu->stack = NULL;
 	cpu->lapic = NULL;
 
-	//halCpuInitIdt();
+	halCpuInitIdt();
 	picRemap(0x20, 0x28);
 	for(int i = 0; i<16; i++) {
 		picSetMask(i);
 	}
-	timerSetFrequency(50);
+	//timerSetFrequency(50);
 	SetExceptionHandlers();
-	//cpuEnableInterrupts();
+	cpuEnableInterrupts();
 	lapicStart();
 
 	cpu->state = CpuDesc::CPU_INIT;
@@ -228,6 +228,15 @@ Processors::InitAp() {
 	cpu->stack = malloc(cpu->stackSize);
 	cpu->lapic = NULL;
 
+	halCpuInitIdt();
+	picRemap(0x20, 0x28);
+	for(int i = 0; i<16; i++) {
+		picSetMask(i);
+	}
+	//timerSetFrequency(50);
+	SetExceptionHandlers();
+	cpuEnableInterrupts();
+
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
 	//lapicSetBase((size_t)cpu->lapic);
 	lapicStart();
@@ -240,6 +249,8 @@ Processors::InitAp() {
 	cpu->state = CpuDesc::CPU_HALTED;
 
 	_lock.Unlock();
+
+	//volatile int a = 6/0;
 
 	cpuHalt();
 

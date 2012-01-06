@@ -39,8 +39,8 @@ Console::ResetAttributes()
 	SetBold(false);
 	SetBlink(false);
 	SetReverseVideo(false);
-	Background(WHITE_B);
-	Foreground(BLACK);
+	Background(BLACK);
+	Foreground(WHITE);
 }
 
 void
@@ -383,9 +383,9 @@ Console::PrintChar (char c)
 }
 
 Console&
-Console::operator << (int value)
+Console::operator << (int32_t value)
 {
-	unsigned int ud;
+	uint32_t ud;
 	if (value < 0) {
 		PutChar('-');
 		ud = -value;
@@ -406,7 +406,7 @@ Console::operator << (int value)
 }
 
 Console&
-Console::operator << (size_t ud)
+Console::operator << (uint32_t ud)
 {
 	char buf[48];
 	char* p = buf;
@@ -422,7 +422,46 @@ Console::operator << (size_t ud)
 }
 
 Console&
-Console::operator << (const void* i)
+Console::operator << (int64_t value)
+{
+	uint64_t ud;
+	if (value < 0) {
+		PutChar('-');
+		ud = -value;
+	} else {
+		ud = value;
+	}
+	char buf[48];
+	char* p = buf;
+	do {
+		*p++ = symb[ud % 10];
+	} while (ud /= 10);
+
+	while (p > buf) {
+		PutChar(*--p);
+	}
+
+	return *this;
+}
+
+Console&
+Console::operator << (uint64_t ud)
+{
+	char buf[48];
+	char* p = buf;
+	do {
+		*p++ = symb[ud % 10];
+	} while (ud /= 10);
+
+	while (p > buf) {
+		PutChar(*--p);
+	}
+
+	return *this;
+}
+/*
+Console&
+Console::operator << (const ptr_t i)
 {
 	size_t ud = (size_t)i;
 	const int len = sizeof(size_t)*2;
@@ -440,7 +479,7 @@ Console::operator << (const void* i)
 	PutString(buf);
 	return *this;
 }
-
+*/
 Console&
 Console::operator << (bool b)
 {

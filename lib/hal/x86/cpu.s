@@ -1,17 +1,7 @@
 extern isr_handler
 
-global halCpuFlushIdt
-global halCpuFlushGdt
-global halCpuFlushTss
-
 [section .text]
 [bits 32]
-
-halCpuFlushIdt:
-	mov eax, [esp+4]  ; Get the pointer to the IDT, passed as a parameter.
-	lidt [eax]        ; Load the IDT pointer.
-	ret
-
 
 ; This macro creates a stub for an ISR which does NOT pass it's own
 ; error code (adds a dummy errcode byte).
@@ -90,29 +80,28 @@ ISR_NOERR 128
 ; up for kernel mode segments, calls the C-level fault handler,
 ; and finally restores the stack frame.
 isr_common_stub:
-	pusha                    ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+	pusha         ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
 	mov ecx, esp
 
-	;mov ax, ds               ; Lower 16-bits of eax = ds.
-	;push eax                 ; save the data segment descriptor
+	;mov ax, ds   ; Lower 16-bits of eax = ds.
+	;push ax      ; save the data segment descriptor
 
-	;mov ax, 0x08  ; load the kernel data segment descriptor
+	;mov ax, 0x08 ; load the kernel data segment descriptor
 	;mov ds, ax
 	;mov es, ax
 	;mov fs, ax
 	;mov gs, ax
 
-
 	call isr_handler
 
-	;pop ebx        ; reload the original data segment descriptor
+	;pop bx       ; reload the original data segment descriptor
 	;mov ds, bx
 	;mov es, bx
 	;mov fs, bx
 	;mov gs, bx
 
-	popa                     ; Pops edi,esi,ebp...
+	popa          ; Pops edi,esi,ebp...
 	add esp, 8    ; Cleans up the pushed error code and pushed ISR number
 	sti
 	iretd         ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP

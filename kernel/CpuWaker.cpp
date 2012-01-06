@@ -26,7 +26,7 @@ CpuWaker::CpuWaker(Entry entry)
 	List<iDevFileSystem*> fsystems = DeviceManager::Instance()->GetFileSystems();
 	for (List<iDevFileSystem*>::It its = fsystems.First(); its != fsystems.End(); ++its) {
 		if (File waker = fsystems[its]->FindFile("waker.bin")) {
-			(*console) << "Found waker.bin (" << waker->Length << " bytes) on " << fsystems[its]->GetDescription() << endl;
+			(*console) << "Found waker.bin (" << (uint64_t)waker->Length << " bytes) on " << fsystems[its]->GetDescription() << endl;
 			waker->Read(0, waker->Length, (void*)CPU_WAKER_ADDR);
 		}
 	}

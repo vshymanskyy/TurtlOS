@@ -1,5 +1,6 @@
 #include <hal/cpu.h>
 #include <hal/portio.h>
+#include <assert.h>
 #include <string.h>
 
 extern "C" {
@@ -64,6 +65,19 @@ extern "C" {
 IdtEntry idtEntries[MAX_INTERRUPTS];
 isr_t interrupt_handlers[MAX_INTERRUPTS];
 
+void halCpuSetIdtGate(uint8_t num, size_t base, uint16_t sel, uint8_t flags)
+{
+	idtEntries[num].base_lo = (uint16_t)(base & 0xFFFF);
+	idtEntries[num].base_hi = (uint16_t)((base >> 16) & 0xFFFF);
+	idtEntries[num].base_hi2 = (uint32_t)(base >> 32) & 0xFFFFFFFF;
+
+	idtEntries[num].sel = sel;
+	idtEntries[num].flags = flags;
+
+	idtEntries[num].reserved0 = 0;
+	idtEntries[num].reserved1 = 0;
+}
+
 void halCpuInitIdt()
 {
 	memset(&interrupt_handlers, 0, sizeof(isr_t)*MAX_INTERRUPTS);
@@ -121,23 +135,7 @@ void halCpuInitIdt()
 
 	halCpuSetIdtGate(128,(size_t)isr128,CPU_GDT_SEL_CODE, IDT_DESC_PRESENT | IDT_DESC_RING0 | IDT_DESC_INT);
 
-	IdtPtr idtPtr;
-	idtPtr.limit = sizeof(IdtEntry)*MAX_INTERRUPTS -1;
-	idtPtr.base  = (size_t)&idtEntries;
-	halCpuFlushIdt((size_t)&idtPtr);
-}
-
-void halCpuSetIdtGate(uint8_t num, size_t base, uint16_t sel, uint8_t flags)
-{
-	idtEntries[num].base_lo = (uint16_t)(base & 0xFFFF);
-	idtEntries[num].base_hi = (uint16_t)((base >> 16) & 0xFFFF);
-	idtEntries[num].base_hi2 = (uint32_t)(base >> 32) & 0xFFFFFFFF;
-
-	idtEntries[num].sel = sel;
-	idtEntries[num].flags = flags;
-
-	idtEntries[num].reserved0 = 0;
-	idtEntries[num].reserved1 = 0;
+	cpuSetIDT(&idtEntries, sizeof(IdtEntry)*MAX_INTERRUPTS -1);
 }
 
 void halCpuRegisterISR(int n, isr_t handler)
@@ -150,22 +148,8 @@ extern "C"
 void isr_handler()
 {
 	register RegisterFrame* regs __asm ("rcx");
-
-	// This line is important. When the processor extends the 8-bit interrupt number
-	// to a 32bit value, it sign-extends, not zero extends. So if the most significant
-	// bit (0x80) is set, regs.int_no will be very large (about 0xffffff80).
 	regs->interrupt &= 0xFF;
 	if (interrupt_handlers[regs->interrupt] != 0) {
 		interrupt_handlers[regs->interrupt](regs);
-	}
-
-	// Send an EOI (end of interrupt) signal to the PICs.
-	if (regs->interrupt >= 32 && regs->interrupt <= 47) {
-		if (regs->interrupt >= 40) {
-			// Send reset signal to slave.
-			outportb(0xA0, 0x20);
-		}
-		// Send reset signal to master.
-		outportb(0x20, 0x20);
 	}
 }
