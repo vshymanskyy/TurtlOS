@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdint.h>
+#include <stddef.h>
 
 void*
 memrev(void* b, void* e)

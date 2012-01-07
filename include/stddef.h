@@ -44,7 +44,7 @@
 #define offsetof(type, member) ((size_t)&(((type*)0)->member))
 #define _bit(val, i) ((size_t)(*(val)) & ((size_t)1 << (i)))
 #define _countof(arr) (sizeof(arr)/sizeof(arr[0]))
-#define asm __asm__ __volatile__
+#define asm __asm __volatile
 
 
 #ifdef __cplusplus

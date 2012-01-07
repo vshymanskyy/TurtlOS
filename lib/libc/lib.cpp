@@ -1,11 +1,12 @@
 #include <string.h>
+#include <stddef.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #ifdef TEST
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
 #endif
 
 static const char* symb = "0123456789abcdefghijklmnopqrstuvwxyz";

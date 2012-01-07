@@ -147,9 +147,9 @@ ifeq ($(Build),Debug)
 				   -Wmissing-declarations \
 				   -Wunsafe-loop-optimizations \
 				   -Wno-variadic-macros \
-				   -g -fstack-protector-all
+				   -g3 -fstack-protector-all
 	
-	CFLAGS		+= -std=c99
+	CFLAGS		+= -ansi #-std=c99
 	
 	CPPFLAGS	+= -Woverloaded-virtual
 	
@@ -226,7 +226,7 @@ $(TEMP)/%.o: %.c $(INCLUDE)/$(GLOBALINC)
 	$(MKDIR) $(shell dirname $@)
 	$(CC) $(CCFLAGS) $(CFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -o $@ -c $<
 ifdef CppGenAsm
-	$(CC) $(CCFLAGS) $(CFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.obj=.lst) -o $(@:.obj=.lst2) -S $<
+	$(CC) $(CCFLAGS) $(CFLAGS) $(DEFINES) -I $(INCLUDE) -include $(GLOBALINC) -masm=intel -Wa,-adhl=$(@:.o=.l) -o $(@:.o=.l2) -S $<
 endif
 
 $(TEMP)/%.b: %.s

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stddef.h>
 #include <assert.h>
 
 FILE* fopen(const char* fn, const char*mode)

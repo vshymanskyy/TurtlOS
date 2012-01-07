@@ -13,6 +13,7 @@ extern "C" {
 	void inportsb(const uint16_t port, void* buffer, const int count);
 	void inportsw(const uint16_t port, void* buffer, const int count);
 	void inportsl(const uint16_t port, void* buffer, const int count);
+
 	void outportb(const uint16_t port, const uint8_t data);
 	void outportw(const uint16_t port, const uint16_t data);
 	void outportl(const uint16_t port, const uint32_t data);
@@ -24,6 +25,4 @@ extern "C" {
 }
 #endif
 
-#include INCLUDE_COMMON(../lib/hal,portio.inl)
-
-#endif //_INC_PORTIO_H
+#endif /*_INC_PORTIO_H */

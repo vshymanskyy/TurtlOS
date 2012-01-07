@@ -6,7 +6,7 @@
 #include <hal/pic.h>
 #include <hal/timer.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 
 static
 const char* ExceptionMsgs[] = {
@@ -40,60 +40,39 @@ DefaultIsrHandler(RegisterFrame* regs)
 
 #if TARGET == TARGET_X86
 
+char exceptionBuffer[1024];
+
 static
 void
 HandleException(RegisterFrame* regs)
 {
-	(*console)
-		<< esc << "[41;93m"
-		<< "Exception on CPU" << (size_t)lapicGetID() << ": "
-		<< ExceptionMsgs[regs->interrupt]
-		<< " (" << (size_t)regs->interrupt << ") at "
-		<< (int)regs->cs << ':' << (ptr_t)regs->eip << endl
-		<< " Error code: " << (ptr_t)regs->error << endl
-		<< " AX:" << (ptr_t)regs->eax
-		<< " BX:" << (ptr_t)regs->ebx
-		<< " CX:" << (ptr_t)regs->ecx
-		<< " DX:" << (ptr_t)regs->edx
-		<< " FL:" << (ptr_t)regs->eflags << endl
-		<< " BP:" << (ptr_t)regs->ebp
-		<< " SP:" << (ptr_t)regs->esp
-		<< " DI:" << (ptr_t)regs->edi
-		<< " SI:" << (ptr_t)regs->esi << endl
-		<< esc << "[m";
+	char* buff = exceptionBuffer;
+	buff += snprintf(buff, 1024, "Exception on CPU%d: %d (%s)\n", lapicGetID(), regs->interrupt, ExceptionMsgs[regs->interrupt]);
+	buff += snprintf(buff, 1024, "CS:IP=0x%x:%x ERROR:0x%08x\n", regs->cs, regs->eip, regs->error);
+	buff += snprintf(buff, 1024, "AX=%08x BX=%08x CX=%08x DX=%08x FL=%08x\n", regs->eax, regs->ebx, regs->ecx, regs->edx, regs->eflags);
+	buff += snprintf(buff, 1024, "BP=%08x SP=%08x DI=%08x SI=%08x\n", regs->ebp, regs->esp, regs->edi, regs->esi);
+
+	debug_puts(exceptionBuffer);
 	cpuHalt();
 }
 
 #elif TARGET == TARGET_X86_64
 
+char exceptionBuffer[1024];
+
 static
 void
 HandleException(RegisterFrame* regs)
 {
-	(*console)
-		<< esc << "[41;93m"
-		<< "Exception on CPU" << (uint64_t)lapicGetID() << ": "
-		<< ExceptionMsgs[regs->interrupt]
-		<< " (" << (uint64_t)regs->interrupt << ") at "
-		<< (int)regs->cs << ':' << (ptr_t)regs->rip << endl
-		<< " Error code: " << (ptr_t)regs->error << endl
-		<< " AX:" << (ptr_t)regs->rax
-		<< " BX:" << (ptr_t)regs->rbx
-		<< " CX:" << (ptr_t)regs->rcx
-		<< " DX:" << (ptr_t)regs->rdx
-		<< " 9 :" << (ptr_t)regs->r9
-		<< " 10:" << (ptr_t)regs->r10
-		<< " 11:" << (ptr_t)regs->r11
-		<< " 12:" << (ptr_t)regs->r12
-		<< " 13:" << (ptr_t)regs->r13
-		<< " 14:" << (ptr_t)regs->r14
-		<< " 15:" << (ptr_t)regs->r15
-		<< " FL:" << (ptr_t)regs->rflags
-		<< " BP:" << (ptr_t)regs->rbp
-		<< " SP:" << (ptr_t)regs->rsp
-		<< " DI:" << (ptr_t)regs->rdi
-		<< " SI:" << (ptr_t)regs->rsi << endl
-		<< esc << "[m";
+	char* buff = exceptionBuffer;
+	buff += snprintf(buff, 1024, "Exception on CPU%d: %d (%s)\n", lapicGetID(), regs->interrupt, ExceptionMsgs[regs->interrupt]);
+	buff += snprintf(buff, 1024, "CS:IP=0x%x:%x ERROR=0x%016x\n", regs->cs, regs->rip, regs->error);
+	buff += snprintf(buff, 1024, "AX=%016x BX=%016x CX=%016x DX=%016x\n", regs->rax, regs->rbx, regs->rcx, regs->rdx);
+	buff += snprintf(buff, 1024, " 9=%016x 10=%016x 11=%016x 12=%016x\n", regs->r9 , regs->r10, regs->r11, regs->r12);
+	buff += snprintf(buff, 1024, "13=%016x 14=%016x 15=%016x FL=%016x\n", regs->r13, regs->r14, regs->r15, regs->rflags);
+	buff += snprintf(buff, 1024, "BP=%016x SP=%016x DI=%016x SI=%016x\n", regs->rbp, regs->rsp, regs->rdi, regs->rsi);
+
+	debug_puts(exceptionBuffer);
 	cpuHalt();
 }
 
@@ -248,9 +227,10 @@ Processors::InitAp() {
 
 	cpu->state = CpuDesc::CPU_HALTED;
 
+	volatile int a = 6/0;
+
 	_lock.Unlock();
 
-	//volatile int a = 6/0;
 
 	cpuHalt();
 

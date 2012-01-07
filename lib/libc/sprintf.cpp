@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -198,7 +200,7 @@ vsnprintf (char* buffer, size_t buffSize, const char* format, va_list args)
 				const char* value = va_arg(args, const char*);
 				const size_t len = strlen(value);
 				memcpy(p, value, len);
-				p += length;
+				p += len;
 				continue;
 			}
 			integer: {

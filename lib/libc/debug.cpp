@@ -46,17 +46,13 @@ debug_print (const char* format, ...)
 void
 fatal_soft(const char* msg, const char* file, const int line, const char* func)
 {
-	debug_print("Fatal soft:\n '%s' at %s:%d (in %s)", msg, file, line, func);
-	for (;;) {
-		cpuStop();
-	}
+	debug_print("Fatal soft: '%s' at %s:%d (in %s)", msg, file, line, func);
+	cpuStop();
 }
 
 void
 assert_failed(const char* msg, const char* file, const int line, const char* func)
 {
-	debug_print("Assertion failed:\n '%s' at %s:%d (in %s)", msg, file, line, func);
-	for (;;) {
-		cpuStop();
-	}
+	debug_print("Assertion failed: '%s' at %s:%d (in %s)", msg, file, line, func);
+	cpuStop();
 }

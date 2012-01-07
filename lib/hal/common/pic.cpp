@@ -39,18 +39,18 @@ picRemap(uint8_t masterOffset, uint8_t slaveOffset)
 {
 	uint8_t a1, a2;
 
-	a1 = inportb(PIC1_DATA);					// save masks
+	a1 = inportb(PIC1_DATA);					/* save masks */
 	a2 = inportb(PIC2_DATA);
 
-	outportb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	// starts the initialization sequence
+	outportb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	/* starts the initialization sequence */
 	io_wait();
 	outportb(PIC2_CMD, ICW1_INIT+ICW1_ICW4);
 	io_wait();
-	outportb(PIC1_DATA, masterOffset);          // define the PIC vectors
+	outportb(PIC1_DATA, masterOffset);          /* define the PIC vectors */
 	io_wait();
 	outportb(PIC2_DATA, slaveOffset);
 	io_wait();
-	outportb(PIC1_DATA, 4);                     // continue initialization sequence
+	outportb(PIC1_DATA, 4);                     /* continue initialization sequence */
 	io_wait();
 	outportb(PIC2_DATA, 2);
 	io_wait();
@@ -60,7 +60,7 @@ picRemap(uint8_t masterOffset, uint8_t slaveOffset)
 	outportb(PIC2_DATA, ICW4_8086);
 	io_wait();
 
-	outportb(PIC1_DATA, a1);   // restore saved masks.
+	outportb(PIC1_DATA, a1);   /* restore saved masks */
 	outportb(PIC2_DATA, a2);
 }
 
