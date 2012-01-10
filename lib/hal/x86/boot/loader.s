@@ -15,7 +15,6 @@ extern entry
 %include "../../common/boot/mboot.inc"
 %include "gdt.inc"
 
-
 mbiMagic dd 0
 mbiTable dd 0
 
@@ -36,6 +35,24 @@ loader:
 	mov dword[0xb8008], 'i_n_'
 	mov dword[0xb800c], 'g_._'
 	mov dword[0xb8010], '._._'
+
+	; load new gdt
+	lgdt [gdtr]
+	jmp GDT_SEL_CODE:.flush   ; Far jump!
+
+.flush:
+	mov ax, GDT_SEL_DATA
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+
+	mov esp, stack+STACKSIZE
+	mov dword[0xb8000], 'x_8_'
+	mov dword[0xb8004], '6_ _'
+	mov dword[0xb8008], ' _o_'
+	mov dword[0xb800c], 'k_._'
 
 	jmp entry
 

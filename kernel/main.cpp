@@ -12,6 +12,7 @@
 #include <hal/lapic.h>
 #include <hal/cpu.h>
 #include <hal/timer.h>
+#include <hal/keyboard.h>
 
 #include <std/Utils.h>
 
@@ -20,7 +21,6 @@
 #include "Processors.h"
 
 #include "Heap.h"
-#include "Keyboard.h"
 
 Console* console;
 CliDesktop* desktop;
@@ -71,16 +71,9 @@ int main() {
 	//Keyboard a;
 
 
+	keyboardInit();
 	for(;;) {
-		for (volatile uint64_t i = 0; i< 1000; i++) {
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-		}
+		(*console) << (char)keyboardGetChar();
 		asm ("int $128");
 	}
 

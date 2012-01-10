@@ -36,9 +36,9 @@ static
 void
 DefaultIsrHandler(RegisterFrame* regs)
 {
-	isrLock.Lock();
-	(*console) << "Unhandled int on CPU" << lapicGetID() <<  " (" << regs->interrupt << ")" << endl;
-	isrLock.Unlock();
+	//isrLock.Lock();
+	//(*console) << "Unhandled int on CPU" << lapicGetID() <<  " (" << regs->interrupt << ")" << endl;
+	//isrLock.Unlock();
 }
 
 #if TARGET == TARGET_X86
@@ -241,15 +241,6 @@ Processors::InitAp() {
 	//cpuStop();
 
 	for(;;) {
-		for (volatile uint64_t i = 0; i< 1000; i++) {
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-			cpuNoOperation();
-		}
 		asm ("int $128");
 	}
 
