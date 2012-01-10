@@ -37,7 +37,6 @@ bool
 CpuWaker::StartCpu(uint32_t lapicId)
 {
 	assert((size_t)CpuWaker::Waked < 0xFFFFFFFF);
-	assert(cpuGetPageTable() < 0xFFFFFFFF);
 
 	_lock.Lock();
 

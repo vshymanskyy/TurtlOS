@@ -14,6 +14,7 @@ extern "C" {
 
 	void halCpuInitIdt(void);
 	void halCpuRegisterISR(int n, isr_t handler);
+	void halCpuRegisterIRQ(int n, isr_t handler);
 
 	int cpuBcdToInt(const uint8_t bcd);
 	uint8_t cpuIntToBcd(const int i);

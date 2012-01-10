@@ -11,6 +11,7 @@
 
 #include <hal/lapic.h>
 #include <hal/cpu.h>
+#include <hal/timer.h>
 
 #include <std/Utils.h>
 
@@ -19,6 +20,7 @@
 #include "Processors.h"
 
 #include "Heap.h"
+#include "Keyboard.h"
 
 Console* console;
 CliDesktop* desktop;
@@ -66,11 +68,16 @@ int main() {
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
 
+	//Keyboard a;
+
+	timerSetFrequency(20);
+	timerInit();
+
+
 	for(;;) {
-		(*console) << "Running (" << cpuReadTimeStamp() << ")" << endl;
-		//volatile int a = 6/0;
-		for (volatile uint64_t i = 0; i< 100000000; i++) {
+		for (volatile uint64_t i = 0; i< 10000000; i++) {
 		}
+		asm ("int $128");
 	}
 
 	delete console;

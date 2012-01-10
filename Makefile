@@ -112,7 +112,7 @@ CPPFLAGS	 = -fno-exceptions \
  
 LDFLAGS		 = -nodefaultlibs
 ASFLAGS		 = -w+gnu-elf-extensions
-EMFLAGS		 = -m 64 -smp 6 -boot d
+EMFLAGS		 = -m 64 -smp 4 -boot d
 
 #----- Platform-dependent --------------------------------
 ifeq ($(Arch),x86)
@@ -149,7 +149,7 @@ ifeq ($(Build),Debug)
 				   -Wno-variadic-macros \
 				   -g3 -fstack-protector-all
 	
-	CFLAGS		+= -ansi #-std=c99
+	CFLAGS		+= -std=c99
 	
 	CPPFLAGS	+= -Woverloaded-virtual
 	
@@ -191,9 +191,9 @@ image: $(IMAGE)
 
 all:
 	$(MAKE) image Arch=x86 Build=Debug
-#	$(MAKE) image Arch=x86 Build=Release
+	$(MAKE) image Arch=x86 Build=Release
 	$(MAKE) image Arch=x86-64 Build=Debug
-#	$(MAKE) image Arch=x86-64 Build=Release
+	$(MAKE) image Arch=x86-64 Build=Release
 	
 tools: $(BIN2INL) $(MKINITRD)
 
@@ -341,4 +341,4 @@ todo:
 	-for file in $(ALLFILES); do fgrep --exclude Makefile --color=auto -H -n -e TODO -e FIXME $$file; done; true
 
 devenv:
-	apt-get install vim-gtk genisoimage cscope exuberant-ctags g++ nasm qemu meld git
+	sudo apt-get install vim-gtk genisoimage cscope exuberant-ctags g++ nasm qemu meld git

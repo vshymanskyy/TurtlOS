@@ -22,21 +22,29 @@ inline
 void
 cpuDisableInterrupts()
 {
-	asm("cli");
+	asm ("cli");
 }
 
 inline
 void
 cpuEnableInterrupts()
 {
-	asm("sti");
+	asm ("sti");
+}
+
+inline
+int cpuInterruptsEnabled()
+{
+	int f;
+	asm ("pushf\n popl %0" : "=g"(f));
+	return f & ( 1 << 9 );
 }
 
 inline
 void
 cpuNoOperation()
 {
-	asm("nop");
+	asm ("nop");
 }
 
 inline
@@ -44,8 +52,8 @@ void
 cpuStop()
 {
 	for(;;) {
-		asm("cli");
-		asm("hlt");
+		asm ("cli");
+		asm ("hlt");
 	}
 }
 
@@ -53,30 +61,69 @@ inline
 void
 cpuHalt()
 {
-	asm("hlt");
+	asm ("hlt");
 }
 
 inline
 void
 cpuWriteBackInvalidateCache()
 {
-	asm("wbinvd");
+	asm ("wbinvd");
 }
 
 inline
 void
 cpuInvalidateCache()
 {
-	asm("invd");
+	asm ("invd");
+}
+
+inline
+size_t cpuGetCR0(void)
+{
+	size_t val;
+    asm ( "mov %%cr0, %0" : "=r"(val) );
+    return val;
+}
+
+inline
+size_t cpuGetCR1(void)
+{
+	size_t val;
+    asm ( "mov %%cr1, %0" : "=r"(val) );
+    return val;
+}
+
+inline
+size_t cpuGetCR2(void)
+{
+	size_t val;
+    asm ( "mov %%cr2, %0" : "=r"(val) );
+    return val;
+}
+
+inline
+size_t cpuGetCR3(void)
+{
+	size_t val;
+    asm ( "mov %%cr3, %0" : "=r"(val) );
+    return val;
 }
 
 inline
 size_t
-cpuGetPageTable()
+cpuGetStackPtr()
 {
-	size_t cr3;
-	asm ("mov %%cr3, %0" : "=r" (cr3) :);
-	return cr3;
+	size_t result;
+	asm ("mov %%esp, (%0)" : "=r"(result));
+	return result;
+}
+
+inline
+void
+cpuSetStackPtr(void* ptr, size_t size)
+{
+	asm ("mov (%0), %%esp; push $0; push $0; push $0" : : "r"((size_t)ptr+size-8));
 }
 
 inline
@@ -94,7 +141,7 @@ cpuSetMSR(uint32_t msr, uint64_t val)
 {
 	uint32_t hi = (uint32_t)(val >> 32);
 	uint32_t lo = val & 0xFFFFFFFF;
-	asm("wrmsr"::"a"(lo),"d"(hi),"c"(msr));
+	asm ("wrmsr"::"a"(lo),"d"(hi),"c"(msr));
 }
 
 inline
@@ -116,5 +163,5 @@ cpuSetIDT(void* base, uint16_t limit)
 
 	IDTR.limit = limit;
 	IDTR.base = (size_t)base;
-	asm("lidt (%0)" : : "p"(&IDTR));
+	asm ("lidt (%0)" : : "p"((size_t)&IDTR));
 }

@@ -31,11 +31,14 @@ const char* ExceptionMsgs[] = {
 	"Machine check"
 };
 
+Spinlock isrLock;
 static
 void
 DefaultIsrHandler(RegisterFrame* regs)
 {
+	isrLock.Lock();
 	(*console) << "Unhandled int on CPU" << lapicGetID() <<  " (" << regs->interrupt << ")" << endl;
+	isrLock.Unlock();
 }
 
 #if TARGET == TARGET_X86
@@ -183,12 +186,10 @@ Processors::InitBsp() {
 	for(int i = 0; i<16; i++) {
 		picSetMask(i);
 	}
-	//timerSetFrequency(50);
+
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
 	lapicStart();
-
-	cpu->state = CpuDesc::CPU_INIT;
 
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
 	//lapicSetBase((size_t)cpu->lapic);
@@ -207,12 +208,16 @@ Processors::InitAp() {
 	cpu->stack = malloc(cpu->stackSize);
 	cpu->lapic = NULL;
 
+	memset(cpu->stack, 0, cpu->stackSize);
+
+	cpuSetStackPtr(cpu->stack, cpu->stackSize);
+
 	halCpuInitIdt();
-	picRemap(0x20, 0x28);
-	for(int i = 0; i<16; i++) {
-		picSetMask(i);
-	}
-	//timerSetFrequency(50);
+	//picRemap(0x20, 0x28);
+	//for(int i = 0; i<16; i++) {
+	//	picSetMask(i);
+	//}
+
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
 
@@ -227,12 +232,17 @@ Processors::InitAp() {
 
 	cpu->state = CpuDesc::CPU_HALTED;
 
-	volatile int a = 6/0;
-
 	_lock.Unlock();
 
+	cpuStop();
 
-	cpuHalt();
+	for(;;) {
+		for (volatile uint64_t i = 0; i< 10000000; i++) {
+		}
+		asm ("int $128");
+	}
+
+	cpuStop();
 
 	fatal("executing after cpuHalt");
 }

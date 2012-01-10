@@ -81,7 +81,7 @@ inline
 void
 Queue<T, SIZE>::Push(const T& info)
 {
-	AutoSpinLock(this);
+	//AutoSpinLock(this);
 	_data[_inIdx] = info;
 	_inIdx = (_inIdx+1)%SIZE;
 	assert(_inIdx != _outIdx);		//overflow
@@ -92,7 +92,7 @@ inline
 T
 Queue<T, SIZE>::Pop()
 {
-	AutoSpinLock(this);
+	//AutoSpinLock(this);
 	_outIdx = (_outIdx+1)%SIZE;
 	assert(_outIdx != _inIdx);		//underflow
 	return _data[_outIdx];

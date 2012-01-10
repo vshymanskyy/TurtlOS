@@ -23,15 +23,13 @@
 #define ICW4_BUF_MASTER	0x0C	/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
 
-static void io_wait(void) {}
-
 void
 picSendEOI(uint8_t irq)
 {
 	if (irq >= 8) {
-		outportb(PIC2_CMD,PIC_EOI);
+		outb(PIC2_CMD,PIC_EOI);
 	}
-	outportb(PIC1_CMD,PIC_EOI);
+	outb(PIC1_CMD,PIC_EOI);
 }
 
 void
@@ -39,29 +37,29 @@ picRemap(uint8_t masterOffset, uint8_t slaveOffset)
 {
 	uint8_t a1, a2;
 
-	a1 = inportb(PIC1_DATA);					/* save masks */
-	a2 = inportb(PIC2_DATA);
+	a1 = inb(PIC1_DATA);					/* save masks */
+	a2 = inb(PIC2_DATA);
 
-	outportb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	/* starts the initialization sequence */
+	outb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	/* starts the initialization sequence */
 	io_wait();
-	outportb(PIC2_CMD, ICW1_INIT+ICW1_ICW4);
+	outb(PIC2_CMD, ICW1_INIT+ICW1_ICW4);
 	io_wait();
-	outportb(PIC1_DATA, masterOffset);          /* define the PIC vectors */
+	outb(PIC1_DATA, masterOffset);          /* define the PIC vectors */
 	io_wait();
-	outportb(PIC2_DATA, slaveOffset);
+	outb(PIC2_DATA, slaveOffset);
 	io_wait();
-	outportb(PIC1_DATA, 4);                     /* continue initialization sequence */
+	outb(PIC1_DATA, 4);                     /* continue initialization sequence */
 	io_wait();
-	outportb(PIC2_DATA, 2);
-	io_wait();
-
-	outportb(PIC1_DATA, ICW4_8086);
-	io_wait();
-	outportb(PIC2_DATA, ICW4_8086);
+	outb(PIC2_DATA, 2);
 	io_wait();
 
-	outportb(PIC1_DATA, a1);   /* restore saved masks */
-	outportb(PIC2_DATA, a2);
+	outb(PIC1_DATA, ICW4_8086);
+	io_wait();
+	outb(PIC2_DATA, ICW4_8086);
+	io_wait();
+
+	outb(PIC1_DATA, a1);   /* restore saved masks */
+	outb(PIC2_DATA, a2);
 }
 
 void
@@ -76,8 +74,8 @@ picSetMask(uint8_t IRQline)
         port = PIC2_DATA;
         IRQline -= 8;
     }
-    value = inportb(port) | (1 << IRQline);
-    outportb(port, value);
+    value = inb(port) | (1 << IRQline);
+    outb(port, value);
 }
 
 void
@@ -92,6 +90,6 @@ picClearMask(uint8_t IRQline)
         port = PIC2_DATA;
         IRQline -= 8;
     }
-    value = inportb(port) & ~(1 << IRQline);
-    outportb(port, value);
+    value = inb(port) & ~(1 << IRQline);
+    outb(port, value);
 }

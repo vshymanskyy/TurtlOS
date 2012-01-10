@@ -143,6 +143,11 @@ void halCpuRegisterISR(int n, isr_t handler)
 	interrupt_handlers[n] = handler;
 }
 
+void halCpuRegisterIRQ(int n, isr_t handler)
+{
+	interrupt_handlers[n+0x20] = handler;
+}
+
 // This gets called from our ASM interrupt handler stub.
 extern "C"
 void isr_handler()
