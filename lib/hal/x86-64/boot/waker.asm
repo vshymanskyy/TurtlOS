@@ -5,6 +5,7 @@ struc config
 	.mode	resb	1
 	.id		resb	1
 	.entry	resq	1
+	.stack	resq	1
 endstruc
 
 ; ========================================================
@@ -70,7 +71,6 @@ pmode:
 
 [bits 64]
 lmode:
-	mov rsp, 0x7C00
+	mov rsp, qword[CONFIG + config.stack]
 
 	call qword[CONFIG + config.entry]
-

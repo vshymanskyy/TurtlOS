@@ -5,6 +5,7 @@ struc config
 	.mode	resb	1
 	.id		resb	1
 	.entry	resd	1
+	.stack	resd	1
 endstruc
 
 ; ========================================================
@@ -43,7 +44,7 @@ pmode:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-	mov esp, 0x7C00
+
+	mov esp, dword[CONFIG + config.stack]
 
 	call dword[CONFIG + config.entry]
-

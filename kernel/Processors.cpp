@@ -163,7 +163,10 @@ Processors::Startup()
 		if (cpu.state == CpuDesc::CPU_STOPPED) {
 			(*console) << "Starting...";
 			cpu.state = CpuDesc::CPU_BOOTING;
-			if (!waker.StartCpu(cpu.lapicId)) {
+			cpu.stackSize = 0x4096;
+			cpu.stack = malloc(cpu.stackSize);
+
+			if (!waker.StartCpu(cpu.lapicId, (void*)((size_t)cpu.stack) + cpu.stackSize - 16)) {
 				(*console) << esc << "[31m fail" << esc << "[m" << endl;
 			}
 			_lock.Wait();
@@ -191,6 +194,9 @@ Processors::InitBsp() {
 	cpuEnableInterrupts();
 	lapicStart();
 
+	timerSetFrequency(20);
+	timerInit();
+
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
 	//lapicSetBase((size_t)cpu->lapic);
 
@@ -204,19 +210,14 @@ Processors::InitAp() {
 	CpuDesc* cpu = GetCpu(lapicGetID());
 
 	cpu->state = CpuDesc::CPU_INIT;
-	cpu->stackSize = 0x4096;
-	cpu->stack = malloc(cpu->stackSize);
 	cpu->lapic = NULL;
 
-	memset(cpu->stack, 0, cpu->stackSize);
-
-	cpuSetStackPtr(cpu->stack, cpu->stackSize);
 
 	halCpuInitIdt();
-	//picRemap(0x20, 0x28);
-	//for(int i = 0; i<16; i++) {
-	//	picSetMask(i);
-	//}
+	picRemap(0x20, 0x28);
+	for(int i = 0; i<16; i++) {
+		picSetMask(i);
+	}
 
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
@@ -225,19 +226,29 @@ Processors::InitAp() {
 	//lapicSetBase((size_t)cpu->lapic);
 	lapicStart();
 
+	timerSetFrequency(20);
+	timerInit();
+
 	//for(;;) {
 	//	(*console) << cpu->lapicId << endl;
 	//}
 
 
-	cpu->state = CpuDesc::CPU_HALTED;
+	cpu->state = CpuDesc::CPU_READY;
 
 	_lock.Unlock();
 
-	cpuStop();
+	//cpuStop();
 
 	for(;;) {
-		for (volatile uint64_t i = 0; i< 10000000; i++) {
+		for (volatile uint64_t i = 0; i< 1000; i++) {
+			cpuNoOperation();
+			cpuNoOperation();
+			cpuNoOperation();
+			cpuNoOperation();
+			cpuNoOperation();
+			cpuNoOperation();
+			cpuNoOperation();
 		}
 		asm ("int $128");
 	}

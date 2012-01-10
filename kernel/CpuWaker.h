@@ -10,7 +10,7 @@ public:
 	typedef Delegate<void(void)> Entry;
 
 	CpuWaker(Entry entry);
-	bool StartCpu(uint32_t lapicId);
+	bool StartCpu(uint32_t lapicId, void* stack);
 
 private:
 	static void Waked();

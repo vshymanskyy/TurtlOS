@@ -19,7 +19,7 @@ extern entry
 mbiMagic dd 0
 mbiTable dd 0
 
-STACKSIZE equ 0x4000
+STACKSIZE equ 0x1000
 
 ; ========================================================
 ;  Code
@@ -45,4 +45,4 @@ loader:
 [section .bss]
 align 32
 stack:
-	resb STACKSIZE			; reserve 16k stack on a quadword boundary
+	resb STACKSIZE			; reserve stack on a quadword boundary

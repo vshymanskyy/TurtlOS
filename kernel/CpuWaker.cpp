@@ -13,6 +13,7 @@ struct CpuConfig {
 	uint8_t mode;
 	uint8_t id;
 	size_t entry;
+	size_t stack;
 } PACKED;
 
 static CpuWaker* instance = NULL;
@@ -34,7 +35,7 @@ CpuWaker::CpuWaker(Entry entry)
 }
 
 bool
-CpuWaker::StartCpu(uint32_t lapicId)
+CpuWaker::StartCpu(uint32_t lapicId, void* stack)
 {
 	assert((size_t)CpuWaker::Waked < 0xFFFFFFFF);
 
@@ -43,6 +44,7 @@ CpuWaker::StartCpu(uint32_t lapicId)
 	config->mode	= TARGET;
 	config->id		= (uint8_t)lapicId;
 	config->entry	= (size_t)&Waked;
+	config->stack	= (size_t)stack;
 
 	lapicStartCpu(lapicId, CPU_WAKER_ADDR);
 
