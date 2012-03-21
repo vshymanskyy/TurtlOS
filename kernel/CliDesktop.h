@@ -1,6 +1,6 @@
 #pragma once
 #include "CliPanel.h"
-#include <hal/portio.h>
+#include "portio.h"
 
 #define TEXT_INDEX		0x03D4
 #define TEXT_DATA		0x03D5

@@ -12,7 +12,7 @@ extern entry
 ;  Data
 ; ========================================================
 
-%include "../../common/boot/mboot.inc"
+%include "../../common-x86/boot/mboot.inc"
 %include "gdt.inc"
 %include "pagetable.inc"
 

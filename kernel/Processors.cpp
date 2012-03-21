@@ -1,10 +1,10 @@
 #include "Processors.h"
 #include "CpuWaker.h"
 #include "Console.h"
-#include <hal/lapic.h>
-#include <hal/cpu.h>
-#include <hal/pic.h>
-#include <hal/timer.h>
+#include <lapic.h>
+#include <cpu_structs.h>
+#include <pic.h>
+#include <timer.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -36,9 +36,9 @@ static
 void
 DefaultIsrHandler(RegisterFrame* regs)
 {
-	//isrLock.Lock();
-	//(*console) << "Unhandled int on CPU" << lapicGetID() <<  " (" << regs->interrupt << ")" << endl;
-	//isrLock.Unlock();
+	isrLock.Lock();
+	debug_print("[CPU %d] Unhandled int %d\n", lapicGetID(), regs->interrupt);
+	isrLock.Unlock();
 }
 
 #if TARGET == TARGET_X86
@@ -78,6 +78,14 @@ HandleException(RegisterFrame* regs)
 	debug_puts(exceptionBuffer);
 	cpuHalt();
 }
+#elif TARGET == TARGET_ARM
+
+static
+void
+HandleException(RegisterFrame* regs)
+{
+
+}
 
 #else
 	#error "Target not supported"
@@ -112,7 +120,7 @@ CpuDesc::CpuDesc(uint32_t lapic_id, bool enabled)
 
 Processors::Processors()
 	: _bspLapicId(0xFF)
-	, _lock(false)
+	//, _lock(false)
 {
 }
 
@@ -159,20 +167,15 @@ Processors::Startup()
 		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == _bspLapicId) {
 			continue;
 		}
-		(*console) << "CPU " << (int)cpu.lapicId << ": ";
 		if (cpu.state == CpuDesc::CPU_STOPPED) {
-			(*console) << "Starting...";
 			cpu.state = CpuDesc::CPU_BOOTING;
 			cpu.stackSize = 0x4096;
 			cpu.stack = malloc(cpu.stackSize);
 
 			if (!waker.StartCpu(cpu.lapicId, (void*)((size_t)cpu.stack) + cpu.stackSize - 16)) {
-				(*console) << esc << "[31m fail" << esc << "[m" << endl;
+				debug_print("[CPU %d] Failed to start CPU %d\n", lapicGetID(), cpu.lapicId);
 			}
-			_lock.Wait();
-		} else {
-			static const char* labels[5] = { "Disabled", "Stopped", "Booting", "Init", "Ready" };
-			(*console) << labels[cpu.state] << endl;
+			//_lock.Wait();
 		}
 	}
 }
@@ -205,13 +208,12 @@ Processors::InitBsp() {
 
 void
 Processors::InitAp() {
-	_lock.Lock();
-	(*console) << esc << "[32m ok" << esc << "[m" << endl;
+	//_lock.Lock();
+	debug_print("[CPU %d] Started\n", lapicGetID());
 	CpuDesc* cpu = GetCpu(lapicGetID());
 
 	cpu->state = CpuDesc::CPU_INIT;
 	cpu->lapic = NULL;
-
 
 	halCpuInitIdt();
 	picRemap(0x20, 0x28);
@@ -222,12 +224,11 @@ Processors::InitAp() {
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
 
+	timerInit();
+
 	//cpu->lapic = aligned_alloc(0x400, 0x1000);
 	//lapicSetBase((size_t)cpu->lapic);
 	lapicStart();
-
-	timerSetFrequency(20);
-	timerInit();
 
 	//for(;;) {
 	//	(*console) << cpu->lapicId << endl;
@@ -236,12 +237,13 @@ Processors::InitAp() {
 
 	cpu->state = CpuDesc::CPU_READY;
 
-	_lock.Unlock();
+	//_lock.Unlock();
 
 	//cpuStop();
 
 	for(;;) {
-		asm ("int $128");
+		//for(int i=0; i<10000000; i++);
+		//asm ("int $128");
 	}
 
 	cpuStop();

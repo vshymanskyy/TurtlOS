@@ -55,5 +55,5 @@ private:
 
 	uint32_t	_bspLapicId;
 	CpuList		_processors;
-	Spinlock	_lock;
+	//Spinlock	_lock;
 };

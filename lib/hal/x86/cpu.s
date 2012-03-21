@@ -84,22 +84,22 @@ isr_common_stub:
 
 	mov ecx, esp
 
-	;mov ax, ds   ; Lower 16-bits of eax = ds.
-	;push ax      ; save the data segment descriptor
+	mov ax, ds   ; Lower 16-bits of eax = ds.
+	push eax      ; save the data segment descriptor
 
-	;mov ax, 0x08 ; load the kernel data segment descriptor
-	;mov ds, ax
-	;mov es, ax
-	;mov fs, ax
-	;mov gs, ax
+	mov ax, 0x08 ; load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
 	call isr_handler
 
-	;pop bx       ; reload the original data segment descriptor
-	;mov ds, bx
-	;mov es, bx
-	;mov fs, bx
-	;mov gs, bx
+	pop ebx       ; reload the original data segment descriptor
+	mov ds, bx
+	mov es, bx
+	mov fs, bx
+	mov gs, bx
 
 	popa          ; Pops edi,esi,ebp...
 	add esp, 8    ; Cleans up the pushed error code and pushed ISR number

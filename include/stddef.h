@@ -13,6 +13,7 @@
 #if		TARGET == TARGET_X86
 	typedef uint32_t			size_t;
 	typedef int32_t				ptrdiff_t;
+	typedef int32_t				ssize_t;
 
 	#define SIZE_T_MIN			0
 	#define SIZE_T_MAX			0xffffffffUL
@@ -20,10 +21,20 @@
 #elif		TARGET == TARGET_X86_64
 	typedef long unsigned int	size_t;
 	typedef long signed int		ptrdiff_t;
+	typedef long signed int		ssize_t;
 
 	#define SIZE_T_MIN			0
 	#define SIZE_T_MAX			0xffffffffffffffffULL
 	#define SIZE_T_SIZE			8
+
+#elif		TARGET == TARGET_ARM
+	typedef uint32_t			size_t;
+	typedef int32_t				ptrdiff_t;
+	typedef int32_t				ssize_t;
+
+	#define SIZE_T_MIN			0
+	#define SIZE_T_MAX			0xffffffffUL
+	#define SIZE_T_SIZE			4
 
 #else
 	#error "Platform not supported."

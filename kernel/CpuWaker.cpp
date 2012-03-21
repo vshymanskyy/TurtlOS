@@ -3,8 +3,8 @@
 #include "DeviceManager.h"
 #include "Console.h"
 
-#include "hal/lapic.h"
-#include <hal/cpu.h>
+#include <lapic.h>
+#include <cpu_structs.h>
 
 #define CPU_WAKER_ADDR 0x1000
 #define CPU_CONFIG_ADDR 0x600
@@ -27,7 +27,7 @@ CpuWaker::CpuWaker(Entry entry)
 	List<iDevFileSystem*> fsystems = DeviceManager::Instance()->GetFileSystems();
 	for (List<iDevFileSystem*>::It its = fsystems.First(); its != fsystems.End(); ++its) {
 		if (File waker = fsystems[its]->FindFile("waker.bin")) {
-			(*console) << "Found waker.bin (" << (uint64_t)waker->Length << " bytes) on " << fsystems[its]->GetDescription() << endl;
+			debug_print("[WAKER] Found waker.bin (%d bytes) on %s\n", waker->Length, (const char*)fsystems[its]->GetDescription());
 			waker->Read(0, waker->Length, (void*)CPU_WAKER_ADDR);
 		}
 	}
@@ -51,10 +51,6 @@ CpuWaker::StartCpu(uint32_t lapicId, void* stack)
 	const bool locked = _lock.Wait(10000000);
 	_lock.Unlock();
 	return locked;
-	
-	//_lock.Lock();
-	//_lock.Unlock();
-	//return true;
 }
 
 void

@@ -14,9 +14,6 @@ Build		?= Debug
 # BINARIES
 #---------------------------------------------------------
 ECHO		 = @echo
-LD			 = ld
-CC			 = gcc
-AS			 = nasm
 OBJDUMP		 = objdump
 SLEEP		 = sleep
 CP			 = cp
@@ -24,12 +21,86 @@ RM			 = rm -f
 RMDIR		 = rm -rf
 MKDIR		 = mkdir -p
 
+DEVENV		 = build-essential \
+			gcc-arm-linux-gnueabi \
+			g++-arm-linux-gnueabi \
+			genisoimage \
+			uboot-mkimage \
+			g++ \
+			nasm \
+			qemu \
+			qemu-kvm-extras \
+			vim-gtk \
+			cscope \
+			exuberant-ctags \
+			meld \
+			git
+
 ifeq ($(Arch),x86)
-	EM			 = qemu
+	AS			 = nasm -f elf32
+	CC			 = gcc -m32
+	LD			 = ld -m elf_i386 -L/usr/lib/gcc/x86_64-linux-gnu/4.6/32/
+	EM			 = qemu -debugcon stdio -m 64 -smp 4 -boot d
 	GDB			 = gdb
+	DEFINES		+= -D __x86
+	
+	BUILDPATHS	 = lib/hal/common   \
+			   lib/hal/common-x86   \
+			   lib/hal/$(Arch)  \
+			   lib/crt/gcc-common  \
+			   lib/crt/gcc-$(Arch)  \
+			   lib/std          \
+			   lib/libc         \
+			   kernel
+			   
+	CCFLAGS		 += -I include \
+				-I lib/hal/common-x86  \
+				-I lib/hal/$(Arch)
+	
 else ifeq ($(Arch),x86-64)
-	EM			 = qemu-system-x86_64
-	GDB			 = x86_64-linux-gnu-gdb
+	AS			 = nasm -f elf64
+	CC			 = gcc -m64
+	LD			 = ld -m elf_x86_64 -L/usr/lib/gcc/x86_64-linux-gnu/4.6/
+	EM			 = qemu-system-x86_64 -debugcon stdio -m 64 -smp 4 -boot d
+	GDB			 = gdb
+	DEFINES		+= -D __x86_64
+	
+	BUILDPATHS	 = lib/hal/common   \
+			   lib/hal/common-x86   \
+			   lib/hal/$(Arch)  \
+			   lib/crt/gcc-common  \
+			   lib/crt/gcc-$(Arch)  \
+			   lib/std          \
+			   lib/libc         \
+			   kernel
+			   
+	CCFLAGS		 += -I include \
+				-I lib/hal/common-x86  \
+				-I lib/hal/$(Arch)
+
+else ifeq ($(Arch),arm)
+	TCHAIN		 = arm-linux-gnueabi-
+	AS			 = $(TCHAIN)as -mcpu=cortex-a8
+	CC			 = $(TCHAIN)gcc -mcpu=cortex-a8
+	LD			 = $(TCHAIN)ld -L/usr/lib/gcc/arm-linux-gnueabi/4.6.1/
+	OBJCOPY		 = $(TCHAIN)objcopy
+	EM			 = qemu-system-arm -serial stdio -m 64 -M realview-pb-a8
+	GDB			 = gdb
+	DEFINES		+= -D __arm
+	
+	BUILDPATHS	 = lib/hal/common  \
+			   lib/hal/$(Arch)  \
+			   lib/crt/gcc-common  \
+			   lib/crt/gcc-$(Arch)  \
+			   lib/libc         \
+			   lib/std
+			   
+	CCFLAGS		 += -I include \
+			-I lib/hal/$(Arch) \
+			-I lib/hal/mach-versatilepb
+
+else
+	$(error Target platform '$(Arch)' not supported)
 endif
 
 #---------------------------------------------------------
@@ -46,31 +117,26 @@ TEMP_ISO	 = $(TEMP).iso
 # FILES
 #---------------------------------------------------------
 GLOBALINC	 = global.h
-LINKSCRIPT	 = linker.ld
+LINKSCRIPT	 = lib/hal/$(Arch)/linker.ld
 TARBALL		 = TurtlOS.tar.bz2
 
 AUXFILES	 = $(LINKSCRIPT) \
 			   Makefile      \
 			   Readme.txt    \
 			   doxyfile      \
-			   grub.cfg
+			   grub.cfg		 \
+			   .project		 \
+			   .cproject
 
 GENFILES	 = $(TARBALL) \
 			   cscope.*   \
 			   tags
-
-BUILDPATHS	 = lib/hal/common   \
-			   lib/hal/$(Arch)  \
-			   lib/std          \
-			   lib/libc         \
-			   kernel
 
 TARPATHS	 = config      \
 			   include     \
 			   kernel      \
 			   lib         \
 			   tools       \
-			   .git        \
 			   .settings
 
 MKINITRD	 = $(BUILD)/mkinitrd
@@ -93,41 +159,25 @@ OUTFILES	 = $(patsubst %.s, $(TEMP)/%.b, $(ASMFILES))
 OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.obj, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.o, $(CFILES))
 DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.dep, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.d, $(CFILES))
 
-LINKFILES	 = $(OUTFILES) $(OBJFILES)
+LINKFILES	 = $(OUTFILES) $(OBJFILES) -lsupc++ -lgcc
 
 TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES)
 
 #---------------------------------------------------------
 # General FLAGS
 #---------------------------------------------------------
-CCFLAGS		 = -nostartfiles   \
-			   -I include/std  \
+CCFLAGS		 += -nostartfiles   \
 			   -nodefaultlibs  \
 			   -ffreestanding  \
+			   -fno-keep-inline-functions \
 			   -fno-builtin    \
 			   -MMD -MP -MF $(@:.obj=.dep)
 			   
-CPPFLAGS	 = -fno-exceptions \
+CPPFLAGS	 += -fno-exceptions \
 			   -fno-rtti
  
-LDFLAGS		 = -nodefaultlibs
-ASFLAGS		 = -w+gnu-elf-extensions
-EMFLAGS		 = -m 64 -smp 4 -boot d
-
-#----- Platform-dependent --------------------------------
-ifeq ($(Arch),x86)
-	ASFLAGS		+= -f elf32
-	CCFLAGS		+= -m32
-	LDFLAGS		+= -m elf_i386
-	DEFINES		+= -D __x86
-else ifeq ($(Arch),x86-64)
-	ASFLAGS		+= -f elf64
-	CCFLAGS		+= -m64
-	LDFLAGS		+= -m elf_x86_64
-	DEFINES		+= -D __x86_64
-else
-	$(error Target platform '$(Arch)' not supported)
-endif
+LDFLAGS		 += -nodefaultlibs
+#ASFLAGS		 += -w+gnu-elf-extensions
 
 #----- Build type ----------------------------------------
 ifeq ($(Build),Debug)
@@ -185,7 +235,7 @@ endif
 #---------------------------------------------------------
 # RULES
 #---------------------------------------------------------
-.PHONY: all clean tar todo image run run_debug run_ddd cscope ctags docs devenv
+.PHONY: all clean tar todo kernel image run run_debug run_ddd cscope ctags docs devenv
 
 image: $(IMAGE)
 
@@ -194,6 +244,8 @@ all:
 	$(MAKE) image Arch=x86 Build=Release
 	$(MAKE) image Arch=x86-64 Build=Debug
 	$(MAKE) image Arch=x86-64 Build=Release
+	$(MAKE) kernel Arch=arm Build=Debug
+	$(MAKE) kernel Arch=arm Build=Release
 	
 tools: $(BIN2INL) $(MKINITRD)
 
@@ -206,11 +258,13 @@ clean:
 $(KERNEL): $(LINKFILES) $(LINKSCRIPT)
 	$(ECHO) Linking to $@
 	$(MKDIR) $(shell dirname $@)
-	$(LD) $(LDFLAGS)  -T linker.ld -o $@ $(LINKFILES)
+	$(LD) $(LDFLAGS) -T $(LINKSCRIPT) -o $@ $(LINKFILES)
 	-chmod a+x $@
 ifdef ObjDump
 	$(OBJDUMP) -dlxw -M intel $@ > $@.dump
 endif
+
+kernel: $(KERNEL)
 
 #----- Compiling -----------------------------------------
 $(TEMP)/%.obj: %.cpp $(INCLUDE)/$(GLOBALINC)
@@ -232,11 +286,17 @@ endif
 $(TEMP)/%.b: %.s
 	$(ECHO) Assembling $<
 	$(MKDIR) $(shell dirname $@)
+ifeq ($(Arch),x86)
 	$(AS) $(ASFLAGS) -i $(shell dirname $<)/ -o $@ $<
+else ifeq ($(Arch),x86-64)
+	$(AS) $(ASFLAGS) -i $(shell dirname $<)/ -o $@ $<
+else ifeq ($(Arch),arm)
+	$(AS) $(ASFLAGS) -g $< -o $@
+endif
 
 $(WAKER): lib/hal/$(Arch)/boot/waker.asm
 	$(ECHO) Assembling $<
-	$(AS) -i $(shell dirname $<)/ -o $@ $<
+	nasm -i $(shell dirname $<)/ -o $@ $<
 
 #----- Additional dependencies ---------------------------
 $(LINKFILES): Makefile
@@ -266,6 +326,7 @@ else ifeq ($(Arch),x86-64)
 	$(ECHO) "set archi i386:x86-64:intel"    >> $@
 endif
 	$(ECHO) "b assert_failed"                >> $@
+	$(ECHO) "b entry"                        >> $@
 
 $(DDDCONF):
 	$(MKDIR) $(shell dirname $@)
@@ -280,7 +341,7 @@ endif
 	$(ECHO) "symbol-file $(KERNEL)"          >> $@
 	$(ECHO) "target remote :1234"            >> $@
 	$(ECHO) "b assert_failed"                >> $@
-	$(ECHO) "b main"                         >> $@
+	$(ECHO) "b entry"                        >> $@
 	$(ECHO) "c"                              >> $@
 
 
@@ -296,15 +357,26 @@ $(IMAGE): $(KERNEL) $(INITRD) $(GDBCONF) grub.cfg
 	$(ECHO) Creating $@
 	$(MKDIR) $(TEMP_ISO)/boot/grub
 	$(CP) grub.cfg $(TEMP_ISO)/boot/grub
+	$(CP) /boot/grub/unicode.pf2 $(TEMP_ISO)/boot/grub
 	$(CP) $(KERNEL) $(TEMP_ISO)/kernel.bin
 	$(CP) $(INITRD) $(TEMP_ISO)/initrd.img
-	grub-mkimage -p /boot/grub -O i386-pc -o $(TEMP_ISO)/core.img biosdisk normal iso9660 multiboot
+	grub-mkimage -p /boot/grub -O i386-pc -o $(TEMP_ISO)/core.img biosdisk normal iso9660 multiboot vbe video_bochs video_cirrus videoinfo gfxterm cpuid gfxmenu halt hexdump lspci lsacpi lsapm pci png jpeg reboot serial terminfo usb_keyboard usb usbserial_common usbserial_ftdi usbtest help
 	cat /usr/lib/grub/i386-pc/cdboot.img $(TEMP_ISO)/core.img > $(TEMP_ISO)/boot.img
 	genisoimage -quiet -pad -input-charset ascii -R -A "TurtlOS" -no-emul-boot -boot-load-size 4 -boot-info-table -b boot.img -c boot.catalog -hide boot.img -hide boot.catalog -o $(IMAGE) $(TEMP_ISO)
 
 #----- Run -----------------------------------------------
+ifeq ($(Arch),x86)
 run: $(IMAGE)
 	$(EM) $(EMFLAGS) -cdrom $(IMAGE)
+else ifeq ($(Arch),x86-64)
+run: $(IMAGE)
+	$(EM) $(EMFLAGS) -cdrom $(IMAGE)
+else ifeq ($(Arch),arm)
+run: $(KERNEL)
+	$(OBJCOPY) -O binary $(KERNEL) $(DEST)/kernel-bin
+	$(EM) $(EMFLAGS) -kernel $(DEST)/kernel-bin
+endif
+
 
 run_debug: $(IMAGE)
 	$(EM) $(EMFLAGS) -s -S -cdrom $(IMAGE)
@@ -341,4 +413,4 @@ todo:
 	-for file in $(ALLFILES); do fgrep --exclude Makefile --color=auto -H -n -e TODO -e FIXME $$file; done; true
 
 devenv:
-	sudo apt-get install vim-gtk genisoimage cscope exuberant-ctags g++ nasm qemu meld git
+	sudo apt-get install $(DEVENV)

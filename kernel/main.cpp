@@ -9,10 +9,9 @@
 //#include "CachedDrive.h"
 #include "InitrdFs.h"
 
-#include <hal/lapic.h>
-#include <hal/cpu.h>
-#include <hal/timer.h>
-#include <hal/keyboard.h>
+#include <lapic.h>
+#include <keyboard.h>
+#include <mouse.h>
 
 #include <std/Utils.h>
 
@@ -37,10 +36,11 @@ int main() {
 		(*console) << "Loader:  " << bootl << endl;
 	}
 	(*console) << "Kernel:  TurtlOS " __string_def(TARGET_PATH) " (" << __COMPILER__ << " on " << __DATE__ << ' ' << __TIME__ << ")" << endl;
-	/*if (char* cmdl = MultibootParser::Instance()->GetCommandLine()) {
+	if (char* cmdl = MultibootParser::Instance()->GetCommandLine()) {
 		(*console) << "Command: " << cmdl << endl;
 	}
-
+	
+	/*
 	MultibootParser::MemoryMap* mmap = NULL;
 	uint32_t mmap_len = MultibootParser::Instance()->GetMemoryMap(mmap);
 	static const char* mmapTypes[6] = { "Usable", "Reserved", "Acpi recl", "Acpi nvs", "Bad" };
@@ -68,13 +68,12 @@ int main() {
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
 
-	//Keyboard a;
-
 
 	keyboardInit();
+	//mouseInit();
+
 	for(;;) {
 		(*console) << (char)keyboardGetChar();
-		asm ("int $128");
 	}
 
 	delete console;

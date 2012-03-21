@@ -99,25 +99,24 @@ isr_common_stub:
 
 	mov	rcx, rsp
 
-	;mov ax, ds    ; Lower 16-bits of eax = ds.
-	;push rax      ; save the data segment descriptor
+	mov ax, ds    ; Lower 16-bits of eax = ds.
+	push rax      ; save the data segment descriptor
 
-	;mov ax, 0x08  ; load the kernel data segment descriptor
-	;mov ds, ax
-	;mov es, ax
-	;mov fs, ax
-	;mov gs, ax
-
+	mov ax, 0x08  ; load the kernel data segment descriptor
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
 	;sub rsp, 0x20
 	call isr_handler
 	;add rsp, 0x20
 
-	;pop rbx        ; reload the original data segment descriptor
-	;mov ds, bx
-	;mov es, bx
-	;mov fs, bx
-	;mov gs, bx
+	pop rbx        ; reload the original data segment descriptor
+	mov ds, bx
+	mov es, bx
+	mov fs, bx
+	mov gs, bx
 
 	pop r15
 	pop r14

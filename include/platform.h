@@ -7,6 +7,7 @@
 
 #define TARGET_X86 1
 #define TARGET_X86_64 2
+#define TARGET_ARM 3
 
 #define COMPILER_GCC 1
 #define COMPILER_ICC 2
@@ -18,14 +19,20 @@
 #if defined(__x86)
 #  define TARGET TARGET_X86
 #  define TARGET_PATH x86
+#  define COMMON_PATH common-x86
 #elif defined(__x86_64)
 #  define TARGET TARGET_X86_64
-#  define TARGET_PATH x86-64
+#  define TARGET_PATH x64
+#  define COMMON_PATH common-x86
+#elif defined(__arm)
+#  define TARGET TARGET_ARM
+#  define TARGET_PATH arm
+#  define COMMON_PATH mach-versatilepb
 #else
 #  error "Target platform not recognized"
 #endif
 
-#define INCLUDE_COMMON(PATH,FILENAME) <PATH/common/FILENAME>
+#define INCLUDE_COMMON(PATH,FILENAME) <PATH/COMMON_PATH/FILENAME>
 #define INCLUDE_TARGET(PATH,FILENAME) <PATH/TARGET_PATH/FILENAME>
 
 /*********************************************************
@@ -58,6 +65,7 @@
 #  error "Compiler not recognized"
 #endif
 
+#define INLINE __inline__ static
 #define NAKED __declspec((naked))
 #define NORETURN __declspec((noreturn))
 #define NOINLINE __declspec((noinline))

@@ -7,6 +7,7 @@ extern "C" {
 
 void debug_print(const char* format, ...);
 void debug_puts (const char* s);
+void debug_putc (const char s);
 
 void __attribute__((noreturn)) assert_failed (const char *msg, const char *file, const int line, const char *func);
 void __attribute__((noreturn)) fatal_soft (const char *msg, const char *file, const int line, const char *func);

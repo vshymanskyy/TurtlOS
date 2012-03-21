@@ -1,6 +1,6 @@
 #pragma once
 
-#include <hal/atomic.h>
+#include <atomic.h>
 
 /// @brief Spinlock for CPU synchronization
 class Spinlock
