@@ -40,7 +40,7 @@ ifeq ($(Arch),x86)
 	AS			 = nasm -f elf32
 	CC			 = gcc -m32
 	LD			 = ld -m elf_i386 -L/usr/lib/gcc/x86_64-linux-gnu/4.6/32/
-	EM			 = qemu -debugcon stdio -m 64 -smp 4 -boot d
+	EM			 = qemu-system-i386 -debugcon stdio -m 64 -smp 4 -boot d
 	GDB			 = gdb
 	DEFINES		+= -D __x86
 	
@@ -159,7 +159,8 @@ OUTFILES	 = $(patsubst %.s, $(TEMP)/%.b, $(ASMFILES))
 OBJFILES	 = $(patsubst %.cpp, $(TEMP)/%.obj, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.o, $(CFILES))
 DEPFILES	 = $(patsubst %.cpp, $(TEMP)/%.dep, $(CPPFILES)) $(patsubst %.c, $(TEMP)/%.d, $(CFILES))
 
-LINKFILES	 = $(OUTFILES) $(OBJFILES) -lsupc++ -lgcc
+LINKFILES	 = $(OUTFILES) $(OBJFILES)
+#-lsupc++ -lgcc
 
 TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES)
 

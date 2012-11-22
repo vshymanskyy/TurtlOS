@@ -1,15 +1,13 @@
-#ifndef INC_STRING_HPP
-#define INC_STRING_HPP
-
-#if _MSC_VER > 1000
-	#pragma once
-#endif
+#ifndef _X_STRING_H_
+#define _X_STRING_H_
 
 #ifndef __cplusplus
 #error "This C++ header was included in C file"
 #endif
 
-#include <stddef.h>
+
+#define X_ASSERT assert
+#define X_DBG(expr) expr
 
 /// An ANSI COW string, length is stored internally
 class String
@@ -22,19 +20,22 @@ private:
 		unsigned length;
 		/// Count of references
 		int refcount;
+		/// Data buffer
+		char buffer[1];
 	};
+
+	static RefCountedData EMPTY;
 
 	/// Pointer to actual data
 	RefCountedData* mRefData;
 
-	char* GetBuffer() const {
-		return mRefData ? (char*)(mRefData+1) : NULL;
-	}
-
 	/// Compares data to another String
 	/// @param s String to compare
 	/// @return Difference
-	ptrdiff_t Compare(const String& s)const;
+	ssize_t Compare(const String& s)const;
+
+	/// @param s Length of the buffer
+	String(size_t len);
 
 public:
 	/// Default constructor
@@ -63,25 +64,31 @@ public:
 	unsigned Length() const;
 
 	/// @param s The String to check against being prefix
-	bool StartsWith(const String& s)const;
+	bool StartsWith(const String& s) const;
 
 	/// @param s The String to check against being postfix
-	bool EndsWith(const String& s)const;
+	bool EndsWith(const String& s) const;
 
 	/// @param offset The offset of substring
 	/// @returns substring
-	String Substring(int offset);
+	String Substring(int offset) const;
 
 	/// @param offset The offset of substring
 	/// @param length The length of substring
 	/// @returns substring
-	String Substring(int offset, int length);
+	String Substring(int offset, unsigned length) const;
+
+	int	Find(const String& s, int offset = 0) const;
 
 	/// Sets data to a new value
 	void Set(const String& s);
 
 	/// @returns pointer to the constant data
-	operator const char*() const;
+	operator const char*() const { return mRefData->buffer; }
+
+	operator char*() { return mRefData->buffer; }
+
+	//operator bool() const { return Length() != 0; };
 
 	/// @param index the index of char
 	/// @returns reference to a char with the specified index
@@ -103,7 +110,7 @@ public:
 
 inline
 unsigned String::Length() const{
-	return mRefData ? mRefData->length : 0;
+	return mRefData->length;
 }
 
 inline
@@ -112,53 +119,55 @@ String operator+(const String& s1, const String& s2) {
 }
 
 inline
-String::operator const char*() const
-{
-	return GetBuffer();
-}
-
-inline
 const char&
 String::operator[](int index) const
 {
-	return (GetBuffer())[index];
+	if (index < 0) index += mRefData->length;
+	if (index < 0 || index >= (int)mRefData->length) return mRefData->buffer[mRefData->length];
+	return mRefData->buffer[index];
 }
 
+inline
+bool
+String::operator==(const String& s) const
+{
+	return Compare(s) == 0;
+}
 
 inline
 bool
 String::operator!=(const String& s) const
 {
-	return Compare(s)!=0;
+	return Compare(s) != 0;
 }
 
 inline
 bool
 String::operator <(const String& s) const
 {
-	return Compare(s) <0;
+	return Compare(s) < 0;
 }
 
 inline
 bool
 String::operator >(const String& s) const
 {
-	return Compare(s) >0;
+	return Compare(s) > 0;
 }
 
 inline
 bool
 String::operator<=(const String& s) const
 {
-	return Compare(s)<=0;
+	return Compare(s) <= 0;
 }
 
 inline
 bool
 String::operator>=(const String& s) const
 {
-	return Compare(s)>=0;
+	return Compare(s) >= 0;
 }
 
-#endif // INC_STRING_HPP
+#endif /* _X_STRING_H_ */
 
