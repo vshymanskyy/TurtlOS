@@ -46,11 +46,11 @@ int DeviceManager::GetDeviceQty() {
 }
 
 void DeviceManager::Print() {
-	(*console) << "======== Registered devices: ================" << endl;
+	debug_print("======== Registered devices: ================\n");
 	for (DeviceList::It it = _devices.First(); it != _devices.End(); ++it) {
-		(*console) << _devices[it]->GetDescription() << endl;
+		debug_print("%s", (char*)_devices[it]->GetDescription());
 	}
-	(*console) << "=============================================" << endl;
+	debug_print("=============================================\n");
 }
 
 }

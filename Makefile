@@ -40,7 +40,7 @@ ifeq ($(Arch),x86)
 	AS			 = nasm -f elf32
 	CC			 = gcc -m32
 	LD			 = ld -m elf_i386 -L/usr/lib/gcc/x86_64-linux-gnu/4.6/32/
-	EM			 = qemu-system-i386 -debugcon stdio -m 64 -smp 4 -boot d
+	EM			 = qemu-system-i386 -sdl -debugcon stdio -m 64 -smp 4 -boot d
 	GDB			 = gdb
 	DEFINES		+= -D __x86
 	
@@ -61,7 +61,7 @@ else ifeq ($(Arch),x86-64)
 	AS			 = nasm -f elf64
 	CC			 = gcc -m64
 	LD			 = ld -m elf_x86_64 -L/usr/lib/gcc/x86_64-linux-gnu/4.6/
-	EM			 = qemu-system-x86_64 -debugcon stdio -m 64 -smp 4 -boot d
+	EM			 = qemu-system-x86_64 -sdl -debugcon stdio -m 64 -smp 4 -boot d
 	GDB			 = gdb
 	DEFINES		+= -D __x86_64
 	
@@ -69,7 +69,6 @@ else ifeq ($(Arch),x86-64)
 			   lib/hal/common-x86   \
 			   lib/hal/$(Arch)  \
 			   lib/crt/gcc-common  \
-			   lib/crt/gcc-$(Arch)  \
 			   lib/std          \
 			   lib/libc         \
 			   kernel
@@ -79,12 +78,12 @@ else ifeq ($(Arch),x86-64)
 				-I lib/hal/$(Arch)
 
 else ifeq ($(Arch),arm)
-	TCHAIN		 = arm-linux-gnueabi-
-	AS			 = $(TCHAIN)as -mcpu=cortex-a8
-	CC			 = $(TCHAIN)gcc -mcpu=cortex-a8
-	LD			 = $(TCHAIN)ld -L/usr/lib/gcc/arm-linux-gnueabi/4.6.1/
+	TCHAIN		 = arm-linux-gnueabihf-
+	AS			 = $(TCHAIN)as -mcpu=cortex-a9
+	CC			 = $(TCHAIN)gcc -mcpu=cortex-a9
+	LD			 = $(TCHAIN)ld -L/usr/lib/gcc/arm-linux-gnueabihf/4.8/
 	OBJCOPY		 = $(TCHAIN)objcopy
-	EM			 = qemu-system-arm -serial stdio -m 64 -M realview-pb-a8
+	EM			 = qemu-system-arm -cpu arm1176 -m 256 -M raspi -no-reboot -serial stdio -show-cursor
 	GDB			 = gdb
 	DEFINES		+= -D __arm
 	
@@ -167,16 +166,18 @@ TARFILES	 = $(shell find $(TARPATHS) ! -path "*.svn*" -a -name "*.*") $(AUXFILES
 #---------------------------------------------------------
 # General FLAGS
 #---------------------------------------------------------
-CCFLAGS		 += -nostartfiles   \
+CCFLAGS		 += -std=c99 \
+			   -nostartfiles   \
 			   -nodefaultlibs  \
 			   -ffreestanding  \
 			   -fno-keep-inline-functions \
 			   -fno-builtin    \
 			   -MMD -MP -MF $(@:.obj=.dep)
 			   
-CPPFLAGS	 += -fno-exceptions \
+CPPFLAGS	 += -std=c++11 \
+			   -fno-exceptions \
 			   -fno-rtti
- 
+
 LDFLAGS		 += -nodefaultlibs
 #ASFLAGS		 += -w+gnu-elf-extensions
 
@@ -199,11 +200,8 @@ ifeq ($(Build),Debug)
 				   -Wunsafe-loop-optimizations \
 				   -Wno-variadic-macros \
 				   -g3 -fstack-protector-all
-	
-	CFLAGS		+= -std=c99
-	
+
 	CPPFLAGS	+= -Woverloaded-virtual
-	
 	DEFINES		+= -D DEBUG
 else ifeq ($(Build),Release)
 	CCFLAGS		+= -O4 -fno-stack-protector

@@ -40,10 +40,9 @@ void isr47(); // secondary ATA channel
 #define PIC_IRQ_ATA_PRIMARY 14
 #define PIC_IRQ_ATA_SECONDARY 15
 
+void picInit(uint8_t masterOffset, uint8_t slaveOffset);
+void picSetMask(uint8_t irq, bool masked);
 void picSendEOI(uint8_t irq);
-void picRemap(uint8_t masterOffset, uint8_t slaveOffset);
-void picSetMask(uint8_t IRQline);
-void picClearMask(uint8_t IRQline);
 
 #ifdef __cplusplus
 }

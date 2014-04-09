@@ -24,72 +24,55 @@
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
 
 void
+picInit(uint8_t masterOffset, uint8_t slaveOffset)
+{
+	// Remap PIC
+	outb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	/* starts the initialization sequence */
+	io_wait();
+	outb(PIC2_CMD, ICW1_INIT+ICW1_ICW4);
+	io_wait();
+	outb(PIC1_DATA, masterOffset);          /* define the PIC vectors */
+	io_wait();
+	outb(PIC2_DATA, slaveOffset);
+	io_wait();
+	outb(PIC1_DATA, 4);                     /* continue initialization sequence */
+	io_wait();
+	outb(PIC2_DATA, 2);
+	io_wait();
+	outb(PIC1_DATA, ICW4_8086);
+	io_wait();
+	outb(PIC2_DATA, ICW4_8086);
+	io_wait();
+
+	// Mask all interrupts
+	outb(PIC1_DATA, 0xFB); // Due to PIC cascading (we want it enabled)
+	outb(PIC2_DATA, 0xFF);
+}
+
+void
+picSetMask(uint8_t irq, bool masked)
+{
+	uint16_t port = PIC1_DATA;
+	
+	//debug_print("[PIC] Setting mask IRQ %d to %d\n", irq, masked);
+
+	if (irq > 7) {
+		port = PIC2_DATA;
+		irq -= 8;
+	}
+	uint8_t val = inb(port);
+	//debug_print("[PIC] data before: 0b%08b\n", val);
+	val &= ~(1 << irq);
+	val |= (!!masked) << irq;
+	//debug_print("[PIC] data after: 0b%08b\n", val);
+	outb(port, val);
+}
+
+void
 picSendEOI(uint8_t irq)
 {
-	if (irq >= 8) {
+	if (irq > 7) {
 		outb(PIC2_CMD,PIC_EOI);
 	}
 	outb(PIC1_CMD,PIC_EOI);
-}
-
-void
-picRemap(uint8_t masterOffset, uint8_t slaveOffset)
-{
-	uint8_t a1, a2;
-
-	a1 = inb(PIC1_DATA);					/* save masks */
-	a2 = inb(PIC2_DATA);
-
-	outb(PIC1_CMD, ICW1_INIT+ICW1_ICW4);	/* starts the initialization sequence */
-	//io_wait();
-	outb(PIC2_CMD, ICW1_INIT+ICW1_ICW4);
-	//io_wait();
-	outb(PIC1_DATA, masterOffset);          /* define the PIC vectors */
-	//io_wait();
-	outb(PIC2_DATA, slaveOffset);
-	//io_wait();
-	outb(PIC1_DATA, 4);                     /* continue initialization sequence */
-	//io_wait();
-	outb(PIC2_DATA, 2);
-	//io_wait();
-
-	outb(PIC1_DATA, ICW4_8086);
-	//io_wait();
-	outb(PIC2_DATA, ICW4_8086);
-	//io_wait();
-
-	outb(PIC1_DATA, a1);   /* restore saved masks */
-	outb(PIC2_DATA, a2);
-}
-
-void
-picSetMask(uint8_t IRQline)
-{
-	uint16_t port;
-	uint8_t value;
-
-	if (IRQline < 8) {
-		port = PIC1_DATA;
-	} else {
-		port = PIC2_DATA;
-		IRQline -= 8;
-	}
-	value = inb(port) | (1 << IRQline);
-	outb(port, value);
-}
-
-void
-picClearMask(uint8_t IRQline)
-{
-	uint16_t port;
-	uint8_t value;
-
-	if (IRQline < 8) {
-		port = PIC1_DATA;
-	} else {
-		port = PIC2_DATA;
-		IRQline -= 8;
-	}
-	value = inb(port) & ~(1 << IRQline);
-	outb(port, value);
 }

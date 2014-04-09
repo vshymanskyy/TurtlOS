@@ -25,8 +25,13 @@ Console* console;
 CliDesktop* desktop;
 
 int main();
-
-int main() {
+extern void kheap_init();
+int main()
+{
+	debug_puts("In main\n");
+	
+	kheap_init();
+	
 	desktop = new CliDesktop(Rect(0, 0, 80, 25));
 	console = new Console(Rect(1, 1, 78, 23));
 
@@ -49,17 +54,17 @@ int main() {
 			(*console) << mmap[i].addr << ": " << (uint64_t)mmap[i].length << " - " << mmapTypes[mmap[i].type - 1] << endl;
 		}
 		delete[] mmap;
-	}*/
+	}
 
 	DeviceManager::Instance()->RegisterListener(new InitrdFs::Listener());
 	for (uint32_t i = 0; i < MultibootParser::Instance()->GetModulesQty(); i++) {
 		MultibootParser::Module mod;
 		if (MultibootParser::Instance()->GetModule(i, mod)) {
-			//(*console) << "Module:  " << mod.command << " at " << mod.data << endl;
+			(*console) << "Module:  " << mod.command << " at " << mod.data << endl;
 			mallocat(mod.data, mod.length);
 			DeviceManager::Instance()->RegisterDevice(new RamDrive(mod.data, mod.length / 512 + 1));
 		}
-	}
+	}*/
 
 	lapicInit();
 
@@ -68,9 +73,8 @@ int main() {
 	ImpsParser::Instance();
 	Processors::Instance()->Startup();
 
-
+	mouseInit();
 	keyboardInit();
-	//mouseInit();
 
 	for(;;) {
 		(*console) << (char)keyboardGetChar();

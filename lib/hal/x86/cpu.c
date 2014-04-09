@@ -154,7 +154,9 @@ void isr_handler()
 {
 	register RegisterFrame_t* regs __asm ("ecx");
 	regs->interrupt &= 0xFF;
-	if (interrupt_handlers[regs->interrupt] != 0) {
+	if (interrupt_handlers[regs->interrupt] != NULL) {
 		interrupt_handlers[regs->interrupt](regs);
+	} else {
+		debug_print("[ISR] Unhandled interrupt %d\n", regs->interrupt);
 	}
 }

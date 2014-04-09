@@ -116,7 +116,7 @@ ImpsParser::ImpsParser()
 {
 	_fps = FindFPS(0xF0000, 0xFFFFF);
 	if (!_fps) {
-		(*console) << "FPS not found!" << endl;
+		debug_print("[ImpsParser] FPS not found!\n");
 		Processors::Instance()->AddCpu(0, true, true);
 		return;
 	}

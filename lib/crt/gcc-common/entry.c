@@ -4,8 +4,7 @@
 extern void __stack_chk_guard_setup ();
 extern void main();
 
-void
-entry()
+void entry()
 {
 	debug_puts("Kernel entry executed\n");
 
@@ -48,7 +47,7 @@ entry()
 	size_t* call;
 	for (call = &__ctorsStart; call < &__ctorsEnd; call++) {
 		if (*call) {
-			//debug_print("Calling ctor 0x%p\n", *call);
+			debug_print("Calling ctor 0x%p\n", *call);
 			((pproc_t)*call)();
 		}
 	}
@@ -59,7 +58,7 @@ entry()
 	// Call all static destructors
 	for (call = &__dtorsStart; call < &__dtorsEnd; call++) {
 		if (*call) {
-			//debug_print("Calling dtor 0x%p\n", *call);
+			debug_print("Calling dtor 0x%p\n", *call);
 			((pproc_t)*call)();
 		}
 	}

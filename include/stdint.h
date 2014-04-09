@@ -5,6 +5,10 @@
 	#pragma once
 #endif
 
+#ifndef __cplusplus
+	typedef unsigned bool;
+#endif
+
 #if COMPILER == COMPILER_GCC
 
 	#define __int8 char

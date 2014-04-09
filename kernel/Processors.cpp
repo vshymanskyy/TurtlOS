@@ -32,6 +32,7 @@ const char* ExceptionMsgs[] = {
 };
 
 Spinlock isrLock;
+
 static
 void
 DefaultIsrHandler(RegisterFrame* regs)
@@ -160,38 +161,38 @@ void
 Processors::Startup()
 {
 	InitBsp();
-
+/*
 	CpuWaker waker(CpuWaker::Entry(Processors::Instance(), &Processors::InitAp));
-	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i) {
+	for(CpuList::It i = _processors.First(); i != _processors.End(); ++i)
+	{
 		CpuDesc& cpu = _processors[i];
-		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == _bspLapicId) {
+		if (cpu.state == CpuDesc::CPU_DISABLED || cpu.lapicId == _bspLapicId)
+		{
 			continue;
 		}
-		if (cpu.state == CpuDesc::CPU_STOPPED) {
+		if (cpu.state == CpuDesc::CPU_STOPPED)
+		{
 			cpu.state = CpuDesc::CPU_BOOTING;
 			cpu.stackSize = 0x4096;
 			cpu.stack = malloc(cpu.stackSize);
 
-			if (!waker.StartCpu(cpu.lapicId, (void*)((size_t)cpu.stack) + cpu.stackSize - 16)) {
+			if (!waker.StartCpu(cpu.lapicId, (void*)((size_t)cpu.stack) + cpu.stackSize - 16))
+			{
 				debug_print("[CPU %d] Failed to start CPU %d\n", lapicGetID(), cpu.lapicId);
 			}
 			//_lock.Wait();
 		}
 	}
+*/
 }
 
 void
 Processors::InitBsp() {
 	assert (_bspLapicId != 0xFF);
-	CpuDesc* cpu = GetCpu(_bspLapicId);
-	cpu->stack = NULL;
-	cpu->lapic = NULL;
+
 
 	halCpuInitIdt();
-	picRemap(0x20, 0x28);
-	for(int i = 0; i<16; i++) {
-		picSetMask(i);
-	}
+	picInit(32, 40);
 
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
@@ -200,10 +201,15 @@ Processors::InitBsp() {
 	timerSetFrequency(20);
 	timerInit();
 
-	//cpu->lapic = aligned_alloc(0x400, 0x1000);
-	//lapicSetBase((size_t)cpu->lapic);
 
-	cpu->state = CpuDesc::CPU_READY;
+	if (CpuDesc* cpu = GetCpu(_bspLapicId))
+	{
+		cpu->stack = NULL;
+		cpu->lapic = NULL;
+		cpu->state = CpuDesc::CPU_READY;
+		//cpu->lapic = aligned_alloc(0x400, 0x1000);
+		//lapicSetBase((size_t)cpu->lapic);
+	}
 }
 
 void
@@ -216,10 +222,7 @@ Processors::InitAp() {
 	cpu->lapic = NULL;
 
 	halCpuInitIdt();
-	picRemap(0x20, 0x28);
-	for(int i = 0; i<16; i++) {
-		picSetMask(i);
-	}
+	picInit(0x20, 0x28);
 
 	SetExceptionHandlers();
 	cpuEnableInterrupts();
@@ -241,10 +244,10 @@ Processors::InitAp() {
 
 	//cpuStop();
 
-	for(;;) {
+	//for(;;) {
 		//for(int i=0; i<10000000; i++);
 		//asm ("int $128");
-	}
+	//}
 
 	cpuStop();
 

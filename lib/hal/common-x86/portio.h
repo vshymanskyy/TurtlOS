@@ -3,8 +3,6 @@
 
 #include <global.h>
 
-
-
 INLINE void io_wait(void);
 
 INLINE uint8_t  inb(const uint16_t port);

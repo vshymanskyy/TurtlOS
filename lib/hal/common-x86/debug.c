@@ -1,11 +1,16 @@
 #include <cpu_structs.h>
+#include <stdint.h>
+
+#if 0
 
 void
 debug_putc (const char c)
 {
 	asm ( "outb %0, %1" : : "a"(c), "Nd"(0xe9) );
 }
-/*
+
+#else
+
 void
 debug_putc (const char c)
 {
@@ -25,11 +30,12 @@ debug_putc (const char c)
 		break;
 		}
 	default:
-		*buff++ = static_cast<uint16_t>(0x4E00 | c);
+		*buff++ = (uint16_t)(0x4E00 | c);
 		break;
 	}
 	if ((size_t)buff >= 0xB8000+(80*25*2)) {
 		buff = (uint16_t*)0xB8000;
 	}
 }
-*/
+
+#endif

@@ -8,7 +8,7 @@
 
 
 Heap::Heap(const void* start, const size_t size)
-	:_size(size)
+	: _size(size)
 {
 	Node* mFirst = (Node*)start;
 	_head = (Node*)((char*)(mFirst - 1) + size);
@@ -18,19 +18,23 @@ Heap::Heap(const void* start, const size_t size)
 	_nodesQty = 1;
 }
 
-Heap::~Heap() {
+Heap::~Heap()
+{
 
 }
 
-inline Heap::Iterator Heap::First() const{
+inline Heap::Iterator Heap::First() const
+{
 	return Iterator(_head->_next);
 }
 
-inline Heap::Iterator Heap::End() const{
+inline Heap::Iterator Heap::End() const
+{
 	return Iterator(_head);
 }
 
-size_t Heap::GetFreeMemorySize() const{
+size_t Heap::GetFreeMemorySize() const
+{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
 		if (it->_free) {
@@ -40,7 +44,8 @@ size_t Heap::GetFreeMemorySize() const{
 	return result;
 }
 
-size_t Heap::GetAllocatedMemorySize() const{
+size_t Heap::GetAllocatedMemorySize() const
+{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
 		if (!it->_free) {
@@ -51,7 +56,8 @@ size_t Heap::GetAllocatedMemorySize() const{
 	return result;
 }
 
-size_t Heap::GetMaxFreeBlock() const{
+size_t Heap::GetMaxFreeBlock() const
+{
 	size_t result = 0;
 	for(Iterator it = First(); it != End(); it++) {
 		if (it->_free) {
@@ -63,19 +69,20 @@ size_t Heap::GetMaxFreeBlock() const{
 	return result;
 }
 
-size_t Heap::GetOverhead() const{
+size_t Heap::GetOverhead() const
+{
 	return sizeof(Heap) + sizeof(Node) * (_nodesQty + 1);
 }
 
-void Heap::Dump() {
+void Heap::Dump()
+{
 	int aQty = 0;
 	int fQty = 0;
 	size_t aSize = 0;
 	size_t fSize = 0;
 	size_t fMax = 0;
 
-	(*console)
-		<< "---------- Memory status ----------" << endl;
+	debug_print("---------- Memory status ----------\n");
 
 	for(Iterator it = First(); it != End(); it++) {
 		const size_t size = it->GetSize();
@@ -86,7 +93,7 @@ void Heap::Dump() {
 				fMax = size;
 		} else {
 			#ifdef DEBUG
-			(*console) << it->_file << ":" << it->_line << endl;
+			debug_print("%s:%d\n", it->_file, it->_line);
 			#endif
 			++aQty;
 			aSize += size;
@@ -103,7 +110,8 @@ void Heap::Dump() {
 		*/
 }
 
-bool Heap::IsEmpty() const {
+bool Heap::IsEmpty() const
+{
 	for(Iterator it = First(); it != End(); it++) {
 		if (!it->_free) {
 			return false;
@@ -113,7 +121,8 @@ bool Heap::IsEmpty() const {
 }
 
 #ifdef DEBUG
-void Heap::DumpDebug() const{
+void Heap::DumpDebug() const
+{
 	for(Iterator it = First(); it != End(); it++) {
 		if (!it->_free) {
 			debug_print("%s:%d [%d]\n", it->_file, it->_line, it->GetSize());
@@ -121,7 +130,8 @@ void Heap::DumpDebug() const{
 	}
 }
 
-void* Heap::AllocateDebug(size_t size, const char* file, int line) {
+void* Heap::AllocateDebug(size_t size, const char* file, int line)
+{
 	if (!size)
 		return NULL;
 	Node* n = FindSutableNode(size);
@@ -140,7 +150,8 @@ void* Heap::AllocateDebug(size_t size, const char* file, int line) {
 }
 #endif
 
-void* Heap::Allocate(size_t size) {
+void* Heap::Allocate(size_t size)
+{
 	if (!size)
 		return NULL;
 	Node* n = FindSutableNode(size);

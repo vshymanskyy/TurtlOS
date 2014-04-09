@@ -8,16 +8,19 @@
 #define PIT_CHANNEL2_DATA 0x42    /* Channel 2 data port (read/write) */
 #define PIT_MODE_CMD 0x43         /* Mode/Command register (write only, a read is ignored) */
 
-unsigned tick=0;
-char rotator[] = {'|','/','-','\\'};
+#ifdef DEBUG
+  unsigned tick=0;
+  char rotator[] = {'|','/','-','\\'};
+#endif
 
 static
 void
 TimerIrqHandler(RegisterFrame* regs)
 {
+#ifdef DEBUG
 	tick++;
 	*((char*)0xB8000 + 79*2) = rotator[tick%4];
-
+#endif
 	picSendEOI(PIC_IRQ_TIMER);
 }
 
@@ -25,7 +28,7 @@ void
 timerInit(void)
 {
 	halCpuRegisterIRQ(PIC_IRQ_TIMER, &TimerIrqHandler);
-	picClearMask(PIC_IRQ_TIMER);
+	picSetMask(PIC_IRQ_TIMER, false);
 }
 
 

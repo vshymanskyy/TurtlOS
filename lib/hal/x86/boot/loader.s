@@ -51,8 +51,9 @@ loader:
 	mov esp, stack+STACKSIZE
 	mov dword[0xb8000], 'x_8_'
 	mov dword[0xb8004], '6_ _'
-	mov dword[0xb8008], ' _o_'
-	mov dword[0xb800c], 'k_._'
+	mov dword[0xb8008], 'o_k_'
+	mov dword[0xb800c], '._ _'
+	mov dword[0xb8010], ' _ _'
 
 	jmp entry
 

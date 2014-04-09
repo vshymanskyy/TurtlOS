@@ -83,6 +83,7 @@ private:
 	void RemoveNode(Node* n);
 
 public:
+	Heap() { };
 
 	Heap(const void* start, const size_t size);
 

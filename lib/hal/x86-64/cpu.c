@@ -158,5 +158,7 @@ void isr_handler()
 	regs->interrupt &= 0xFF;
 	if (interrupt_handlers[regs->interrupt] != 0) {
 		interrupt_handlers[regs->interrupt](regs);
+	} else {
+		debug_print("[ISR] Unhandled interrupt %d\n", regs->interrupt);
 	}
 }

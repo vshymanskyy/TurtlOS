@@ -454,7 +454,8 @@ static
 void
 KeyboardIrqHandler(RegisterFrame* regs)
 {
-	if (inb(CTRL_STATS_REG) & CTRL_STATS_MASK_OUT_BUF) {
+	if (inb(CTRL_STATS_REG) & CTRL_STATS_MASK_OUT_BUF)
+	{
 		int scancode = inb(ENC_INPUT_REG);
 
 		//int temp = inb(0x61);
@@ -481,7 +482,7 @@ KeyboardIrqHandler(RegisterFrame* regs)
 						mAlt = false;
 						break;
 					default:
-						debug_print("[KBD] Up '%c'\n", key);
+						//debug_print("[KBD] Up '%c'\n", key);
 						break;
 				}
 			} else {					//KEY_DOWN
@@ -522,7 +523,7 @@ KeyboardIrqHandler(RegisterFrame* regs)
 						break;
 
 					default:
-						debug_print("[KBD] Down '%c'\n", key);
+						//debug_print("[KBD] Down '%c'\n", key);
 						mBuffer.Push(key);
 						break;
 				}
@@ -567,7 +568,7 @@ keyboardInit(void)
 	}
 
 	halCpuRegisterIRQ(PIC_IRQ_KEYBOARD, KeyboardIrqHandler);
-	picClearMask(PIC_IRQ_KEYBOARD);
+	picSetMask(PIC_IRQ_KEYBOARD, false);
 
 	cpuEnableInterrupts();
 }

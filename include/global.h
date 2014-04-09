@@ -20,10 +20,5 @@ typedef void*    ptr_t;
 #define __string(x) #x				/*  */
 #define __string_def(x) __string(x)	/*  */
 
-#ifdef __cplusplus
-	extern class Console* console;
-	extern class CliDesktop* desktop;
-#endif
-
 #endif /* INC_GLOBAL_H */
 

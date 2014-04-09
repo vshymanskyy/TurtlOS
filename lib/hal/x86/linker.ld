@@ -25,6 +25,18 @@ SECTIONS
 		__dtorsStart = .;
 		*(.dtor*)
 		__dtorsEnd = .;
+		
+      __ctorsStart = .;
+      LONG((__ctorsEnd - __ctorsStart) / 4 - 2)
+      *(.ctors)
+      LONG(0)
+      __ctorsEnd = .;
+      __dtorsStart = .;
+      LONG((__dtorsEnd - __dtorsStart) / 4 - 2)
+      *(.dtors)
+      LONG(0)
+      __dtorsEnd = .;
+      
 		__ehframeStart = .;
 		*(.eh_frame)
 		QUAD(0)
